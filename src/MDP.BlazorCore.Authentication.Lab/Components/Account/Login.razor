@@ -1,0 +1,41 @@
+﻿@using MyLab.Module
+
+@page "/Account/Login"
+@code {
+
+    // Methods
+    protected override Task OnInitializedAsync()
+    {
+        // Return
+        return Task.CompletedTask;
+    }
+}
+
+
+<PageScript>
+    <script>
+
+        // blazorPageLoaded
+        document.addEventListener("BlazorPageLoaded", function (event) {
+                
+            // loginByLine
+            document.getElementById("loginByLineButton").addEventListener("click", function (event) {
+
+                // variables
+                var returnUrl = (new URLSearchParams(window.location.search)).get("returnUrl") || null;
+
+                // login
+                mdp.blazor.authenticationManager.login("Line", returnUrl);
+            });
+        }, { once: true });
+    </script>
+</PageScript>
+
+
+<!-- title -->
+<h3>Login</h3>
+<hr />
+
+<!-- Login -->
+<button class="btn btn-primary" id="loginByLineButton">LoginByLine</button><br />
+<br />

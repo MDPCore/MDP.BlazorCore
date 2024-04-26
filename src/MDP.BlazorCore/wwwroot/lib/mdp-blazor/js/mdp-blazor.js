@@ -73,9 +73,6 @@ mdp.blazor.interopManager = (function () {
 // mdp.blazor.authenticationManager
 mdp.blazor.authenticationManager = (function () {
 
-    // fields
-
-
     // methods
     function login(scheme, returnUrl) {
 
