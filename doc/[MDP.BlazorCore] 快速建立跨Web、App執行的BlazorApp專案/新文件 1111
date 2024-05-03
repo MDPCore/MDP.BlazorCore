@@ -1,0 +1,39 @@
+[MDP.BlazorCore] 快速建立跨Web、App執行的BlazorApp專案。
+
+團隊資源受限的時候，使用Blazor開發應用系統，只需開發一份程式碼及使用一種程式語言，就同時產出Web跟App應用系統。
+
+本篇文章，紀錄使用MDP.BlazorCore所提供的樣板，快速建立跨Web、App執行的BlazorApp專案。為自己留個紀錄，也希望能幫助到有需要的開發人員。
+
+
+安裝指令：
+
+dotnet new install MDP.BlazorApp::8.0.2-beta03
+
+dotnet new MDP.BlazorApp -n BlazorApp1
+
+
+專案執行：
+
+1. 使用Visual Studio開啟，指令建立的BlazorApp1.sln。
+
+2. 將BlazorApp1.WebApp設定為啟動專案，按下執行專案，就可以看到Web版的程式畫面。
+
+3. 將BlazorApp1.MauiApp設定為啟動專案，按下執行專案，就可以看到Windows版的程式畫面。
+
+
+專案分層：
+
+BlazorApp1.CoreApp：Blazor程式專案，包含Blazor元件及wwwroot靜態檔案。只需寫一份程式碼，就可以執行在Web跟App。
+
+BlazorApp1.WebApp：Blazor Web執行專案，用來在Web站台上，執行Blazor程式專案。
+
+BlazorApp1.MauiApp：Blazor Maui執行專案，用來在Android、iOS、Windows上，執行Blazor程式專案。
+
+MyLab.Todos：領域層範例。提供Context、Repository、Entity程式碼，及注入Repository介面範例。
+
+MyLab.Todos.Accesses：資料存取層範例。提供Repository實作程式碼，及自動註冊Repository實作範例。
+
+
+程式源碼：
+
+https://github.com/MDPNetCore/MDP.NetCore
