@@ -27,7 +27,7 @@
     <PackageReference Include="MDP.NetCore" Version="8.0.5" />
     <PackageReference Include="MDP.Registration" Version="8.0.5" />
 	</ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
   </ItemGroup>

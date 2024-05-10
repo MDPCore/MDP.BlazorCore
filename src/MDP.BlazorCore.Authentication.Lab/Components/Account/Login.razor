@@ -1,31 +1,40 @@
-﻿@using MyLab.Module
-
+﻿@attribute [AllowAnonymous]
 @page "/Account/Login"
 @code {
 
+    // Fields
+    [Inject]
+    public NavigationManager _navigationManager { get; set; } = null;
+
+
     // Methods
-    protected override Task OnInitializedAsync()
+    private object CreatePageData()
     {
+        // ReturnUrl
+        var returnUrl = string.Empty;
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
+
         // Return
-        return Task.CompletedTask;
+        return new { returnUrl = returnUrl };
     }
 }
 
 
-<PageScript>
+<PageScript PageData="@this.CreatePageData()">
     <script>
 
         // blazorPageLoaded
         document.addEventListener("BlazorPageLoaded", function (event) {
-                
+             
+            // variables
+            const pageData = event.detail.pageData;
+
             // loginByLine
             document.getElementById("loginByLineButton").addEventListener("click", function (event) {
 
-                // variables
-                var returnUrl = (new URLSearchParams(window.location.search)).get("returnUrl") || null;
-
                 // login
-                mdp.blazor.authenticationManager.login("Line", returnUrl);
+                mdp.blazor.authenticationManager.login("Line", pageData.returnUrl);
             });
         }, { once: true });
     </script>

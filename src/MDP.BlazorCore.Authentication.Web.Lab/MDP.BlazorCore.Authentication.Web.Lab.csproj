@@ -7,14 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.AspNetCore.Authentication" Version="8.0.5" />
-    <PackageReference Include="MDP.AspNetCore.Authentication.Line" Version="8.0.5" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.5.1" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.Line" Version="8.0.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Web\MDP.BlazorCore.Web.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Authentication.Lab\MDP.BlazorCore.Authentication.Lab.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication.Web\MDP.BlazorCore.Authentication.Web.csproj" />
   </ItemGroup>
 
 </Project>

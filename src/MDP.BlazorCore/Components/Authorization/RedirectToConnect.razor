@@ -1,30 +1,30 @@
-﻿
-@namespace MDP.BlazorCore
+﻿@namespace MDP.BlazorCore
 @code {
 
     // Fields
     [Inject]
-    public RoutesOptions _routesOptions { get; set; }
-
-    [Inject]
     public NavigationManager _navigationManager { get; set; }
+
+
+    // Properties
+    [Parameter]
+    public string ConnectPath { get; set; } = null;
 
 
     // Methods
     protected override Task OnInitializedAsync()
     {
-        // LoginPath
-        var loginPath = _routesOptions.LoginPath;
-        if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
+        // ConnectPath
+        var connectPath = this.ConnectPath;
+        if (string.IsNullOrEmpty(connectPath) == true) connectPath = "/";
 
         // ReturnUrl
         var returnUrl = string.Empty;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = (new Uri(_navigationManager.Uri)).PathAndQuery;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
-        returnUrl = Uri.EscapeDataString(returnUrl);
 
         // Redirect
-        _navigationManager.NavigateTo($"{loginPath}?returnUrl={returnUrl}");
+        _navigationManager.NavigateTo($"{connectPath}?returnUrl={Uri.EscapeDataString(returnUrl)}");
 
         // Return
         return Task.CompletedTask;

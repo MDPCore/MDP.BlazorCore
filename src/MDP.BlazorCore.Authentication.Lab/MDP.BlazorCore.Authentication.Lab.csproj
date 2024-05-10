@@ -13,15 +13,10 @@
   <PropertyGroup>
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
-    <PackageReference Include="MDP.Registration" Version="8.0.5" />
-    <PackageReference Include="MDP.Security.Claims" Version="8.0.5" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
   </ItemGroup>
 
 </Project>

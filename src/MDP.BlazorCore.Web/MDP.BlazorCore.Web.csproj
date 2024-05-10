@@ -6,7 +6,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
-
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

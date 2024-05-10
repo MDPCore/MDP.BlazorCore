@@ -4,10 +4,12 @@ using MDP.Hosting;
 using MDP.NetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
@@ -39,12 +41,26 @@ namespace MDP.BlazorCore.Web
             if (entryAssembly == null) throw new InvalidOperationException($"{nameof(entryAssembly)}=null");
 
             // BlazorBuilder
-            var componentsBuilder = applicationBuilder.Services.AddRazorComponents();
             {
-                // Rendermode
-                componentsBuilder.AddInteractiveServerComponents();
+                // DeveloperTools
+                Action<CircuitOptions> configureDeveloperTool = null;
+                if (applicationBuilder.Environment.IsDevelopment() == true)
+                {
+                    configureDeveloperTool = (options) =>
+                    {
+                        options.DetailedErrors = true;
+                    };
+                }
 
-                // BlazorApp
+                // RazorApp
+                applicationBuilder.Services
+                    .AddRazorComponents()
+                    .AddInteractiveServerComponents(options =>
+                    {
+                        if (configureDeveloperTool != null) configureDeveloperTool(options);
+                    });
+
+                // RoutesOptions
                 applicationBuilder.Services.AddSingleton<RoutesOptions>(serviceProvider => {
                     return new RoutesOptions()
                     {

@@ -7,9 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Web\MDP.BlazorCore.Web.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Lab\MDP.BlazorCore.Lab.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Web\MDP.BlazorCore.Web.csproj" />
   </ItemGroup>
 
 </Project>
