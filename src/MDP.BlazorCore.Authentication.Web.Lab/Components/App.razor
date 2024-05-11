@@ -1,7 +1,46 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+
+    <!-- title -->
+    <title>MDP.BlazorCore</title>
+
+    <!-- meta -->
+    <base href="/" />
+    <meta charset="utf-8">
+    <meta name="googlebot" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+
+    <!-- styles -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="MDP.BlazorCore.Authentication.Web.Lab.styles.css" />
+
+    <!-- scripts -->
+    <script src="/lib/mdp-blazor/js/mdp-blazor.js"></script>
+    <HeadOutlet @rendermode="@this.HeadOutletRenderMode" />
+</head>
+<body>
+
+    <!-- content -->
+    <Routes @rendermode="@this.RoutesRenderMode" />
+
+    <!-- scripts -->
+    <script src="_framework/blazor.web.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            ssr: { disableDomPreservation: true }
+        });
+    </script>
+    <PageOutlet @rendermode="@this.PageOutletRenderMode" />
+</body>
+</html>
+
+
+<!-- code -->
+@using Microsoft.AspNetCore.Components.Web
 @using MDP.BlazorCore
-@using MDP.BlazorCore.Authentication.Lab
-@using MDP.BlazorCore.Authentication.Lab.Layout
 
 @namespace MDP.BlazorCore.Authentication.Web.Lab
 @code {
@@ -13,28 +52,3 @@
 
     private IComponentRenderMode PageOutletRenderMode { get; set; } = new InteractiveServerRenderMode(prerender: false);
 }
-
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="MDP.BlazorCore.Authentication.Web.Lab.styles.css" />
-    <script src="/lib/mdp-blazor/js/mdp-blazor.js"></script>
-    <HeadOutlet @rendermode="@this.HeadOutletRenderMode" />
-</head>
-<body>
-    <Routes @rendermode="@this.RoutesRenderMode" />
-    <script src="_framework/blazor.web.js" autostart="false"></script>
-    <script>
-        Blazor.start({
-            ssr: { disableDomPreservation: true }
-        });
-    </script>
-    <PageOutlet @rendermode="@this.PageOutletRenderMode" />
-</body>
-</html>

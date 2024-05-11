@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Authentication;
 using System;
 using System.Collections.Generic;
@@ -20,20 +21,24 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         public readonly OAuthSSOOptions _authOptions = null;
 
+        public readonly IHostEnvironment _hostEnvironment = null;
+
         public HttpClient _httpClient = null;
 
 
         // Constructors
-        public OAuthSSOHandler(OAuthSSOOptions authOptions)
+        public OAuthSSOHandler(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment)
         {
             #region Contracts
 
             if (authOptions == null) throw new ArgumentException($"{nameof(authOptions)}=null");
+            if (hostEnvironment == null) throw new ArgumentException($"{nameof(hostEnvironment)}=null");
 
             #endregion
 
             // Default
             _authOptions = authOptions;
+            _hostEnvironment = hostEnvironment;
         }
 
         public void Dispose()
@@ -61,10 +66,17 @@ namespace MDP.BlazorCore.Authentication.Maui
                     // Create
                     if (_httpClient == null)
                     {
-                        HttpClientHandler handler = new HttpClientHandler();
-                        handler.ServerCertificateCustomValidationCallback = (HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors) => true;
-
-                        _httpClient = new HttpClient(handler);
+                        if (_hostEnvironment.IsDevelopment() == true)
+                        {
+                            _httpClient = new HttpClient(new HttpClientHandler()
+                            {
+                                ServerCertificateCustomValidationCallback = (HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors) => true
+                            });
+                        }
+                        else
+                        {
+                            _httpClient = new HttpClient();
+                        }
                     }
 
                     // Return
