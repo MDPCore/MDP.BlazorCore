@@ -37,9 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorizatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Lab", "MDP.BlazorCore.Authorization.Lab\MDP.BlazorCore.Authorization.Lab.csproj", "{28CBC88D-C592-49C1-AABB-321164EBE930}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDP.BlazorCore.Authorization.Web", "MDP.BlazorCore.Authorization.Web\MDP.BlazorCore.Authorization.Web.csproj", "{5205E55B-5416-4860-BFEB-540D02CD1C1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Web", "MDP.BlazorCore.Authorization.Web\MDP.BlazorCore.Authorization.Web.csproj", "{5205E55B-5416-4860-BFEB-540D02CD1C1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDP.BlazorCore.Authorization.Web.Lab", "MDP.BlazorCore.Authorization.Web.Lab\MDP.BlazorCore.Authorization.Web.Lab.csproj", "{3D2AA0EC-11E6-44B5-8465-9F49C8354DA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Web.Lab", "MDP.BlazorCore.Authorization.Web.Lab\MDP.BlazorCore.Authorization.Web.Lab.csproj", "{3D2AA0EC-11E6-44B5-8465-9F49C8354DA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

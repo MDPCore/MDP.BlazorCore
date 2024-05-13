@@ -1,0 +1,45 @@
+﻿@using System.Security.Claims
+
+@attribute [Authorize]
+@page "/AuthorizeExample"
+@code {
+
+    // Fields
+    [Inject]
+    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
+
+
+    // Methods
+    protected override async Task OnInitializedAsync()
+    {
+        // User
+        var user = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        if (user == null) throw new InvalidOperationException($"{nameof(user)}=null");
+        this.User = user;
+    }
+
+
+    // Properties
+    public ClaimsPrincipal User { get; set; }
+}
+
+
+<!-- title -->
+<h3>AuthorizeExample</h3>
+<hr />
+
+<!-- identity -->
+AuthenticationType=@User?.Identity?.AuthenticationType<br />
+UserId=@User.GetClaimValue(ClaimTypes.NameIdentifier)<br />
+UserName=@User.GetClaimValue(ClaimTypes.Name)<br />
+Mail=@User.GetClaimValue(ClaimTypes.Email)<br />
+Role=@String.Join(",", User.GetAllClaimValue(ClaimTypes.Role))<br />
+<br />
+
+<!-- logout -->
+<form action="/Account/Logout" method="post">
+    <input type="hidden" name="returnUrl" value="/Home/Index" />
+    <input type="submit" value="Logout" /><br />
+    <br />
+</form>
+<hr />

@@ -25,10 +25,25 @@ namespace MDP.AspNetCore.Authentication.Line.Lab
         }
 
         [AllowAnonymous]
-        public Task<ActionResult> LoginByLine(string returnUrl = null)
+        public async Task<ActionResult> LoginByPassword(string username, string password = null, string returnUrl = null)
         {
+            #region Contracts
+
+            if (string.IsNullOrEmpty(username) == true) throw new ArgumentException($"{nameof(username)}=null");
+
+            #endregion
+
+            // ClaimsIdentity
+            var claimsIdentity = new ClaimsIdentity(authenticationType: "Password", claims: new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, $"{username}"),
+                new Claim(ClaimTypes.Email, $"{username}@example.com"),
+                new Claim(ClaimTypes.Role, "User")
+            });
+
             // Return
-            return this.LoginAsync(LineDefaults.AuthenticationScheme, returnUrl);
+            return await this.LoginAsync(claimsIdentity, returnUrl);
         }
     }
 }

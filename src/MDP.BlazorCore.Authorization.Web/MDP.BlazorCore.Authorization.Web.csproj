@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MDP.AspNetCore.Authorization" Version="8.0.5.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore.Authorization\MDP.BlazorCore.Authorization.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Web\MDP.BlazorCore.Web.csproj" />
   </ItemGroup>

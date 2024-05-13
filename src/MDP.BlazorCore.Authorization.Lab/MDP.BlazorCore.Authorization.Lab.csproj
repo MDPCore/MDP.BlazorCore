@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Authorization\MDP.BlazorCore.Authorization.csproj" />
   </ItemGroup>
 
 </Project>

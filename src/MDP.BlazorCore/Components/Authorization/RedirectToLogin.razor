@@ -8,15 +8,15 @@
 
     // Properties
     [Parameter]
-    public string ConnectPath { get; set; } = null;
+    public string LoginPath { get; set; } = null;
 
 
     // Methods
     protected override Task OnInitializedAsync()
     {
-        // ConnectPath
-        var connectPath = this.ConnectPath;
-        if (string.IsNullOrEmpty(connectPath) == true) connectPath = "/";
+        // LoginPath
+        var loginPath = this.LoginPath;
+        if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
 
         // ReturnUrl
         var returnUrl = string.Empty;
@@ -24,7 +24,7 @@
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
         // Redirect
-        _navigationManager.NavigateTo($"{connectPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+        _navigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
 
         // Return
         return Task.CompletedTask;
