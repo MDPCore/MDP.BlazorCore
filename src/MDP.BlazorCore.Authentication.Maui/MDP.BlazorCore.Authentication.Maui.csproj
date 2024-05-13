@@ -36,10 +36,5 @@
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Platforms\Android\PlatformClass1.cs">
-      <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
-    </Compile>
-  </ItemGroup>
 
 </Project>

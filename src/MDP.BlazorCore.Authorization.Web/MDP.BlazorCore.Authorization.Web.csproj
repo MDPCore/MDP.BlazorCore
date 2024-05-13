@@ -10,17 +10,14 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="MDP.Registration" Version="8.0.5" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authorization\MDP.BlazorCore.Authorization.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Web\MDP.BlazorCore.Web.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
-    <authors>MDP Software Studio</authors>
-    <copyright>Copyright © 2014 MDP Software Studio</copyright>
+    <authors>CLK Software Studio</authors>
+    <copyright>Copyright © 2014 CLK Software Studio</copyright>
     <description>MDP.Net Library</description>
     <PackageIcon>Package.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>

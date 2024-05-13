@@ -24,7 +24,7 @@
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
         // Redirect
-        _navigationManager.NavigateTo($"{connectPath}?returnUrl={Uri.EscapeDataString(returnUrl)}");
+        _navigationManager.NavigateTo($"{connectPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
 
         // Return
         return Task.CompletedTask;

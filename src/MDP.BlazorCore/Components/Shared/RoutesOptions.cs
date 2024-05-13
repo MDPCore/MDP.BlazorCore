@@ -15,7 +15,7 @@ namespace MDP.BlazorCore
 
         public Type DefaultLayout { get; set; }
 
-        public string ConnectPath { get; set; } = "/Account/Connect";
+        public string ConnectPath { get; set; } = "/Account/Login";
 
 
         // Methods

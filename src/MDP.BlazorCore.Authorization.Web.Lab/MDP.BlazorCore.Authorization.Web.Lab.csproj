@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore.Authorization.Lab\MDP.BlazorCore.Authorization.Lab.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authorization.Web\MDP.BlazorCore.Authorization.Web.csproj" />
+  </ItemGroup>
+
+</Project>
