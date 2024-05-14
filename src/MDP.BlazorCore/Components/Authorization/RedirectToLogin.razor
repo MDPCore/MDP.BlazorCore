@@ -5,28 +5,45 @@
     [Inject]
     public NavigationManager _navigationManager { get; set; }
 
+    [Inject]
+    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
+
 
     // Properties
     [Parameter]
     public string LoginPath { get; set; } = null;
 
+    [Parameter]
+    public string AccessDeniedPath { get; set; } = null;
+
 
     // Methods
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        // LoginPath
-        var loginPath = this.LoginPath;
-        if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
-
         // ReturnUrl
         var returnUrl = string.Empty;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = (new Uri(_navigationManager.Uri)).PathAndQuery;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
         // Redirect
-        _navigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+        var user  = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        if (user != null && user.Identity?.IsAuthenticated == true)
+        {
+            // AccessDeniedPath
+            var accessDeniedPath = this.AccessDeniedPath;
+            if (string.IsNullOrEmpty(accessDeniedPath) == true) accessDeniedPath = "/";
 
-        // Return
-        return Task.CompletedTask;
+            // AccessDenied
+            _navigationManager.NavigateTo($"{accessDeniedPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+        }
+        else
+        {
+            // LoginPath
+            var loginPath = this.LoginPath;
+            if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
+
+            // Login
+            _navigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+        }
     }
 }

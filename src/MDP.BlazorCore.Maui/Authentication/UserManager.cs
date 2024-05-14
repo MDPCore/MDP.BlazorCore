@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace MDP.BlazorCore.Maui
 {
-    [Service<UserManager>(singleton:true)]
     public class UserManager
     {
         // Properties

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebView.Maui;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MDP.BlazorCore.Maui
 {
@@ -77,6 +78,12 @@ namespace MDP.BlazorCore.Maui
                         DefaultLayout = defaultLayout
                     };
                 });
+
+                // AuthenticationStateProvider
+                applicationBuilder.Services.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
+
+                // UserManager
+                applicationBuilder.Services.AddSingleton<UserManager, UserManager>();
             }
 
             // Return

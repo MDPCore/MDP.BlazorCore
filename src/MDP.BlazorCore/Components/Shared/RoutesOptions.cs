@@ -17,6 +17,8 @@ namespace MDP.BlazorCore
 
         public string LoginPath { get; set; } = "/Account/Login";
 
+        public string AccessDeniedPath { get; set; } = "/Account/AccessDenied";
+
 
         // Methods
         public Assembly CreateAppAssembly()

@@ -14,7 +14,7 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@_routesOptions.CreateDefaultLayout()" >
             <NotAuthorized>
-                <RedirectToLogin LoginPath="@_routesOptions.LoginPath" />
+                <RedirectToLogin LoginPath="@_routesOptions.LoginPath" AccessDeniedPath="@_routesOptions.AccessDeniedPath" />
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>

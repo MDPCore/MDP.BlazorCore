@@ -9,7 +9,6 @@ using System.Xml.Linq;
 
 namespace MDP.BlazorCore.Authentication.Maui
 {
-    [Service<AuthenticationManager>(singleton: false, autoRegister: true)]
     public class AuthenticationManager
     {
         // Fields

@@ -18,6 +18,13 @@ namespace MDP.BlazorCore.Authorization.Web.Lab
         }
 
         [AllowAnonymous]
+        public ActionResult AccessDenied()
+        {
+            // Return
+            return this.View();
+        }
+
+        [AllowAnonymous]
         public Task<ActionResult> Logout(string returnUrl = null)
         {
             // Return
