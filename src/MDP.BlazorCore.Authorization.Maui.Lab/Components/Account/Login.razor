@@ -1,0 +1,50 @@
+﻿@using MDP.BlazorCore
+@using MDP.BlazorCore.Maui
+@using MDP.BlazorCore.Authentication.Maui
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+@page "/Account/Login"
+@code {
+
+    // Fields
+    [Inject]
+    public NavigationManager _navigationManager { get; set; } = null;
+
+    [Inject]
+    public AuthenticationManager _authenticationManager { get; set; } = null;
+
+
+    // Properties
+    public string ErrorMessage { get; set; } = null;
+
+
+    // Methods
+    protected override async Task OnInitializedAsync()
+    {        
+        // Execute        
+        try
+        {
+            // ReturnUrl
+            var returnUrl = string.Empty;
+            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
+            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
+
+            // Login
+            await _authenticationManager.LoginAsync(returnUrl: returnUrl);
+        }
+        catch (Exception exception)
+        {
+            // Message
+            this.ErrorMessage = exception.Message;
+        }
+    }
+}
+
+<!-- title -->
+<h3>Login...</h3>
+<hr />
+
+<!-- message -->
+<p style="color:red">@ErrorMessage</p>
+<br />

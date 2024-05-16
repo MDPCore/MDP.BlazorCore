@@ -23,11 +23,11 @@
     <hr />
 
     <!-- logout -->
-    <form asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post">
+    <form action="/Account/Logout" method="get">
+        <input type="hidden" name="returnUrl" value="/" />
         <input type="submit" value="Logout" /><br />
         <br />
     </form>
     <hr />
-
 </body>
 </html>

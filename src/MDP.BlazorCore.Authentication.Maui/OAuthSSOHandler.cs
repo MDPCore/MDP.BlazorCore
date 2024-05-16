@@ -295,7 +295,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             #endregion
 
             // Request
-            var request = new HttpRequestMessage(HttpMethod.Get, _authOptions.UserInformationEndpoint);
+            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.UserInformationEndpoint);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authenticateToken);
 

@@ -1,24 +1,17 @@
 ﻿using MDP.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MDP.BlazorCore.Authorization.Web
 {
-    public class NavigationResourceProvider : IResourceProvider
+    public class BlazorAccessResourceProvider : IAccessResourceProvider
     {
         // Fields
         private readonly NavigationManager _navigationManager = null;
 
 
         // Constructors
-        public NavigationResourceProvider(NavigationManager navigationManager)
+        public BlazorAccessResourceProvider(NavigationManager navigationManager)
         {
             #region Contracts
 
@@ -32,19 +25,19 @@ namespace MDP.BlazorCore.Authorization.Web
 
 
         // Methods
-        public Resource Create()
+        public AccessResource Create()
         {
             // Uri
             var uriString = _navigationManager.Uri;
             if (string.IsNullOrEmpty(uriString) == true) return null;
             var uri = new Uri(uriString);
 
-            // Resource
-            var resource = new Resource($"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}");
-            if (resource == null) return null;
+            // AccessResource
+            var accessResource = new AccessResource($"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}");
+            if (accessResource == null) return null;
 
             // Return
-            return resource;
+            return accessResource;
         }
     }
 }

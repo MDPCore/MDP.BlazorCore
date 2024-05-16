@@ -1,0 +1,29 @@
+﻿@using MDP.BlazorCore
+@using MDP.BlazorCore.Maui
+@using MDP.BlazorCore.Authentication.Maui
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+@page "/Account/Logout"
+@code {
+
+    // Fields
+    [Inject]
+    public NavigationManager _navigationManager { get; set; } = null;
+
+    [Inject]
+    public AuthenticationManager _authenticationManager { get; set; } = null;
+
+
+    // Methods
+    protected override async Task OnInitializedAsync()
+    {        
+        // ReturnUrl
+        var returnUrl = string.Empty;
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
+
+        // Logout
+        await _authenticationManager.LogoutAsync(returnUrl: returnUrl);
+    }
+}

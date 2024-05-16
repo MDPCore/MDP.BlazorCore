@@ -63,5 +63,21 @@ namespace MDP.BlazorCore.Authentication.Maui
             // Redirect
             _navigationManager.NavigateTo(returnUrl);
         }
+
+        public async Task LogoutAsync(string returnUrl = null)
+        {
+            // Require
+            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
+
+            // AuthenticateToken
+            
+            // AccessToken
+
+            // ClaimsIdentity
+            await _userManager.SignOutAsync();
+
+            // Redirect
+            _navigationManager.NavigateTo(returnUrl);
+        }
     }
 }

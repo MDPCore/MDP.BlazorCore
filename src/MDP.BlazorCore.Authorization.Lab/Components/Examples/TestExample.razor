@@ -37,8 +37,8 @@ Role=@String.Join(",", User.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
 
 <!-- logout -->
-<form action="/Account/Logout" method="post">
-    <input type="hidden" name="returnUrl" value="/AuthorizeExample" />
+<form action="/Account/Logout" method="get">
+    <input type="hidden" name="returnUrl" value="/" />
     <input type="submit" value="Logout" /><br />
     <br />
 </form>

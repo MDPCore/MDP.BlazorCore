@@ -35,3 +35,11 @@ UserName=@User.GetClaimValue(ClaimTypes.Name)<br />
 Mail=@User.GetClaimValue(ClaimTypes.Email)<br />
 Role=@String.Join(",", User.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
+
+<!-- logout -->
+<form action="/Account/Logout" method="get">
+    <input type="hidden" name="returnUrl" value="/" />
+    <input type="submit" value="Logout" /><br />
+    <br />
+</form>
+<hr />

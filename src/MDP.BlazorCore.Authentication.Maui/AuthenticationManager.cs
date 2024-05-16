@@ -54,5 +54,30 @@ namespace MDP.BlazorCore.Authentication.Maui
                 return authenticationProvider.LoginAsync(returnUrl);
             }           
         }
+
+        public Task LogoutAsync(string scheme = null, string returnUrl = null)
+        {
+            // AuthenticationProviderBuilder
+            IAuthenticationProviderBuilder authenticationProviderBuilder = null;
+            if (string.IsNullOrEmpty(scheme) == true)
+            {
+                authenticationProviderBuilder = _authenticationProviderBuilderList.FirstOrDefault();
+            }
+            else
+            {
+                authenticationProviderBuilder = _authenticationProviderBuilderList.FirstOrDefault(e => e.Name == scheme);
+            }
+            if (authenticationProviderBuilder == null) throw new InvalidOperationException($"{nameof(authenticationProviderBuilder)}=null");
+
+            // AuthenticationProvider
+            using (var authenticationProvider = authenticationProviderBuilder.BuildProvider())
+            {
+                // Require
+                if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
+
+                // LogoutAsync
+                return authenticationProvider.LogoutAsync(returnUrl);
+            }
+        }
     }
 }

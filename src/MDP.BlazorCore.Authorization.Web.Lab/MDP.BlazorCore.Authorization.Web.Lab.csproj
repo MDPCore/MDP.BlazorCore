@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore.Authorization.Lab\MDP.BlazorCore.Authorization.Lab.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Authorization.Web\MDP.BlazorCore.Authorization.Web.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Authentication.Web\MDP.BlazorCore.Authentication.Web.csproj" />
