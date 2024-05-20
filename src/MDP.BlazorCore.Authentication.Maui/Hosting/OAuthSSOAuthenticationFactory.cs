@@ -26,16 +26,11 @@ namespace MDP.BlazorCore.Authentication.Maui
             if (string.IsNullOrEmpty(setting.ClientUrl) == true) throw new InvalidOperationException($"{nameof(setting.ClientUrl)}=null");
             if (string.IsNullOrEmpty(setting.ServerUrl) == true) throw new InvalidOperationException($"{nameof(setting.ServerUrl)}=null");
 
-            // OAuthSSOAuthenticationProviderBuilder
-            serviceCollection.AddTransient<IAuthenticationProviderBuilder, OAuthSSOAuthenticationProviderBuilder>();
-
             // OAuthSSOAuthenticationProvider
-
-            // OAuthSSOHandler
-            serviceCollection.AddTransient<OAuthSSOHandler>();
+            serviceCollection.AddTransient<IAuthenticationProvider, OAuthSSOAuthenticationProvider>();
 
             // OAuthSSOOptions
-            serviceCollection.AddSingleton<OAuthSSOOptions>(serviceProvider =>
+            serviceCollection.AddTransient<OAuthSSOOptions>(serviceProvider =>
             {
                 // AuthOptions
                 var authOptions = new OAuthSSOOptions();

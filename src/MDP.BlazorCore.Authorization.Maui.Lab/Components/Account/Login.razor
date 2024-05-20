@@ -21,17 +21,20 @@
 
     // Methods
     protected override async Task OnInitializedAsync()
-    {        
-        // Execute        
+    {
+        // Execute
         try
         {
+            // Login
+            await _authenticationManager.LoginAsync();
+
             // ReturnUrl
             var returnUrl = string.Empty;
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
-            // Login
-            await _authenticationManager.LoginAsync(returnUrl: returnUrl);
+            // Redirect
+            _navigationManager.NavigateTo(returnUrl);
         }
         catch (Exception exception)
         {

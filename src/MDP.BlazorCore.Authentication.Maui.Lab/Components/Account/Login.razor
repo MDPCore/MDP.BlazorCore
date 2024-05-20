@@ -1,5 +1,6 @@
 ﻿@using MDP.BlazorCore
 @using MDP.BlazorCore.Maui
+@using MDP.BlazorCore.Authentication.Maui
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [AllowAnonymous]
@@ -24,13 +25,16 @@
         // Execute        
         try
         {
+             // Login
+            await _authenticationManager.LoginAsync();
+
             // ReturnUrl
             var returnUrl = string.Empty;
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
-            // Login
-            await _authenticationManager.LoginAsync(returnUrl: returnUrl);
+            // Redirect
+            _navigationManager.NavigateTo(returnUrl);
         }
         catch (Exception exception)
         {

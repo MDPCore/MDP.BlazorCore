@@ -18,12 +18,15 @@
     // Methods
     protected override async Task OnInitializedAsync()
     {        
+        // Logout
+        await _authenticationManager.LogoutAsync();
+
         // ReturnUrl
         var returnUrl = string.Empty;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
-        // Logout
-        await _authenticationManager.LogoutAsync(returnUrl: returnUrl);
+        // Redirect
+        _navigationManager.NavigateTo(returnUrl);
     }
 }

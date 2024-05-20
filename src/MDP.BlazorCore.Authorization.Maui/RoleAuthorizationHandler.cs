@@ -30,7 +30,7 @@ namespace MDP.BlazorCore.Authorization.Maui
             _roleAssignmentProviderList = roleAssignmentProviderList;
             if (_roleAssignmentProviderList.Count <= 0)
             {
-                _roleAssignmentProviderList.Add(new DefaultRoleAssignmentProvider());
+                _roleAssignmentProviderList.Add(DefaultRoleAssignmentProvider.Instance);
             }
 
             // AccessPermissionProviderList            

@@ -22,12 +22,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             #endregion
 
             // AuthenticationManager
-            serviceCollection.AddScoped<AuthenticationManager, AuthenticationManager>();
-
-            // AuthenticationProviderBuilder
-
-            // AuthenticationProvider
-
+            serviceCollection.AddSingleton<AuthenticationManager, AuthenticationManager>();
         }
 
 
