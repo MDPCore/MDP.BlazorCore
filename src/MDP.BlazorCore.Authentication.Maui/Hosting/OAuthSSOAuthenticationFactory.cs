@@ -8,7 +8,7 @@ namespace MDP.BlazorCore.Authentication.Maui
     public class OAuthSSOAuthenticationFactory : ServiceFactory<IServiceCollection, OAuthSSOAuthenticationFactory.Setting>
     {
         // Constructors
-        public OAuthSSOAuthenticationFactory() : base("Authentication.Blazor", "OAuthSSO", false) { }
+        public OAuthSSOAuthenticationFactory() : base("Authentication", "OAuthSSO", false) { }
 
 
         // Methods

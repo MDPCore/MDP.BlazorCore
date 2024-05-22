@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.6.1" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>

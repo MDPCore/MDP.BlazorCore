@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore.Authorization.Maui
+namespace MDP.AspNetCore.Authorization
 {
     public interface IRoleAssignmentProvider
     {

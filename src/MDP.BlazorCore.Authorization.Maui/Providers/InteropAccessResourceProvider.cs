@@ -4,19 +4,18 @@ using System;
 
 namespace MDP.BlazorCore.Authorization.Maui
 {
-    public class BlazorAccessResourceProvider : IAccessResourceProvider
+    public class InteropAccessResourceProvider : IAccessResourceProvider
     {
         // Methods
         public AccessResource Create(object resource = null)
         {
-            // NavigationManager
-            var navigationManager = resource as NavigationManager;
-            if (navigationManager == null) return null;
+            // InteropResource
+            var interopResource = resource as InteropResource;
+            if (interopResource == null) return null;
 
             // Uri
-            var uriString = navigationManager.Uri;
-            if (string.IsNullOrEmpty(uriString) == true) return null;
-            var uri = new Uri(uriString);
+            var uri = interopResource.Uri;
+            if (uri == null) return null;
 
             // AccessResource
             var accessResource = new AccessResource($"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}");

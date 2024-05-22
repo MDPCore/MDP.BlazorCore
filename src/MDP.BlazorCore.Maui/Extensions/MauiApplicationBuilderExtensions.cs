@@ -65,7 +65,7 @@ namespace MDP.BlazorCore.Maui
                     applicationBuilder.Logging.AddDebug();
                 }
 
-                // MauiApp
+                // BlazorApp
                 applicationBuilder.UseMauiApp<MDP.BlazorCore.Maui.App>();
                 applicationBuilder.Services.AddMauiBlazorWebView();
                 applicationBuilder.Services.AddAuthorizationCore();
@@ -79,11 +79,14 @@ namespace MDP.BlazorCore.Maui
                     };
                 });
 
-                // AuthenticationStateProvider
-                applicationBuilder.Services.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
+                // InteropManager
+                applicationBuilder.Services.AddInteropManager();
 
                 // UserManager
                 applicationBuilder.Services.AddSingleton<UserManager, UserManager>();
+
+                // AuthenticationStateProvider
+                applicationBuilder.Services.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
             }
 
             // Return

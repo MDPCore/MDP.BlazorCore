@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore.Authorization.Maui
+namespace MDP.AspNetCore.Authorization
 {
     public class RoleAuthorizationHandler : AuthorizationHandler<RoleAuthorizationRequirement>
     {
@@ -13,16 +13,17 @@ namespace MDP.BlazorCore.Authorization.Maui
 
         private readonly IList<IAccessPermissionProvider> _accessPermissionProviderList = null;
 
-        private readonly IAccessResourceProvider _accessResourceProvider = null;
+        private readonly IList<IAccessResourceProvider> _accessResourceProviderList = null;
 
 
         // Constructors
-        public RoleAuthorizationHandler(IList<IRoleAssignmentProvider> roleAssignmentProviderList, IList<IAccessPermissionProvider> accessPermissionProviderList, IAccessResourceProvider accessResourceProvider = null)
+        public RoleAuthorizationHandler(IList<IRoleAssignmentProvider> roleAssignmentProviderList, IList<IAccessPermissionProvider> accessPermissionProviderList, IList<IAccessResourceProvider> accessResourceProviderList)
         {
             #region Contracts
 
-            if (roleAssignmentProviderList == null) throw new ArgumentException($"{nameof(roleAssignmentProviderList)}=null");
-            if (accessPermissionProviderList == null) throw new ArgumentException($"{nameof(accessPermissionProviderList)}=null");
+            ArgumentNullException.ThrowIfNull(roleAssignmentProviderList);
+            ArgumentNullException.ThrowIfNull(accessPermissionProviderList);
+            ArgumentNullException.ThrowIfNull(accessResourceProviderList);
 
             #endregion
 
@@ -36,8 +37,8 @@ namespace MDP.BlazorCore.Authorization.Maui
             // AccessPermissionProviderList            
             _accessPermissionProviderList = accessPermissionProviderList;
 
-            // AccessResourceProvider
-            _accessResourceProvider = accessResourceProvider;
+            // AccessResourceProviderList
+            _accessResourceProviderList = accessResourceProviderList;
         }
 
 
@@ -51,13 +52,14 @@ namespace MDP.BlazorCore.Authorization.Maui
 
             #endregion
 
-            // AccessResourceProvider
-            IAccessResourceProvider accessResourceProvider = null;
-            if (context.Resource == null) accessResourceProvider = _accessResourceProvider;
-            if (accessResourceProvider == null) return Task.CompletedTask;
-
             // AccessResource
-            var accessResource = accessResourceProvider.Create();
+            AccessResource accessResource = null;
+            foreach (var accessResourceProvider in _accessResourceProviderList)
+            {
+                // Create
+                accessResource = accessResourceProvider.Create(context.Resource);
+                if (accessResource != null) break;
+            }
             if (accessResource == null) return Task.CompletedTask;
 
             // ClaimsIdentity

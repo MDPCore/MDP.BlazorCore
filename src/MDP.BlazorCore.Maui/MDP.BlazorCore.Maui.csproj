@@ -24,8 +24,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-    <PackageReference Include="MDP.NetCore" Version="8.0.6" />
-    <PackageReference Include="MDP.Registration" Version="8.0.6" />
+    <PackageReference Include="MDP.NetCore" Version="8.0.7" />
+    <PackageReference Include="MDP.Registration" Version="8.0.7" />
 	</ItemGroup>
   
   <ItemGroup>

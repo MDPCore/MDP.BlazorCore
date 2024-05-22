@@ -8,7 +8,7 @@ namespace MDP.BlazorCore.Authentication.Maui
     public class AuthenticationFactory : ServiceFactory<IServiceCollection, AuthenticationFactory.Setting>
     {
         // Constructors
-        public AuthenticationFactory() : base("Authentication.Blazor", null, true) { }
+        public AuthenticationFactory() : base("Authentication", null, true) { }
 
 
         // Methods

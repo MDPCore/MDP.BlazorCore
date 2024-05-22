@@ -1,4 +1,5 @@
 ﻿@using System.Text.Json;
+@using System.Security.Claims
 
 @namespace MDP.BlazorCore
 @implements IDisposable
@@ -17,7 +18,16 @@
     [Inject]
     public IServiceProvider _serviceProvider { get; set; }
 
-    private DotNetObjectReference<PageOutlet> _interopReference = null;
+    [Inject]
+    public NavigationManager _navigationManager { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
+
+    [Inject]
+    public InteropManager _interopManager { get; set; }
+
+    private DotNetObjectReference<PageOutlet> _interopGateway = null;
 
 
     // Constructors        
@@ -26,27 +36,69 @@
         // Require
         if (firstRender == false) return;
 
-        // InteropReference
-        _interopReference = DotNetObjectReference.Create(this);
-        if (_interopReference == null) throw new InvalidOperationException($"{nameof(_interopReference)}=null");
+        // InteropGateway
+        _interopGateway = DotNetObjectReference.Create(this);
+        if (_interopGateway == null) throw new InvalidOperationException($"{nameof(_interopGateway)}=null");
 
         // Initialize
-        await _jsRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopReference);
+        await _jsRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopGateway);
     }
 
     public void Dispose()
     {
         // InteropReference
-        _interopReference?.Dispose();
+        _interopGateway?.Dispose();
     }
 
 
     // Methods
     [JSInvokable]
-    public Task<string> InvokeMethodAsync(JsonDocument arguments)
-    {       
-        // Return
-        return Task.FromResult(JsonSerializer.Serialize(arguments));
+    public async Task<object> InvokeAsync(string path, JsonDocument payload)
+    {
+        #region Contracts
+
+        ArgumentNullException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(payload);
+
+        #endregion
+
+        // Execute
+        try
+        {
+            // RootUri
+            var rootUri = _navigationManager.BaseUri;
+            if (string.IsNullOrEmpty(rootUri) == true) throw new InvalidOperationException($"{nameof(rootUri)}=null");
+
+            // User
+            var user = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (user == null) throw new InvalidOperationException($"{nameof(user)}=null");
+
+            // InvokeAsync
+            var result = await _interopManager?.InvokeAsync(new InteropRequest
+            (
+                new Uri(new Uri(rootUri), path),
+                payload,
+                user,
+                _serviceProvider
+            ));  
+            
+            // Return
+            return new InteropResponse()
+            {
+                Succeeded = true,
+                Result = result
+            };
+        }
+        catch (Exception exception)
+        {
+            // Return
+            return new InteropResponse()
+            {
+                Succeeded = false,
+                ErrorMessage = exception.Message
+            };
+        }
+        
     }
 }
 

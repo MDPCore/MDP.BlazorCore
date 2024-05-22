@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace MDP.BlazorCore.Authorization.Maui
+namespace MDP.AspNetCore.Authorization
 {
     public class RoleAuthorizationRequirement : IAuthorizationRequirement
     {

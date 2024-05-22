@@ -52,7 +52,7 @@ namespace MDP.BlazorCore.Web
                     };
                 }
 
-                // RazorApp
+                // BlazorApp
                 applicationBuilder.Services
                     .AddRazorComponents()
                     .AddInteractiveServerComponents(options =>
@@ -67,7 +67,10 @@ namespace MDP.BlazorCore.Web
                         AppAssembly = entryAssembly,
                         DefaultLayout = defaultLayout
                     };
-                });                
+                });
+
+                // InteropManager
+                applicationBuilder.Services.AddInteropManager();
             }
 
             // MiddlewareBuilder

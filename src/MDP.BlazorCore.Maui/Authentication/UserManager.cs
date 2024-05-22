@@ -11,7 +11,7 @@ namespace MDP.BlazorCore.Maui
     public class UserManager
     {
         // Properties
-        public ClaimsPrincipal CurrentUser { get; private set; } = new ClaimsPrincipal();
+        public ClaimsPrincipal CurrentUser { get; private set; } = new ClaimsPrincipal(new ClaimsIdentity());
 
 
         // Methods
@@ -37,7 +37,7 @@ namespace MDP.BlazorCore.Maui
         public Task SignOutAsync() 
         {
             // CurrentUser
-            var currentUser = new ClaimsPrincipal();
+            var currentUser = new ClaimsPrincipal(new ClaimsIdentity());
             this.CurrentUser = currentUser;
 
             // Raise

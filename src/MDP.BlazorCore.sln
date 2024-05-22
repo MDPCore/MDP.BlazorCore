@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorizatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Maui", "MDP.BlazorCore.Authorization.Maui\MDP.BlazorCore.Authorization.Maui.csproj", "{62034AFE-F97B-47EA-BC6F-4386BC20B806}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDP.BlazorCore.Authorization.Maui.Lab", "MDP.BlazorCore.Authorization.Maui.Lab\MDP.BlazorCore.Authorization.Maui.Lab.csproj", "{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Maui.Lab", "MDP.BlazorCore.Authorization.Maui.Lab\MDP.BlazorCore.Authorization.Maui.Lab.csproj", "{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

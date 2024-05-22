@@ -5,6 +5,10 @@ MDP.BlazorCore是開源的Blazor開發平台，協助開發人員快速建立執
 
 ## 版本更新
 
+### MDP.BlazorCore 8.0.7
+
+- MDP.BlazorCore: 加入Interop身分授權功能
+
 ### MDP.BlazorCore 8.0.6
 
 - MDP.BlazorCore.Authentication.Maui: 提供Blazor Hybrid 身分授權

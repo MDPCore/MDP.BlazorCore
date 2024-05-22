@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.AspNetCore.Authorization" Version="8.0.6.1" />
+    <PackageReference Include="MDP.AspNetCore.Authorization" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
