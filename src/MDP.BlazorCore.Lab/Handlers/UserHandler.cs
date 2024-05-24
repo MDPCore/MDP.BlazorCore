@@ -13,7 +13,7 @@ namespace MDP.BlazorCore.Lab
     {
         // Methods
         [AllowAnonymous]
-        [InteropRoute("/[TenantId]/User/FindByTenantId")]
+        [InteropRoute("/User/FindByTenantId/[TenantId]")]
         public async Task<User> FindByTenantId(string tenantId, User user)
         {
             #region Contracts
