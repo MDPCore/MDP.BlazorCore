@@ -21,37 +21,37 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // InteropHandlerTypeList
-            var interopHandlerTypeList = MDP.Reflection.Type.FindAllApplicationType();
-            if (interopHandlerTypeList == null) throw new InvalidOperationException($"{nameof(interopHandlerTypeList)}=null");
+            // InteropServiceTypeList
+            var interopServiceTypeList = MDP.Reflection.Type.FindAllApplicationType();
+            if (interopServiceTypeList == null) throw new InvalidOperationException($"{nameof(interopServiceTypeList)}=null");
 
-            // InteropHandlerTypeList.Filter
-            interopHandlerTypeList = interopHandlerTypeList.AsParallel().Where(interopHandlerType =>
+            // InteropServiceTypeList.Filter
+            interopServiceTypeList = interopServiceTypeList.AsParallel().Where(interopServiceType =>
             {
                 // Require
-                if (interopHandlerType.IsClass == false) return false;
-                if (interopHandlerType.IsPublic == false) return false;
-                if (interopHandlerType.IsAbstract == true) return false;
-                if (interopHandlerType.IsGenericType == true) return false;
-                if (interopHandlerType.IsAssignableTo(typeof(InteropHandler)) == false) return false;
+                if (interopServiceType.IsClass == false) return false;
+                if (interopServiceType.IsPublic == false) return false;
+                if (interopServiceType.IsAbstract == true) return false;
+                if (interopServiceType.IsGenericType == true) return false;
+                if (interopServiceType.IsAssignableTo(typeof(InteropService)) == false) return false;
 
                 // Return
                 return true;
             }).ToList();
 
-            // InteropHandlerTypeList.Register
-            foreach (var interopHandlerType in interopHandlerTypeList)
+            // InteropServiceTypeList.Register
+            foreach (var interopServiceType in interopServiceTypeList)
             {
                 // Register
-                serviceCollection.AddTransient(interopHandlerType);
+                serviceCollection.AddTransient(interopServiceType);
             }
 
             // InteropMethodDictionary
             var interopMethodDictionary = new Dictionary<string, InteropMethod>(StringComparer.OrdinalIgnoreCase);
-            foreach (var interopHandlerType in interopHandlerTypeList)
+            foreach (var interopServiceType in interopServiceTypeList)
             {
                 // MethodList
-                var methodList = interopHandlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+                var methodList = interopServiceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var method in methodList)
                 {
                     // InteropRoute
