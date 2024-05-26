@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace MDP.BlazorCore
         // Fields
         private readonly string _template = null;
 
-        private readonly MethodInfo _method = null;
-
         private readonly List<string> _templateSectionList = null;
+
+        private readonly MethodInfo _method = null;
 
 
         // Constructors
@@ -34,17 +35,22 @@ namespace MDP.BlazorCore
             if (template.EndsWith("/") == true) template = template.TrimEnd('/');
             _template = template;
 
-            // Method
-            _method = method;
-            
             // TemplateSectionList
             _templateSectionList = template.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (_templateSectionList.Count == 0) throw new InvalidOperationException($"{nameof(_templateSectionList)}.Count=0");
+
+            // Method
+            _method = method;         
+
+            // IsAuthorizationRequired
+            this.IsAuthorizationRequired = this.CreateAuthorizationRequired();
         }
 
 
         // Properties
         public string Template { get { return _template; } }
+
+        public bool IsAuthorizationRequired { get; set; }
 
 
         // Methods
@@ -140,6 +146,16 @@ namespace MDP.BlazorCore
 
             // Return
             return parameterDictionary;
+        }
+
+        private bool CreateAuthorizationRequired()
+        {
+            // Attribute
+            if (_method.GetCustomAttribute<AuthorizeAttribute>() != null) return true;
+            if (_method.GetCustomAttribute<AllowAnonymousAttribute>() != null) return false;
+
+            // Return
+            return false;
         }
     }
 }

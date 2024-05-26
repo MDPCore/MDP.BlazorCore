@@ -63,17 +63,21 @@ namespace MDP.BlazorCore
             if (interopMethod == null) interopMethod = this.FindInteropMethod(pathSectionList);
             if (interopMethod == null) throw new InvalidOperationException($"{nameof(interopMethod)}=null");
 
-            // AuthorizationService
-            var authorizationService = interopRequest.ServiceProvider.GetService<IAuthorizationService>();
-            if (authorizationService == null) throw new InvalidOperationException($"{nameof(authorizationService)}=null");
+            // IsAuthorizationRequired
+            if (interopMethod.IsAuthorizationRequired == true)
+            {
+                // AuthorizationService
+                var authorizationService = interopRequest.ServiceProvider.GetService<IAuthorizationService>();
+                if (authorizationService == null) throw new InvalidOperationException($"{nameof(authorizationService)}=null");
 
-            // AuthorizationPolicy
-            var authorizationPolicy = await this.CreateAuthorizationPolicyAsync();
-            if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
+                // AuthorizationPolicy
+                var authorizationPolicy = await this.CreateAuthorizationPolicyAsync();
+                if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
 
-            // AuthorizationResult
-            var authorizationResult = await authorizationService.AuthorizeAsync(interopRequest.User, interopRequest.Resource, authorizationPolicy);
-            if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.Uri.ToString()}'");
+                // AuthorizationResult
+                var authorizationResult = await authorizationService.AuthorizeAsync(interopRequest.User, interopRequest.Resource, authorizationPolicy);
+                if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.Uri.ToString()}'");
+            }
 
             // InvokeAsync
             return await interopMethod.InvokeAsync(pathSectionList, interopRequest.Payload, interopRequest.ServiceProvider);
