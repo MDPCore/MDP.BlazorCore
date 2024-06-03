@@ -15,24 +15,24 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         private readonly IHostEnvironment _hostEnvironment = null;
 
-        private readonly UserManager _userManager = null;
+        private readonly AuthenticationStateManager _authenticationStateManager = null;
 
 
         // Constructors
-        public OAuthSSOAuthenticationProvider(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment, UserManager userManager)
+        public OAuthSSOAuthenticationProvider(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment, AuthenticationStateManager authenticationStateManager)
         {
             #region Contracts
 
             if (authOptions == null) throw new ArgumentException($"{nameof(authOptions)}=null");
             if (hostEnvironment == null) throw new ArgumentException($"{nameof(hostEnvironment)}=null");
-            if (userManager == null) throw new ArgumentException($"{nameof(userManager)}=null");
+            if (authenticationStateManager == null) throw new ArgumentException($"{nameof(authenticationStateManager)}=null");
 
             #endregion
 
             // Default
             _authOptions = authOptions;
             _hostEnvironment = hostEnvironment;
-            _userManager = userManager;
+            _authenticationStateManager = authenticationStateManager;
         }
 
 
@@ -57,7 +57,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // ClaimsIdentity
                 var claimsIdentity = await authHandler.GetUserInformationAsync(authenticateToken);
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
-                await _userManager.SignInAsync(new ClaimsPrincipal(claimsIdentity));
+                await _authenticationStateManager.SignInAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
 
@@ -71,7 +71,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // AccessToken
 
                 // ClaimsIdentity
-                await _userManager.SignOutAsync();
+                await _authenticationStateManager.SignOutAsync();
             }
         }
     }

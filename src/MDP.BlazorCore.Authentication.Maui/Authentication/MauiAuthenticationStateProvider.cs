@@ -4,45 +4,45 @@ using System.Threading.Tasks;
 using MDP.Registration;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace MDP.BlazorCore.Maui
+namespace MDP.BlazorCore.Authentication.Maui
 {
     public class MauiAuthenticationStateProvider : AuthenticationStateProvider
     {
         // Fields
-        private UserManager _userManager;
+        private AuthenticationStateManager _authenticationStateManager;
 
 
         // Constructors
-        public MauiAuthenticationStateProvider(UserManager userManager)
+        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
         {
             #region Contracts
 
-            if (userManager == null) throw new ArgumentException($"{nameof(userManager)}=null");
+            if (authenticationStateManager == null) throw new ArgumentException($"{nameof(authenticationStateManager)}=null");
 
             #endregion
 
             // Default
-            _userManager = userManager;
+            _authenticationStateManager = authenticationStateManager;
 
             // Event
-            userManager.UserChanged += this.UserManager_UserChanged;
+            authenticationStateManager.PrincipalChanged += this.AuthenticationStateManager_PrincipalChanged;
         }
 
 
         // Methods
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             // ClaimsPrincipal
-            var claimsPrincipal = _userManager.CurrentUser;
+            var claimsPrincipal = await _authenticationStateManager.AuthenticateAsync();
             if(claimsPrincipal == null) throw new InvalidOperationException($"{nameof(claimsPrincipal)}=null");
 
             // Return
-            return Task.FromResult(new AuthenticationState(claimsPrincipal));
+            return new AuthenticationState(claimsPrincipal);
         }
 
 
         // Handlers
-        private void UserManager_UserChanged(ClaimsPrincipal claimsPrincipal)
+        private void AuthenticationStateManager_PrincipalChanged(ClaimsPrincipal claimsPrincipal)
         {
             #region Contracts
 

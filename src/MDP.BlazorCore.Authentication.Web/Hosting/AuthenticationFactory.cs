@@ -1,5 +1,5 @@
-﻿using MDP.Registration;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using MDP.BlazorCore.Authentication.Web;
+using MDP.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -23,13 +23,12 @@ namespace MDP.BlazorCore.Authentication.Maui
             #endregion
 
             // AuthenticationManager
-            serviceCollection.AddSingleton<AuthenticationManager, AuthenticationManager>();
 
             // AuthenticationStateManager
-            serviceCollection.AddSingleton<AuthenticationStateManager, MauiAuthenticationStateManager>();
+            serviceCollection.AddSingleton<AuthenticationStateManager, WebAuthenticationStateManager>();
 
             // AuthenticationStateProvider
-            serviceCollection.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
+
         }
 
 
