@@ -15,6 +15,15 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Methods
+        public override Task<ClaimsPrincipal> AuthenticateAsync()
+        {
+            // CurrentPrincipal
+            var currentPrincipal = _currentPrincipal;
+
+            // Return
+            return Task.FromResult(currentPrincipal);
+        }
+
         public override Task SignInAsync(ClaimsPrincipal principal)
         {
             #region Contracts
@@ -28,7 +37,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             _currentPrincipal = currentPrincipal;
 
             // Raise
-            this.OnPrincipalChanged(principal);
+            this.OnPrincipalChanged(currentPrincipal);
 
             // Return
             return Task.CompletedTask;
@@ -45,12 +54,6 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // Return
             return Task.CompletedTask;
-        }
-
-        public override Task<ClaimsPrincipal> AuthenticateAsync()
-        {                     
-            // Return
-            return Task.FromResult(_currentPrincipal);
         }
     }
 }

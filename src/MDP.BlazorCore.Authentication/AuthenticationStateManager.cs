@@ -11,11 +11,11 @@ namespace MDP.BlazorCore.Authentication
     public abstract class AuthenticationStateManager
     {
         // Methods
+        public abstract Task<ClaimsPrincipal> AuthenticateAsync();
+
         public abstract Task SignInAsync(ClaimsPrincipal principal);
 
         public abstract Task SignOutAsync();
-
-        public abstract Task<ClaimsPrincipal> AuthenticateAsync();
 
 
         // Events

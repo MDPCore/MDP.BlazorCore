@@ -1,4 +1,6 @@
-﻿using MDP.Registration;
+﻿using MDP.AspNetCore.Authentication;
+using MDP.Registration;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,35 @@ namespace MDP.BlazorCore.Authentication.Web
     public class WebAuthenticationStateManager : AuthenticationStateManager
     {
         // Fields
-        private ClaimsPrincipal _currentPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+        private readonly IHttpContextAccessor _httpContextAccessor = null;
+
+
+        // Constructors
+        public WebAuthenticationStateManager(IHttpContextAccessor httpContextAccessor)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNull(httpContextAccessor);
+
+            #endregion
+
+            // Default
+            _httpContextAccessor = httpContextAccessor;
+        }
 
 
         // Methods
-        public override Task SignInAsync(ClaimsPrincipal principal)
+        public override Task<ClaimsPrincipal> AuthenticateAsync()
+        {
+            // CurrentPrincipal
+            var currentPrincipal = _httpContextAccessor.HttpContext.User;
+            if (currentPrincipal == null) currentPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+            // Return
+            return Task.FromResult(currentPrincipal);
+        }
+
+        public override async Task SignInAsync(ClaimsPrincipal principal)
         {
             #region Contracts
 
@@ -23,34 +49,26 @@ namespace MDP.BlazorCore.Authentication.Web
 
             #endregion
 
+            // LoginAsync
+            await _httpContextAccessor.HttpContext.LoginAsync(principal.Identity as ClaimsIdentity);
+
             // CurrentPrincipal
             var currentPrincipal = principal;
-            _currentPrincipal = currentPrincipal;
-
-            // Raise
-            this.OnPrincipalChanged(principal);
-
-            // Return
-            return Task.CompletedTask;
-        }
-
-        public override Task SignOutAsync()
-        {
-            // CurrentPrincipal
-            var currentPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-            _currentPrincipal = currentPrincipal;
 
             // Raise
             this.OnPrincipalChanged(currentPrincipal);
-
-            // Return
-            return Task.CompletedTask;
         }
 
-        public override Task<ClaimsPrincipal> AuthenticateAsync()
+        public override async Task SignOutAsync()
         {
-            // Return
-            return Task.FromResult(_currentPrincipal);
+            // LoginAsync
+            await _httpContextAccessor.HttpContext.LogoutAsync();
+
+            // CurrentPrincipal
+            var currentPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+            // Raise
+            this.OnPrincipalChanged(currentPrincipal);
         }
     }
 }
