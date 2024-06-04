@@ -27,9 +27,6 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // AuthenticationStateManager
             serviceCollection.AddSingleton<AuthenticationStateManager, MauiAuthenticationStateManager>();
-
-            // AuthenticationStateProvider
-            serviceCollection.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
         }
 
 

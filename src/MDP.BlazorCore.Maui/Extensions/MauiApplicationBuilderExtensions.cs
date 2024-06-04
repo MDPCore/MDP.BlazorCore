@@ -79,6 +79,9 @@ namespace MDP.BlazorCore.Maui
                     };
                 });
 
+                // AuthenticationStateProvider
+                applicationBuilder.Services.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();
+
                 // InteropManager
                 applicationBuilder.Services.AddInteropManager();
             }

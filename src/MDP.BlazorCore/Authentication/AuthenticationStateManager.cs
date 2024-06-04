@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore.Authentication
+namespace MDP.BlazorCore
 {
     public abstract class AuthenticationStateManager
     {

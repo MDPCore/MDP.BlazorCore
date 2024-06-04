@@ -4,28 +4,23 @@ using System.Threading.Tasks;
 using MDP.Registration;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace MDP.BlazorCore.Authentication.Maui
+namespace MDP.BlazorCore.Maui
 {
     public class MauiAuthenticationStateProvider : AuthenticationStateProvider
     {
         // Fields
-        private AuthenticationStateManager _authenticationStateManager;
+        private readonly AuthenticationStateManager _authenticationStateManager;
 
 
         // Constructors
-        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
+        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager = null)
         {
-            #region Contracts
-
-            if (authenticationStateManager == null) throw new ArgumentException($"{nameof(authenticationStateManager)}=null");
-
-            #endregion
-
             // Default
             _authenticationStateManager = authenticationStateManager;
+            if(_authenticationStateManager==null) _authenticationStateManager = new MauiAuthenticationStateManager();
 
             // Event
-            authenticationStateManager.PrincipalChanged += this.AuthenticationStateManager_PrincipalChanged;
+            _authenticationStateManager.PrincipalChanged += this.AuthenticationStateManager_PrincipalChanged;
         }
 
 

@@ -69,16 +69,16 @@
             var rootUri = _navigationManager.BaseUri;
             if (string.IsNullOrEmpty(rootUri) == true) throw new InvalidOperationException($"{nameof(rootUri)}=null");
 
-            // User
-            var user = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
-            if (user == null) throw new InvalidOperationException($"{nameof(user)}=null");
+            // Principal
+            var principal = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
 
             // InvokeAsync
             var result = await _interopManager?.InvokeAsync(new InteropRequest
             (
                 new Uri(new Uri(rootUri), path),
                 payload,
-                user,
+                principal,
                 _serviceProvider
             ));  
             

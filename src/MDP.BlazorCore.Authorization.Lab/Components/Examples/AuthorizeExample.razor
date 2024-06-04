@@ -12,15 +12,15 @@
     // Methods
     protected override async Task OnInitializedAsync()
     {
-        // User
-        var user = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
-        if (user == null) throw new InvalidOperationException($"{nameof(user)}=null");
-        this.User = user;
+        // Principal
+        var principal = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+        this.Principal = principal;
     }
 
 
     // Properties
-    public ClaimsPrincipal User { get; set; }
+    public ClaimsPrincipal Principal { get; set; }
 }
 
 
@@ -29,11 +29,11 @@
 <hr />
 
 <!-- identity -->
-AuthenticationType=@User?.Identity?.AuthenticationType<br />
-UserId=@User.GetClaimValue(ClaimTypes.NameIdentifier)<br />
-UserName=@User.GetClaimValue(ClaimTypes.Name)<br />
-Mail=@User.GetClaimValue(ClaimTypes.Email)<br />
-Role=@String.Join(",", User.GetAllClaimValue(ClaimTypes.Role))<br />
+AuthenticationType=@Principal?.Identity?.AuthenticationType<br />
+PrincipalId=@Principal.GetClaimValue(ClaimTypes.NameIdentifier)<br />
+PrincipalName=@Principal.GetClaimValue(ClaimTypes.Name)<br />
+Mail=@Principal.GetClaimValue(ClaimTypes.Email)<br />
+Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
 
 <!-- logout -->
