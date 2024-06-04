@@ -33,7 +33,7 @@ namespace MDP.BlazorCore.Authentication.Maui
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             // ClaimsPrincipal
-            var claimsPrincipal = await _authenticationStateManager.AuthenticateAsync();
+            var claimsPrincipal = await _authenticationStateManager.GetPrincipalAsync();
             if(claimsPrincipal == null) throw new InvalidOperationException($"{nameof(claimsPrincipal)}=null");
 
             // Return

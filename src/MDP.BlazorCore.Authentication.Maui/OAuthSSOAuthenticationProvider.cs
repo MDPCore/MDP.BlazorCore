@@ -57,7 +57,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // ClaimsIdentity
                 var claimsIdentity = await authHandler.GetUserInformationAsync(authenticateToken);
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
-                await _authenticationStateManager.SignInAsync(new ClaimsPrincipal(claimsIdentity));
+                await _authenticationStateManager.LoginAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
 
@@ -71,7 +71,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // AccessToken
 
                 // ClaimsIdentity
-                await _authenticationStateManager.SignOutAsync();
+                await _authenticationStateManager.LogoutAsync();
             }
         }
     }

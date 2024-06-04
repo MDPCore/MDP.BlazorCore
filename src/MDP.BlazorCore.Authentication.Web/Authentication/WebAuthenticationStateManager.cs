@@ -31,7 +31,7 @@ namespace MDP.BlazorCore.Authentication.Web
 
 
         // Methods
-        public override Task<ClaimsPrincipal> AuthenticateAsync()
+        public override Task<ClaimsPrincipal> GetPrincipalAsync()
         {
             // CurrentPrincipal
             var currentPrincipal = _httpContextAccessor.HttpContext.User;
@@ -41,7 +41,7 @@ namespace MDP.BlazorCore.Authentication.Web
             return Task.FromResult(currentPrincipal);
         }
 
-        public override async Task SignInAsync(ClaimsPrincipal principal)
+        public override async Task LoginAsync(ClaimsPrincipal principal)
         {
             #region Contracts
 
@@ -59,7 +59,7 @@ namespace MDP.BlazorCore.Authentication.Web
             this.OnPrincipalChanged(currentPrincipal);
         }
 
-        public override async Task SignOutAsync()
+        public override async Task LogoutAsync()
         {
             // LoginAsync
             await _httpContextAccessor.HttpContext.LogoutAsync();
