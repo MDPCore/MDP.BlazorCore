@@ -29,10 +29,6 @@ namespace MDP.BlazorCore
             interopServiceTypeList = interopServiceTypeList.AsParallel().Where(interopServiceType =>
             {
                 // Require
-                if (interopServiceType.IsClass == false) return false;
-                if (interopServiceType.IsPublic == false) return false;
-                if (interopServiceType.IsAbstract == true) return false;
-                if (interopServiceType.IsGenericType == true) return false;
                 if (interopServiceType.IsAssignableTo(typeof(InteropService)) == false) return false;
 
                 // Return
