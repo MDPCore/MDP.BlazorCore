@@ -14,17 +14,19 @@ namespace MDP.AspNetCore.Authorization
 
 
         // Consructors
-        public AccessPermission(string roleId, string accessUri)
+        public AccessPermission(string roleId, List<string> roleScopes, string accessUri)
         {
             #region Contracts
 
-            if (string.IsNullOrEmpty(roleId) == true) throw new ArgumentException($"{nameof(roleId)}=null");
-            if (string.IsNullOrEmpty(accessUri) == true) throw new ArgumentException($"{nameof(accessUri)}=null");
+            ArgumentNullException.ThrowIfNullOrEmpty(roleId);
+            ArgumentNullException.ThrowIfNull(roleScopes);
+            ArgumentNullException.ThrowIfNullOrEmpty(accessUri);
 
             #endregion
 
             // Default
             this.RoleId = roleId;
+            this.RoleScopes = roleScopes;
 
             // AccessUri
             _accessUri = new AccessUri(accessUri);
@@ -33,6 +35,8 @@ namespace MDP.AspNetCore.Authorization
 
         // Properties
         public string RoleId { get; set; }
+
+        public List<string> RoleScopes { get; set; }
 
         public string AccessProvider { get { return _accessUri.AccessProvider; } }
 
@@ -43,89 +47,6 @@ namespace MDP.AspNetCore.Authorization
         public string AccessString { get { return _accessUri.AccessString; } }
 
         internal List<string> AccessPathList { get { return _accessUri.AccessPathList; } }
-
-
-        // Methods
-        public bool HasAccess(RoleAssignment roleAssignment, AccessResource accessResource)
-        {
-            #region Contracts
-
-            if (roleAssignment == null) throw new ArgumentException($"{nameof(roleAssignment)}=null");
-            if (accessResource == null) throw new ArgumentException($"{nameof(accessResource)}=null");
-
-            #endregion
-
-            // RoleId
-            if (this.RoleId.Equals(roleAssignment.RoleId, StringComparison.OrdinalIgnoreCase) == false) return false;
-
-            // AccessString
-            if (this.AccessString.Equals(accessResource.ResourceString, StringComparison.OrdinalIgnoreCase) == true) return true;
-
-            // AccessProvider
-            if (this.AccessProvider.Equals(accessResource.ResourceProvider, StringComparison.OrdinalIgnoreCase) == false) return false;
-
-            // AccessType
-            if (this.AccessType.Equals(accessResource.ResourceType, StringComparison.OrdinalIgnoreCase) == false) return false;
-
-            // AccessPath.Count
-            var maxCount = Math.Max(this.AccessPathList.Count, accessResource.ResourcePathList.Count);
-            if (maxCount == 0) return true;
-
-            // AccessPath.Equals
-            for (int i = 0; i < maxCount; i++)
-            {
-                // Variables
-                var accessPathSection = this.AccessPathList.ElementAtOrDefault(i);
-                var resourcePathSection = accessResource.ResourcePathList.ElementAtOrDefault(i);
-
-                // Null
-                if (string.IsNullOrEmpty(accessPathSection) == true) return false;
-                if (string.IsNullOrEmpty(resourcePathSection) == true) return false;
-
-                // [Scope]
-                if (accessPathSection.StartsWith("[") == true && accessPathSection.EndsWith("]") == true) 
-                {
-                    // AccessScopeKey
-                    var accessScopeKey = accessPathSection.Substring(1, accessPathSection.Length - 2);
-                    if (string.IsNullOrEmpty(accessScopeKey) == true) return false;
-
-                    // AccessScope
-                    var accessScope = string.Empty;
-                    if (roleAssignment.Scopes.TryGetValue(accessScopeKey, out accessScope) == false) return false;
-                    if (string.IsNullOrEmpty(accessScope) == true) return false;
-
-                    // ResourceScope
-                    var resourceScope = resourcePathSection;
-                    if (string.IsNullOrEmpty(resourceScope) == true) return false;
-
-                    // Equals
-                    if (accessScope.Equals(resourceScope, StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-
-                // *
-                if (accessPathSection == "*")
-                {
-                    // Middle
-                    if (i < this.AccessPathList.Count - 1) continue;
-
-                    // Last
-                    if (i == this.AccessPathList.Count - 1) return true;
-                }
-
-                // String
-                if (accessPathSection.Equals(resourcePathSection, StringComparison.OrdinalIgnoreCase) == false) return false;
-            }
-
-            // Return
-            return true;
-        }
 
 
         // Class
@@ -144,7 +65,7 @@ namespace MDP.AspNetCore.Authorization
             {
                 #region Contracts
 
-                if (string.IsNullOrEmpty(accessUri) == true) throw new ArgumentException($"{nameof(accessUri)}=null");
+                if (string.IsNullOrEmpty(accessUri) == true) throw new ArgumentNullException($"{nameof(accessUri)}=null");
 
                 #endregion
 

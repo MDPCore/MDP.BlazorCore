@@ -10,55 +10,38 @@ namespace MDP.AspNetCore.Authorization
 {
     public class DefaultRoleAssignmentProvider : IRoleAssignmentProvider
     {
-        // Singleton
-        private static readonly object _syncRoot = new object();
-
-        private static DefaultRoleAssignmentProvider _instance = null;
-
-        public static DefaultRoleAssignmentProvider Instance
-        {
-            get
-            {
-                // Require
-                if (_instance != null) return _instance;
-
-                // Create
-                lock (_syncRoot)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new DefaultRoleAssignmentProvider();
-                    }
-                }
-
-                // Return
-                return _instance;
-            }
-        }
-
-
         // Methods
         public List<RoleAssignment> Create(ClaimsIdentity claimsIdentity)
         {
             #region Contracts
 
-            if (claimsIdentity == null) throw new ArgumentException($"{nameof(claimsIdentity)}=null");
+            if (claimsIdentity == null) throw new ArgumentNullException($"{nameof(claimsIdentity)}=null");
 
             #endregion
 
-            // RoleIdList
-            var roleIdList = claimsIdentity.Claims.Where(claim => claim.Type == claimsIdentity.RoleClaimType).Select(claim => claim.Value).ToList();
-            if (roleIdList == null) throw new InvalidOperationException($"{nameof(roleIdList)}=null");
+            // RoleStringList
+            var roleStringList = claimsIdentity.Claims.Where(claim => claim.Type == claimsIdentity.RoleClaimType).Select(claim => claim.Value).ToList();
+            if (roleStringList == null) throw new InvalidOperationException($"{nameof(roleStringList)}=null");
 
             //  RoleAssignmentList
             var roleAssignmentList = new List<RoleAssignment>();
-            foreach (var roleId in roleIdList)
+            foreach (var roleString in roleStringList)
             {
-                // Create
-                var roleAssignment = new RoleAssignment(roleId);
+                // RoleSectionArray
+                var roleSectionArray = roleString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                if (roleSectionArray == null) throw new InvalidOperationException($"{nameof(roleSectionArray)}=null");
+                if (roleSectionArray.Length == 0) throw new InvalidOperationException($"{nameof(roleSectionArray)}=null");
+
+                // RoleId
+                var roleId = roleSectionArray[roleSectionArray.Length - 1];
+                if (string.IsNullOrEmpty(roleId) == true) throw new InvalidOperationException($"{nameof(roleId)}=null");
+
+                // RoleScopes
+                var roleScopes = roleSectionArray.Take(roleSectionArray.Length - 1).ToList();
+                if (roleScopes == null) throw new InvalidOperationException($"{nameof(roleId)}=null");
 
                 // Add
-                roleAssignmentList.Add(roleAssignment);
+                roleAssignmentList.Add(new RoleAssignment(roleId, roleScopes));
             }
 
             // Return
