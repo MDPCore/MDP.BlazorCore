@@ -11,7 +11,7 @@
     // Methods
     private object CreatePageData()
     {
-        return new { a = "123", b = _workContext.GetValue() };
+        return new { message = _workContext.GetValue() };
     }
 }
 
@@ -29,7 +29,7 @@
             document.getElementById("runScriptButton").addEventListener("click", function (event) {
 
                 // alert
-                alert(pageData.b);
+                alert(pageData.message);
             });
 
             // message

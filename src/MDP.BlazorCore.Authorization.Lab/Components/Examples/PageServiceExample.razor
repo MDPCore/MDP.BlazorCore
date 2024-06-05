@@ -1,8 +1,24 @@
-﻿@page "/InteropExample"
+﻿@attribute [Authorize]
+@page "/PageServiceExample"
 @code {
-       
-}
+    
+    // Class
+    public class PageService : InteropService
+    {
+        // Methods
+        public async Task<string> Echo(string message)
+        {
+            #region Contracts
 
+            ArgumentNullException.ThrowIfNullOrEmpty(message);
+
+            #endregion
+
+            // Return
+            return await Task.FromResult(message);
+        }
+    }
+}
 
 <PageScript>
     <script>
@@ -14,13 +30,10 @@
             document.getElementById("runDotNetButton").addEventListener("click", function (event) {
 
                 // invokeMethod
-                mdp.blazor.interopManager.invokeAsync("/User/FindByTenantId/T0001", {
-                    "user": {
-                        "userId": "U0001",
-                        "name": "Clark"
-                    }
+                mdp.blazor.interopManager.invokeAsync("Echo", {
+                    "message": "Hello World By Script"
                 }).then(result => {
-                    alert(JSON.stringify(result));
+                    alert(result);
                 }).catch(error => {
                     alert(error.message);
                 });
@@ -32,9 +45,8 @@
     </script>
 </PageScript>
 
-
 <!-- title -->
-<h3>InteropExample</h3>
+<h3>PageServiceExample</h3>
 <hr />
 
 <!-- Interop -->

@@ -1,5 +1,7 @@
 ﻿using MDP.Registration;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,8 @@ namespace MDP.BlazorCore
             interopServiceTypeList = interopServiceTypeList.AsParallel().Where(interopServiceType =>
             {
                 // Require
+                if (interopServiceType.IsNested == false) return false;
+                if (interopServiceType.DeclaringType == null) return false;
                 if (interopServiceType.IsAssignableTo(typeof(InteropService)) == false) return false;
 
                 // Return
@@ -42,25 +46,16 @@ namespace MDP.BlazorCore
                 serviceCollection.AddTransient(interopServiceType);
             }
 
-            // InteropMethodDictionary
-            var interopMethodDictionary = new Dictionary<string, InteropMethod>(StringComparer.OrdinalIgnoreCase);
+            // InteropResourceList
+            var interopResourceList = new List<InteropResource>();
             foreach (var interopServiceType in interopServiceTypeList)
             {
-                // MethodList
-                var methodList = interopServiceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-                foreach (var method in methodList)
-                {
-                    // InteropRoute
-                    var routeAttribute = method.GetCustomAttribute<InteropRouteAttribute>();
-                    if (routeAttribute == null) continue;
+                // RouteAttributeList
+                var routeAttributeList = interopServiceType.DeclaringType.GetCustomAttributes<RouteAttribute>();
+                if (routeAttributeList == null) throw new InvalidOperationException($"{nameof(routeAttributeList)}=null");
 
-                    // InteropMethod
-                    var interopMethod = new InteropMethod(routeAttribute.Template, method);
-                    if (interopMethodDictionary.ContainsKey(interopMethod.Template) == true) throw new InvalidOperationException($"Duplicate route detected: {interopMethod.Template}");
-
-                    // Add
-                    interopMethodDictionary.Add(interopMethod.Template, interopMethod);
-                }
+                // Add
+                interopResourceList.AddRange(routeAttributeList.Select(routeAttribute => new InteropResource(interopServiceType, routeAttribute)));
             }
 
             // InteropManager
@@ -71,7 +66,7 @@ namespace MDP.BlazorCore
                 if (authorizationPolicyProvider == null) throw new InvalidOperationException($"{nameof(authorizationPolicyProvider)}=null");
 
                 // Return
-                return new InteropManager(interopMethodDictionary, authorizationPolicyProvider);
+                return new InteropManager(interopResourceList, authorizationPolicyProvider);
             });
         }
     }

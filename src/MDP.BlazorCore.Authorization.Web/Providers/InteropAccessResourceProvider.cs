@@ -9,12 +9,12 @@ namespace MDP.BlazorCore.Authorization.Web
         // Methods
         public AccessResource Create(object resource = null)
         {
-            // InteropResource
-            var interopResource = resource as InteropResource;
-            if (interopResource == null) return null;
+            // InteropRequest
+            var interopRequest = resource as InteropRequest;
+            if (interopRequest == null) return null;
 
             // Uri
-            var uri = interopResource.Uri;
+            var uri = interopRequest.ServiceUri;
             if (uri == null) return null;
 
             // AccessResource

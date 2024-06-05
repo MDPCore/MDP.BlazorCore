@@ -3,6 +3,15 @@ var mdp = mdp || {};
 mdp.blazor = mdp.blazor || {};
 
 
+// mdp.blazor.global 
+Error.prototype.toJSON = function () {
+    return {
+        name: this.name,
+        message: this.message
+    };
+};
+
+
 // mdp.blazor.eventManager
 mdp.blazor.eventManager = (function () {
 
@@ -13,13 +22,14 @@ mdp.blazor.eventManager = (function () {
         var pageData = {};
         var pageDataElement = document.getElementById("mdp-blazor-pagedata");
         if (pageDataElement) {
-            try {                
-                pageData = JSON.parse(pageDataElement.getAttribute("data-value"));
-            } catch (error) {
-                console.error("pageData=null, error=", error.message);                
+            var pageDataString = pageDataElement.getAttribute("data-value");
+            if (pageDataString) {
+                try {
+                    pageData = JSON.parse(pageDataString);
+                } catch (error) {
+                    console.error("pageData=null, error=", error.message);
+                }
             }
-        } else {
-            console.log("pageDataElement=null");
         }
 
         // PageLoaded
@@ -35,6 +45,48 @@ mdp.blazor.eventManager = (function () {
 
         // methods
         dispatchPageLoaded: dispatchPageLoaded
+    };
+})();
+
+
+// mdp.blazor.errorManager
+mdp.blazor.errorManager = (function () {
+
+    // fields
+    var handlers = [];
+
+
+    // methods
+    function addHandler(handler) {
+
+        // add
+        handlers.push(handler);
+    }
+
+    function removeHandler(handler) {
+
+        // remove
+        var index = handlers.indexOf(handler);
+        if (index >= 0) handlers.splice(index, 1);
+    }
+
+    function raise(error) {
+
+        // raise
+        const message = typeof error === 'object' ? JSON.stringify(error) : { message: error };
+        handlers.forEach(function (handler) {
+            handler(message);
+        });
+    }
+
+
+    // return
+    return {
+
+        // methods
+        addHandler: addHandler,
+        removeHandler: removeHandler,
+        raise: raise
     };
 })();
 
@@ -64,7 +116,7 @@ mdp.blazor.interopManager = (function () {
                     throw new Error(response.errorMessage);
                 }
             });
-        } 
+        }
 
         // remoteInvoke
         return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "path": path, "payload": payload }).then(function (response) {

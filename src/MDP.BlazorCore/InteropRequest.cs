@@ -11,37 +11,46 @@ namespace MDP.BlazorCore
     public class InteropRequest
     {
         // Constructors
-        public InteropRequest(Uri uri, JsonDocument payload, ClaimsPrincipal principal, IServiceProvider serviceProvider)
+        public InteropRequest(Uri serviceUri, string methodName, JsonDocument methodParameters)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(uri);
-            ArgumentNullException.ThrowIfNull(payload);
-            ArgumentNullException.ThrowIfNull(principal);
-            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentNullException.ThrowIfNull(serviceUri);
+            ArgumentNullException.ThrowIfNullOrEmpty(methodName);
+            ArgumentNullException.ThrowIfNull(methodParameters);
 
             #endregion
 
             // Default
-            this.Uri = uri;
-            this.Payload = payload;
-            this.Principal = principal;
-            this.ServiceProvider = serviceProvider;
+            this.ServiceUri = serviceUri;
+            this.MethodName = methodName;
+            this.MethodParameters = methodParameters;
 
-            // Resource
-            this.Resource = new InteropResource(uri);
+            // RoutePath
+            var routePath = this.ServiceUri.AbsolutePath;
+            if (routePath.StartsWith("/") == false) routePath = "/" + routePath;
+            if (routePath.EndsWith("/") == true) routePath = routePath.TrimEnd('/');
+            if (string.IsNullOrEmpty(routePath) == true) throw new InvalidOperationException($"{nameof(routePath)}=null");
+            this.RoutePath = routePath;
+
+            // RoutePathSectionList
+            var routePathSectionList = routePath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (routePathSectionList == null) throw new InvalidOperationException($"{nameof(routePathSectionList)}=null");
+            if (routePathSectionList.Count == 0) throw new InvalidOperationException($"{nameof(routePathSectionList)}.Count=0");
+            this.RoutePathSectionList = routePathSectionList;
         }
 
 
         // Properties
-        public Uri Uri { get; private set; }
+        public Uri ServiceUri { get; private set; }
+
+        public string MethodName { get; private set; }
         
-        public JsonDocument Payload { get; private set; }
+        public JsonDocument MethodParameters { get; private set; }
 
-        public ClaimsPrincipal Principal { get; private set; }
 
-        public IServiceProvider ServiceProvider { get; private set; }
+        internal string RoutePath { get; private set; }
 
-        public InteropResource Resource { get; private set; }
+        internal List<string> RoutePathSectionList { get; private set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace MDP.BlazorCore
     public class InteropManager
     {
         // Fields
-        private readonly Dictionary<string, InteropMethod> _interopMethodDictionary = null;
+        private readonly Dictionary<string, InteropResource> _interopResourceDictionary = null;
 
         private readonly IAuthorizationPolicyProvider _authorizationPolicyProvider = null;
 
@@ -22,52 +24,55 @@ namespace MDP.BlazorCore
 
 
         // Constructors
-        public InteropManager(Dictionary<string, InteropMethod> interopMethodDictionary, IAuthorizationPolicyProvider authorizationPolicyProvider)
+        public InteropManager(List<InteropResource> interopResourceList, IAuthorizationPolicyProvider authorizationPolicyProvider)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(interopMethodDictionary);
+            ArgumentNullException.ThrowIfNull(interopResourceList);
             ArgumentNullException.ThrowIfNull(authorizationPolicyProvider);
 
             #endregion
 
-            // Default
-            _interopMethodDictionary = interopMethodDictionary;
+            // InteropResourceDictionary
+            _interopResourceDictionary = interopResourceList.ToDictionary
+            (
+                interopResource => interopResource.RouteTemplate,
+                interopResource => interopResource,
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            // AuthorizationPolicyProvider
             _authorizationPolicyProvider = authorizationPolicyProvider;
         }
 
 
         // Methods
-        public async Task<object> InvokeAsync(InteropRequest interopRequest)
+        public async Task<InteropResponse> InvokeAsync(InteropRequest interopRequest, IServiceProvider serviceProvider)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(interopRequest);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             #endregion
 
-            // Path
-            var path = interopRequest.Uri.AbsolutePath;
-            if (path.StartsWith("/") == false) path = "/" + path;
-            if (path.EndsWith("/") == true) path = path.TrimEnd('/');
-            if (string.IsNullOrEmpty(path) == true) throw new InvalidOperationException($"{nameof(path)}=null");
+            // InteropResource
+            var interopResource = this.FindInteropResource(interopRequest);
+            if (interopResource == null) throw new InvalidOperationException($"{nameof(interopResource)}=null");
 
-            // PathSectionList
-            var pathSectionList = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (pathSectionList == null) throw new InvalidOperationException($"{nameof(pathSectionList)}=null");
-            if (pathSectionList.Count == 0) throw new InvalidOperationException($"{nameof(pathSectionList)}.Count=0");
+            // AuthenticationStateProvider
+            var authenticationStateProvider = serviceProvider.GetService<AuthenticationStateProvider>();
+            if (authenticationStateProvider == null) throw new InvalidOperationException($"{nameof(authenticationStateProvider)}=null");
 
-            // InteropMethod
-            InteropMethod interopMethod = null;
-            if (interopMethod == null) interopMethod = this.FindInteropMethod(path);
-            if (interopMethod == null) interopMethod = this.FindInteropMethod(pathSectionList);
-            if (interopMethod == null) throw new InvalidOperationException($"{nameof(interopMethod)}=null");
+            // Principal
+            var principal = (await authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (principal == null) principal = new ClaimsPrincipal(new ClaimsIdentity());
 
             // IsAuthorizationRequired
-            if (interopMethod.IsAuthorizationRequired == true)
+            if (interopResource.IsAuthorizationRequired == true)
             {
                 // AuthorizationService
-                var authorizationService = interopRequest.ServiceProvider.GetService<IAuthorizationService>();
+                var authorizationService = serviceProvider.GetService<IAuthorizationService>();
                 if (authorizationService == null) throw new InvalidOperationException($"{nameof(authorizationService)}=null");
 
                 // AuthorizationPolicy
@@ -75,14 +80,35 @@ namespace MDP.BlazorCore
                 if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
 
                 // AuthorizationResult
-                var authorizationResult = await authorizationService.AuthorizeAsync(interopRequest.Principal, interopRequest.Resource, authorizationPolicy);
-                if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.Uri.ToString()}'");
+                var authorizationResult = await authorizationService.AuthorizeAsync(principal, interopRequest, authorizationPolicy);
+                if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.RoutePath}'");
             }
 
             // InvokeAsync
-            return await interopMethod.InvokeAsync(pathSectionList, interopRequest.Payload, interopRequest.ServiceProvider);
+            return await interopResource.InvokeAsync(interopRequest, principal, serviceProvider);
         }
 
+        private InteropResource FindInteropResource(InteropRequest interopRequest)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNull(interopRequest);
+
+            #endregion
+
+            // Result
+            InteropResource interopResource = null;
+
+            // FindRoute
+            if (_interopResourceDictionary.TryGetValue(interopRequest.RoutePath, out interopResource) == true) return interopResource;
+
+            // MatchRoute
+            interopResource = _interopResourceDictionary.Values.FirstOrDefault(o => o.MatchRoute(interopRequest) == true);
+            if (interopResource != null) return interopResource;
+
+            // Return
+            return null;
+        }
 
         private async Task<AuthorizationPolicy> CreateAuthorizationPolicyAsync()
         {
@@ -96,43 +122,6 @@ namespace MDP.BlazorCore
 
             // Return
             return _authorizationPolicy;
-        }
-
-        private InteropMethod FindInteropMethod(string path)
-        {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNullOrEmpty(path);
-
-            #endregion
-
-            // Result
-            InteropMethod interopMethod = null;
-
-            // FindByPath
-            if (_interopMethodDictionary.TryGetValue(path, out interopMethod) == true) return interopMethod;
-
-            // Return
-            return null;
-        }
-
-        private InteropMethod FindInteropMethod(List<string> pathSectionList)
-        {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNull(pathSectionList);
-
-            #endregion
-
-            // Result
-            InteropMethod interopMethod = null;
-
-            // FindByPathSectionList
-            interopMethod = _interopMethodDictionary.Values.FirstOrDefault(interopMethod => interopMethod.CanInvoke(pathSectionList) == true);
-            if (interopMethod != null) return interopMethod;
-
-            // Return
-            return null;
         }
     }
 }

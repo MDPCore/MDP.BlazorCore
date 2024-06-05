@@ -22,12 +22,9 @@
     public NavigationManager _navigationManager { get; set; }
 
     [Inject]
-    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
-
-    [Inject]
     public InteropManager _interopManager { get; set; }
 
-    private DotNetObjectReference<PageOutlet> _interopGateway = null;
+    private DotNetObjectReference<PageOutlet> _interopComponent = null;
 
 
     // Constructors        
@@ -36,58 +33,55 @@
         // Require
         if (firstRender == false) return;
 
-        // InteropGateway
-        _interopGateway = DotNetObjectReference.Create(this);
-        if (_interopGateway == null) throw new InvalidOperationException($"{nameof(_interopGateway)}=null");
+        // InteropComponent
+        _interopComponent = DotNetObjectReference.Create(this);
+        if (_interopComponent == null) throw new InvalidOperationException($"{nameof(_interopComponent)}=null");
 
         // Initialize
-        await _jsRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopGateway);
+        await _jsRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopComponent);
     }
 
     public void Dispose()
     {
         // InteropReference
-        _interopGateway?.Dispose();
+        _interopComponent?.Dispose();
     }
 
 
     // Methods
     [JSInvokable]
-    public async Task<object> InvokeAsync(string path, JsonDocument payload)
+    public async Task<object> InvokeAsync(string methodName, JsonDocument methodParameters)
     {
         #region Contracts
 
-        ArgumentNullException.ThrowIfNullOrEmpty(path);
-        ArgumentNullException.ThrowIfNull(payload);
+        ArgumentNullException.ThrowIfNullOrEmpty(methodName);
+        ArgumentNullException.ThrowIfNull(methodParameters);
 
         #endregion
-
+                
         // Execute
         try
         {
-            // RootUri
-            var rootUri = _navigationManager.BaseUri;
-            if (string.IsNullOrEmpty(rootUri) == true) throw new InvalidOperationException($"{nameof(rootUri)}=null");
+            // NavigationUri
+            var navigationUri = new Uri(_navigationManager.Uri);
+            if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
 
-            // Principal
-            var principal = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
-            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+            // ServiceUri
+            var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
+            if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
             // InvokeAsync
-            var result = await _interopManager?.InvokeAsync(new InteropRequest
+            var interopResponse = await _interopManager?.InvokeAsync(new InteropRequest
             (
-                new Uri(new Uri(rootUri), path),
-                payload,
-                principal,
-                _serviceProvider
-            ));  
-            
+                new Uri(serviceUri),
+                methodName,
+                methodParameters
+
+            ), _serviceProvider);
+            if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
+
             // Return
-            return new InteropResponse()
-            {
-                Succeeded = true,
-                Result = result
-            };
+            return interopResponse;
         }
         catch (Exception exception)
         {
@@ -97,8 +91,7 @@
                 Succeeded = false,
                 ErrorMessage = exception.Message
             };
-        }
-        
+        }        
     }
 }
 

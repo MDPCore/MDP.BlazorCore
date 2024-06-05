@@ -13,24 +13,24 @@ namespace MDP.BlazorCore
     public class InteropParameterProvider : MDP.Reflection.ParameterProvider
     {
         // Fields
-        private readonly Dictionary<string, string> _parameterDictionary = null;
+        private readonly Dictionary<string, string> _routeParameters = null;
 
-        private readonly JsonDocument _parameterDocument = null;
+        private readonly JsonDocument _methodParameters = null;
 
 
         // Constructors
-        public InteropParameterProvider(Dictionary<string, string> parameterDictionary, JsonDocument parameterDocument)
+        public InteropParameterProvider(Dictionary<string, string> routeParameters, JsonDocument methodParameters)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(parameterDictionary);
-            ArgumentNullException.ThrowIfNull(parameterDocument);
+            ArgumentNullException.ThrowIfNull(routeParameters);
+            ArgumentNullException.ThrowIfNull(methodParameters);
 
             #endregion
 
             // Default
-            _parameterDictionary = parameterDictionary;
-            _parameterDocument = parameterDocument;
+            _routeParameters = routeParameters;
+            _methodParameters = methodParameters;
         }
 
 
@@ -49,8 +49,8 @@ namespace MDP.BlazorCore
             {
                 if (parameterType.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) != null)
                 {
-                    // ParameterDocument
-                    if (_parameterDocument.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement)==true)
+                    // MethodParameters
+                    if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement)==true)
                     {
                         var parameter = JsonSerializer.Deserialize(parameterElement.GetRawText(), parameterType, new JsonSerializerOptions
                         {
@@ -64,8 +64,8 @@ namespace MDP.BlazorCore
             // ValueType
             if (parameterType.IsValueType == true || parameterType == typeof(string))
             {
-                // ParameterDocument
-                if (_parameterDocument.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
+                // MethodParameters
+                if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
                 {
                     if (parameterType == typeof(string))
                     {
@@ -79,17 +79,17 @@ namespace MDP.BlazorCore
                     }
                 }
 
-                // ParameterDictionary
-                if (_parameterDictionary.ContainsKey(parameterName) == true)
+                // RouteParameters
+                if (_routeParameters.ContainsKey(parameterName) == true)
                 {
                     if (parameterType == typeof(string))
                     {
-                        var parameter = _parameterDictionary[parameterName];
+                        var parameter = _routeParameters[parameterName];
                         if (string.IsNullOrEmpty(parameter) == false) return parameter;
                     }
                     else
                     {
-                        var parameter = TypeDescriptor.GetConverter(parameterType).ConvertFromString(_parameterDictionary[parameterName]);
+                        var parameter = TypeDescriptor.GetConverter(parameterType).ConvertFromString(_routeParameters[parameterName]);
                         if (parameter != null) return parameter;
                     }
                 }

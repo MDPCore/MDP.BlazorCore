@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -45,32 +46,34 @@ namespace MDP.BlazorCore.Web
 
             #endregion
 
+            // Require
+            if (string.IsNullOrEmpty(actionModel.ServiceUri) == true) throw new InvalidOperationException($"{nameof(actionModel.ServiceUri)}=null");
+            if (string.IsNullOrEmpty(actionModel.MethodName) == true) throw new InvalidOperationException($"{nameof(actionModel.MethodName)}=null");
+            if (actionModel.MethodParameters == null) throw new InvalidOperationException($"{nameof(actionModel.MethodParameters)}=null");
+
             // Execute
             try
             {
-                // RootUri
-                var rootUri = $"{this.HttpContext.Request.Scheme}://{this.HttpContext.Request.Host}{this.HttpContext.Request.PathBase}";
-                if (string.IsNullOrEmpty(rootUri) == true) throw new InvalidOperationException($"{nameof(rootUri)}=null");
+                // NavigationUri
+                var navigationUri = new Uri(actionModel.ServiceUri);
+                if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
 
-                // User
-                var user = this.User;
-                if (user == null) throw new InvalidOperationException($"{nameof(user)}=null");
+                // ServiceUri
+                var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
+                if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
                 // InvokeAsync
-                var result = await _interopManager.InvokeAsync(new InteropRequest
+                var interopResponse = await _interopManager?.InvokeAsync(new InteropRequest
                 (
-                    new Uri(new Uri(rootUri), actionModel.Path),
-                    actionModel.Payload,
-                    user,
-                    _serviceProvider
-                ));
+                    new Uri(serviceUri),
+                    actionModel.MethodName,
+                    actionModel.MethodParameters
+
+                ), _serviceProvider);
+                if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
                 // Return
-                return new InteropResponse()
-                {
-                    Succeeded = true,
-                    Result = result
-                };
+                return interopResponse;
             }
             catch (Exception exception)
             {
@@ -86,9 +89,11 @@ namespace MDP.BlazorCore.Web
         public class InvokeActionModel 
         {        
             // Properties
-            public string Path { get; set; } = null;
+            public string ServiceUri { get; set; } = null;
 
-            public JsonDocument Payload { get; set; } = null;        
+            public string MethodName { get; set; } = null;
+
+            public JsonDocument MethodParameters { get; set; } = null;        
         }
     }
 }
