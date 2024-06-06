@@ -43,14 +43,14 @@
 
     public void Dispose()
     {
-        // InteropReference
+        // InteropComponent
         _interopComponent?.Dispose();
     }
 
 
     // Methods
     [JSInvokable]
-    public async Task<object> InvokeAsync(string methodName, JsonDocument methodParameters)
+    public async Task<InteropResponse> InvokeAsync(string methodName, JsonDocument methodParameters)
     {
         #region Contracts
 

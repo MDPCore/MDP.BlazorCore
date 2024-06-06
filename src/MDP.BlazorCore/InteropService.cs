@@ -14,5 +14,8 @@ namespace MDP.BlazorCore
     {
         // Properties
         public ClaimsPrincipal User { get; internal set; } 
+
+
+        // Methods
     }
 }

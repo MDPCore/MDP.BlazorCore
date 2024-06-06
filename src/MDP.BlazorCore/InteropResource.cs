@@ -165,11 +165,15 @@ namespace MDP.BlazorCore
                 if (string.IsNullOrEmpty(routePathSection) == true) continue;
                 if (string.IsNullOrEmpty(routeTemplateSection) == true) continue;
 
-                // {Parameter}
+                // {Parameter:Type}
                 if (routeTemplateSection.StartsWith("{") == true && routeTemplateSection.EndsWith("}") == true)
                 {
+                    // EndIndex
+                    var endIndex = routeTemplateSection.IndexOf(":") - 1;
+                    if (endIndex <= -1) endIndex = routeTemplateSection.Length - 2;
+
                     // Add
-                    routeParameters.Add(routeTemplateSection.Substring(1, routeTemplateSection.Length - 2), routePathSection);
+                    routeParameters.Add(routeTemplateSection.Substring(1, endIndex), routePathSection);
                 }
             }
 

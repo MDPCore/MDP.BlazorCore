@@ -1,7 +1,7 @@
 ﻿@using MyLab.Module
 
-@page "/PageDataExample"
-@inherits PageComponent<PageDataExample.PageModel>
+@page "/PageModelExample"
+@inherits PageComponent<PageModelExample.PageModel>
 @code {
 
     // Class
@@ -39,26 +39,21 @@
     public class PageModel
     {
         // Properties
-        [PageData]
         public string Message { get; set; }
     }
 }
 
-
-<PageScript PageData="@CreatePageData()">
+<PageScript>
     <script>
 
         // blazorPageLoaded
         document.addEventListener("BlazorPageLoaded", function (event) {
 
-            // variables
-            const pageData = event.detail.pageData;
-
             // runButton
             document.getElementById("runButton").addEventListener("click", function (event) {
 
                 // message
-                var message = pageData.Message;
+                var message = document.getElementById("messaage").innerText;
 
                 // alert
                 alert(message + " By PageData");
@@ -69,9 +64,10 @@
 
 
 <!-- title -->
-<h3>PageDataExample</h3>
+<h3>PageModelExample</h3>
 <hr />
 
 <!-- run -->
-<button class="btn btn-primary" id="runButton">Run</button><br />
+<div id="messaage" style="display:none">@Model?.Message</div>
+<button class="btn btn-primary" id="runButton">Run</button>
 <br />

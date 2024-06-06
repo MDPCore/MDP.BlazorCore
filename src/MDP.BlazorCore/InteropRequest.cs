@@ -10,16 +10,22 @@ namespace MDP.BlazorCore
 {
     public class InteropRequest
     {
+        // Constants
+        private readonly static JsonDocument _emptyDocument = JsonDocument.Parse("{}");
+
+
         // Constructors
-        public InteropRequest(Uri serviceUri, string methodName, JsonDocument methodParameters)
+        public InteropRequest(Uri serviceUri, string methodName, JsonDocument methodParameters = null)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(serviceUri);
             ArgumentNullException.ThrowIfNullOrEmpty(methodName);
-            ArgumentNullException.ThrowIfNull(methodParameters);
 
             #endregion
+
+            // Require
+            if (methodParameters == null) methodParameters = _emptyDocument;
 
             // Default
             this.ServiceUri = serviceUri;
