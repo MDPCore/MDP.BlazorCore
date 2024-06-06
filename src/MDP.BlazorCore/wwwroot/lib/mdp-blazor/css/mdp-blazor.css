@@ -1,0 +1,134 @@
+/* ---------- global ---------- */
+
+.mdp-wrapper {
+    width: 100%;
+    height: 100dvh;
+    overflow: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: start;
+    align-items: normal;
+}
+
+.mdp-wrapper a,
+.mdp-wrapper p,
+.mdp-wrapper hr,
+.mdp-wrapper h1,
+.mdp-wrapper h2,
+.mdp-wrapper h3,
+.mdp-wrapper h4,
+.mdp-wrapper h5,
+.mdp-wrapper h6,
+.mdp-wrapper h7 {
+    margin: 0rem;
+    margin-block: 0rem;
+}
+
+.mdp-wrapper svg {   
+    flex: 0 0 auto;
+    fill: currentColor;
+}
+
+
+/* ---------- layout ---------- */
+
+/* grid*/
+.mdp-wrapper .row {
+    margin: 0;
+    padding: 0;
+}
+
+/* container */
+.mdp-wrapper .container-sm,
+.mdp-wrapper .container-md,
+.mdp-wrapper .container-lg,
+.mdp-wrapper .container-fluid {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: normal;
+    align-items: normal;
+    padding: 0;
+}
+
+.mdp-wrapper .container-sm-fixed {
+    max-width: var(--bs-breakpoint-sm) !important;
+}
+
+.mdp-wrapper .container-md-fixed {
+    max-width: var(--bs-breakpoint-md) !important;
+}
+
+.mdp-wrapper .container-lg-fixed {
+    max-width: var(--bs-breakpoint-lg) !important;
+}
+
+.mdp-wrapper .container-fluid-fixed {
+    max-width: 100% !important;
+}
+
+
+/* ---------- forms ---------- */
+
+
+/* ---------- components ---------- */
+
+/* image */
+.mdp-wrapper .img-svg {    
+    flex: 0 0 auto;
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    background-color: currentColor;
+}
+
+/* button */
+.mdp-wrapper .btn:hover {
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+    opacity: 0.8;
+}
+
+.mdp-wrapper .btn:focus-visible {
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+    outline: 0;
+    box-shadow: none;
+}
+
+.mdp-wrapper .btn.disabled, .btn:disabled, fieldset:disabled .btn {    
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.mdp-wrapper .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+    color: var(--bs-btn-bg);
+    background-color: var(--bs-btn-color);
+    border-color: var(--bs-btn-border-color);
+}
+
+
+/* ---------- utilities ---------- */
+
+/* sticky */
+.mdp-wrapper .sticky-top-fixed {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+    z-index: 999;
+}
+
+.mdp-wrapper .sticky-top-fixed > * {
+    position: relative;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+}

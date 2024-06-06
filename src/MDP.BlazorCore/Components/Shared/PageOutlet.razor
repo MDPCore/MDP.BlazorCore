@@ -12,18 +12,6 @@
 
 
     // Fields
-    [Inject]
-    public IJSRuntime _jsRuntime { get; set; }
-
-    [Inject]
-    public IServiceProvider _serviceProvider { get; set; }
-
-    [Inject]
-    public NavigationManager _navigationManager { get; set; }
-
-    [Inject]
-    public InteropManager _interopManager { get; set; }
-
     private DotNetObjectReference<PageOutlet> _interopComponent = null;
 
 
@@ -38,7 +26,7 @@
         if (_interopComponent == null) throw new InvalidOperationException($"{nameof(_interopComponent)}=null");
 
         // Initialize
-        await _jsRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopComponent);
+        await this.JSRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopComponent);
     }
 
     public void Dispose()
@@ -46,6 +34,23 @@
         // InteropComponent
         _interopComponent?.Dispose();
     }
+
+
+    // Properties
+    [Inject]
+    public InteropManager _interopManager { get; set; }
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    [Inject]
+    public IServiceProvider ServiceProvider { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
 
     // Methods
@@ -63,21 +68,25 @@
         try
         {
             // NavigationUri
-            var navigationUri = new Uri(_navigationManager.Uri);
+            var navigationUri = new Uri(this.NavigationManager.Uri);
             if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
 
             // ServiceUri
             var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
             if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
+            // Principal
+            var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+
             // InvokeAsync
-            var interopResponse = await _interopManager?.InvokeAsync(new InteropRequest
+            var interopResponse = await _interopManager.InvokeAsync(new InteropRequest
             (
                 new Uri(serviceUri),
                 methodName,
                 methodParameters
 
-            ), _serviceProvider);
+            ), principal, this.ServiceProvider);
             if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
             // Return

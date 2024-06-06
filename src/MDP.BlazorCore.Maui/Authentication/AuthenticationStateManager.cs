@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore
+namespace MDP.BlazorCore.Maui
 {
     public abstract class AuthenticationStateManager
     {

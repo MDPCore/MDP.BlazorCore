@@ -1,14 +1,6 @@
 ﻿@namespace MDP.BlazorCore
 @code {
 
-    // Fields
-    [Inject]
-    public NavigationManager _navigationManager { get; set; }
-
-    [Inject]
-    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
-
-
     // Properties
     [Parameter]
     public string LoginPath { get; set; } = null;
@@ -16,17 +8,23 @@
     [Parameter]
     public string AccessDeniedPath { get; set; } = null;
 
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
 
     // Methods
     protected override async Task OnInitializedAsync()
     {
         // ReturnUrl
         var returnUrl = string.Empty;
-        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = (new Uri(_navigationManager.Uri)).PathAndQuery;
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = (new Uri(this.NavigationManager.Uri)).PathAndQuery;
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
         // Redirect
-        var principal  = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        var principal  = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
         if (principal != null && principal.Identity?.IsAuthenticated == true)
         {
             // AccessDeniedPath
@@ -34,7 +32,7 @@
             if (string.IsNullOrEmpty(accessDeniedPath) == true) accessDeniedPath = "/";
 
             // AccessDenied
-            _navigationManager.NavigateTo($"{accessDeniedPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+            this.NavigationManager.NavigateTo($"{accessDeniedPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
         }
         else
         {
@@ -43,7 +41,7 @@
             if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
 
             // Login
-            _navigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+            this.NavigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
         }
     }
 }

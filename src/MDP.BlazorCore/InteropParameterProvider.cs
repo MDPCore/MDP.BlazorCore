@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MDP.BlazorCore
 {
@@ -50,7 +46,7 @@ namespace MDP.BlazorCore
                 if (parameterType.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) != null)
                 {
                     // MethodParameters
-                    if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement)==true)
+                    if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
                     {
                         var parameter = JsonSerializer.Deserialize(parameterElement.GetRawText(), parameterType, new JsonSerializerOptions
                         {

@@ -3,17 +3,26 @@
 @namespace MDP.BlazorCore
 @code {
 
-    // Fields
-    [Inject]
-    public IJSRuntime _jsRuntime { get; set; }
+    // Constructors
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Require
+        if (firstRender == false) return;
+
+        // PageLoaded
+        await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
+    }
 
 
-    // Properties
+    // Properties    
     [Parameter]
     public object PageData { get; set; } = null;
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
 
 
     // Methods
@@ -25,18 +34,9 @@
         // Return
         return new MarkupString(JsonSerializer.Serialize(this.PageData));
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Require
-        if (firstRender == false) return;
-
-        // PageLoaded
-        await _jsRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
-    }
 }
 
 <SectionContent SectionId="@(PageOutlet.PageDataSectionId)">
-    <span id="mdp-blazor-pagedata" style="display:none;" data-value="@this.CreatePageData()"></span>
+    <span id="mdp-blazor-pagedata" style="display:none;" data-value="@CreatePageData()"></span>
 </SectionContent>
 <SectionContent SectionId="@(PageOutlet.PageScriptSectionId)" ChildContent="@ChildContent" />

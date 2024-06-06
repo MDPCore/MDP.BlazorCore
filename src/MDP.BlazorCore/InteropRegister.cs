@@ -1,14 +1,10 @@
-﻿using MDP.Registration;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
 {
@@ -55,7 +51,7 @@ namespace MDP.BlazorCore
                 if (routeAttributeList == null) throw new InvalidOperationException($"{nameof(routeAttributeList)}=null");
 
                 // Add
-                interopResourceList.AddRange(routeAttributeList.Select(routeAttribute => new InteropResource(interopServiceType, routeAttribute)));
+                interopResourceList.AddRange(routeAttributeList.Select(routeAttribute => new InteropResource(interopServiceType, routeAttribute.Template)));
             }
 
             // InteropManager

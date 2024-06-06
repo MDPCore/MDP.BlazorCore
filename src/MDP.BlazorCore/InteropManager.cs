@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
@@ -47,11 +42,12 @@ namespace MDP.BlazorCore
 
 
         // Methods
-        public async Task<InteropResponse> InvokeAsync(InteropRequest interopRequest, IServiceProvider serviceProvider)
+        public async Task<InteropResponse> InvokeAsync(InteropRequest interopRequest, ClaimsPrincipal principal, IServiceProvider serviceProvider)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(interopRequest);
+            ArgumentNullException.ThrowIfNull(principal);
             ArgumentNullException.ThrowIfNull(serviceProvider);
 
             #endregion
@@ -59,14 +55,6 @@ namespace MDP.BlazorCore
             // InteropResource
             var interopResource = this.FindInteropResource(interopRequest);
             if (interopResource == null) throw new InvalidOperationException($"{nameof(interopResource)}=null");
-
-            // AuthenticationStateProvider
-            var authenticationStateProvider = serviceProvider.GetService<AuthenticationStateProvider>();
-            if (authenticationStateProvider == null) throw new InvalidOperationException($"{nameof(authenticationStateProvider)}=null");
-
-            // Principal
-            var principal = (await authenticationStateProvider.GetAuthenticationStateAsync())?.User;
-            if (principal == null) principal = new ClaimsPrincipal(new ClaimsIdentity());
 
             // IsAuthorizationRequired
             if (interopResource.IsAuthorizationRequired == true)

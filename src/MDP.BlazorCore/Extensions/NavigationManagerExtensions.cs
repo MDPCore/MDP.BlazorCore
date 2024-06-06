@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
-using System.Web;
-using System.Xml.Linq;
 
 namespace MDP.BlazorCore
 {
@@ -19,7 +17,7 @@ namespace MDP.BlazorCore
 
             // QueryString
             var queryString = new Uri(navigationManager.Uri).Query;
-            if (string.IsNullOrEmpty(queryString)==true) return new Dictionary<string, string>();
+            if (string.IsNullOrEmpty(queryString) == true) return new Dictionary<string, string>();
 
             // QueryDictionary
             var queryDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

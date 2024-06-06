@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
 {
@@ -51,7 +48,7 @@ namespace MDP.BlazorCore
         public Uri ServiceUri { get; private set; }
 
         public string MethodName { get; private set; }
-        
+
         public JsonDocument MethodParameters { get; private set; }
 
 

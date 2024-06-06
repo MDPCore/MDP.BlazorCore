@@ -7,17 +7,17 @@
 
     // Fields
     [Inject]
-    public RoutesOptions _routesOptions { get; set; }
+    public RoutesOptions RoutesOptions { get; set; }
 
     [Inject]
-    public NavigationManager _navigationManager { get; set; }
+    public NavigationManager NavigationManager { get; set; }
 }
 
-<Router AppAssembly="@_routesOptions.CreateAppAssembly()" AdditionalAssemblies="@_routesOptions.CreateAdditionalAssemblies()">
+<Router AppAssembly="@RoutesOptions.CreateAppAssembly()" AdditionalAssemblies="@RoutesOptions.CreateAdditionalAssemblies()">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@_routesOptions.CreateDefaultLayout()" Resource="_navigationManager">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@RoutesOptions.CreateDefaultLayout()" Resource="@NavigationManager">
             <NotAuthorized>
-                <RedirectToLogin LoginPath="@_routesOptions.LoginPath" AccessDeniedPath="@_routesOptions.AccessDeniedPath" />
+                <RedirectToLogin LoginPath="@RoutesOptions.LoginPath" AccessDeniedPath="@RoutesOptions.AccessDeniedPath" />
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>

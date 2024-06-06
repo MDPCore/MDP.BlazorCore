@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MDP.BlazorCore.Maui
 {
-    public class MauiAuthenticationStateProvider : AuthenticationStateProvider
+    internal class MauiAuthenticationStateProvider : AuthenticationStateProvider
     {
         // Fields
         private readonly AuthenticationStateManager _authenticationStateManager;

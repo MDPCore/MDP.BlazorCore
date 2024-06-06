@@ -62,14 +62,18 @@ namespace MDP.BlazorCore.Web
                 var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
                 if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
+                // Principal
+                var principal = this.User;
+                if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+
                 // InvokeAsync
-                var interopResponse = await _interopManager?.InvokeAsync(new InteropRequest
+                var interopResponse = await _interopManager.InvokeAsync(new InteropRequest
                 (
                     new Uri(serviceUri),
                     actionModel.MethodName,
                     actionModel.MethodParameters
 
-                ), _serviceProvider);
+                ), principal, _serviceProvider);
                 if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
                 // Return

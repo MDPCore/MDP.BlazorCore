@@ -105,21 +105,21 @@ mdp.blazor.interopManager = (function () {
         _interopComponent = interopComponent;
     }
 
-    function invokeAsync(path, payload) {
+    function invokeAsync(methodName, methodParameters) {
 
         // localInvoke
         if (_interopComponent) {
-            return _interopComponent.invokeMethodAsync("InvokeAsync", path, payload).then(function (response) {
+            return _interopComponent.invokeMethodAsync("InvokeAsync", methodName, methodParameters).then(function (response) {
                 if (response.succeeded == true) {
                     return response.result;
                 } else {
                     throw new Error(response.errorMessage);
                 }
             });
-        }
+        } 
 
         // remoteInvoke
-        return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "path": path, "payload": payload }).then(function (response) {
+        return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "serviceUri": window.location.href, "methodName": methodName, "methodParameters": methodParameters }).then(function (response) {
             if (response.succeeded == true) {
                 return response.result;
             } else {

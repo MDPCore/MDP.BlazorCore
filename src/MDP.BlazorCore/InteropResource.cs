@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
@@ -26,12 +21,12 @@ namespace MDP.BlazorCore
 
 
         // Constructors
-        public InteropResource(Type serviceType, RouteAttribute routeAttribute)
+        public InteropResource(Type serviceType, string routeTemplate)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(serviceType);
-            ArgumentNullException.ThrowIfNull(routeAttribute);
+            ArgumentNullException.ThrowIfNullOrEmpty(routeTemplate);
 
             #endregion
 
@@ -43,7 +38,7 @@ namespace MDP.BlazorCore
             _serviceType = serviceType;
 
             // RouteTemplate
-            _routeTemplate = routeAttribute.Template;
+            _routeTemplate = routeTemplate;
             if (_routeTemplate.StartsWith("/") == false) _routeTemplate = "/" + _routeTemplate;
             if (_routeTemplate.EndsWith("/") == true) _routeTemplate = _routeTemplate.TrimEnd('/');
 
