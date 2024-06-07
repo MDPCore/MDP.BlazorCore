@@ -68,7 +68,7 @@ namespace MDP.BlazorCore.Authorization.Web.Lab
             }
 
             // Return
-            return await this.LoginAsync(claimsIdentity, returnUrl);
+            return await this.SignInAsync(claimsIdentity, returnUrl);
         }
     }
 }
