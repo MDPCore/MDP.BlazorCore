@@ -4,6 +4,14 @@
 @page "/AuthorizeExample"
 @code {
 
+    // Properties
+    [Parameter]
+    public ClaimsPrincipal Principal { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+
     // Methods
     protected override async Task OnInitializedAsync()
     {
@@ -12,14 +20,6 @@
         if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
         this.Principal = principal;
     }
-
-
-    // Properties
-    [Parameter]
-    public ClaimsPrincipal Principal { get; set; }
-
-    [Inject]
-    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 }
 
 
