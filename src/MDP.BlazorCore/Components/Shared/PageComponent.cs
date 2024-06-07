@@ -8,12 +8,23 @@ using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
 {
-    public class PageComponent : PageComponent<object>
+    public class PageComponent : ComponentBase
     {
+        // Properties
+        [Inject]
+        public InteropManager InteropManager { get; set; }
 
+        [Inject]
+        public IServiceProvider ServiceProvider { get; set; }
+
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     }
 
-    public class PageComponent<TModel> : ComponentBase where TModel : class, new()
+    public class PageComponent<TModel> : PageComponent where TModel : class, new()
     {
         // Constructors
         protected override async Task OnInitializedAsync()
@@ -65,18 +76,6 @@ namespace MDP.BlazorCore
         // Properties
         [Parameter]
         public TModel Model { get; set; }
-
-        [Inject]
-        public InteropManager InteropManager { get; set; }
-
-        [Inject]
-        public IServiceProvider ServiceProvider { get; set; }
-
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-
-        [Inject]
-        public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
 
         // Methods

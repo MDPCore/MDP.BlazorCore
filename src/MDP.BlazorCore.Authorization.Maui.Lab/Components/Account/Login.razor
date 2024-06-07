@@ -7,16 +7,19 @@
 @page "/Account/Login"
 @code {
 
-    // Fields
-    [Inject]
-    public NavigationManager _navigationManager { get; set; } = null;
+    // Properties
+    [Parameter]
+    public string ErrorMessage { get; set; } = null;
 
     [Inject]
-    public AuthenticationManager _authenticationManager { get; set; } = null;
+    public NavigationManager NavigationManager { get; set; } = null;
+
+    [Inject]
+    public AuthenticationManager AuthenticationManager { get; set; } = null;
 
 
     // Properties
-    public string ErrorMessage { get; set; } = null;
+   
 
 
     // Methods
@@ -26,15 +29,15 @@
         try
         {
             // Login
-            await _authenticationManager.LoginAsync();
+            await this.AuthenticationManager.LoginAsync();
 
             // ReturnUrl
             var returnUrl = string.Empty;
-            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
+            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = this.NavigationManager.ParseQuery()["returnUrl"];
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
             // Redirect
-            _navigationManager.NavigateTo(returnUrl);
+            this.NavigationManager.NavigateTo(returnUrl);
         }
         catch (Exception exception)
         {

@@ -9,12 +9,6 @@
         // Methods
         public async Task<string> Echo(string message)
         {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNullOrEmpty(message);
-
-            #endregion
-
             // Return
             return await Task.FromResult(message);
         }

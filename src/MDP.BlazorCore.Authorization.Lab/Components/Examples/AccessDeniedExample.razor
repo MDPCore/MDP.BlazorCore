@@ -4,23 +4,22 @@
 @page "/AccessDeniedExample"
 @code {
 
-    // Fields
+    // Properties
+    [Parameter]
+    public ClaimsPrincipal Principal { get; set; }
+
     [Inject]
-    public AuthenticationStateProvider _authenticationStateProvider { get; set; }
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
 
     // Methods
     protected override async Task OnInitializedAsync()
     {
         // Principal
-        var principal = (await _authenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
         if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
         this.Principal = principal;
     }
-
-
-    // Properties
-    public ClaimsPrincipal Principal { get; set; }
 }
 
 

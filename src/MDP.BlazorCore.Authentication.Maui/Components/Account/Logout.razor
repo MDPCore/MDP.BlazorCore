@@ -7,26 +7,26 @@
 @page "/Account/Logout"
 @code {
 
-    // Fields
+    // Properties
     [Inject]
-    public NavigationManager _navigationManager { get; set; } = null;
+    public NavigationManager NavigationManager { get; set; } = null;
 
     [Inject]
-    public AuthenticationManager _authenticationManager { get; set; } = null;
+    public AuthenticationManager AuthenticationManager { get; set; } = null;
 
 
     // Methods
     protected override async Task OnInitializedAsync()
     {        
         // Logout
-        await _authenticationManager.LogoutAsync();
+        await this.AuthenticationManager.LogoutAsync();
 
         // ReturnUrl
         var returnUrl = string.Empty;
-        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = _navigationManager.ParseQuery()["returnUrl"];
+        if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = this.NavigationManager.ParseQuery()["returnUrl"];
         if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
         // Redirect
-        _navigationManager.NavigateTo(returnUrl);
+        this.NavigationManager.NavigateTo(returnUrl);
     }
 }

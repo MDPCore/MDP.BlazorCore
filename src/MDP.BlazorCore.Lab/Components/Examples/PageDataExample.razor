@@ -7,31 +7,13 @@
     // Class
     public class PageService : InteropService
     {
-        // Fields
-        private readonly WorkContext _workContext = null;
-
-
         // Constructors
-        public PageService(WorkContext workContext)
-        {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNull(workContext);
-
-            #endregion
-
-            // Default
-            _workContext = workContext;
-        }
-
-
-        // Methods
         public Task<PageModel> OnInitializedAsync()
         {
             // Return
             return Task.FromResult(new PageModel
             {
-                Message = _workContext.GetValue()
+                Message = "Hello World"
             });
         }
     }
