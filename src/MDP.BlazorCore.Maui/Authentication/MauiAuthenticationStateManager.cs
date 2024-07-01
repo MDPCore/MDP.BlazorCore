@@ -15,7 +15,7 @@ namespace MDP.BlazorCore.Maui
 
 
         // Methods
-        public override Task<ClaimsPrincipal> GetPrincipalAsync()
+        public override Task<ClaimsPrincipal> GetAsync()
         {
             // CurrentPrincipal
             var currentPrincipal = _currentPrincipal;
@@ -24,7 +24,7 @@ namespace MDP.BlazorCore.Maui
             return Task.FromResult(currentPrincipal);
         }
 
-        public override Task LoginAsync(ClaimsPrincipal principal)
+        public override Task SaveAsync(ClaimsPrincipal principal)
         {
             #region Contracts
 
@@ -43,7 +43,7 @@ namespace MDP.BlazorCore.Maui
             return Task.CompletedTask;
         }
 
-        public override Task LogoutAsync()
+        public override Task ClearAsync()
         {
             // CurrentPrincipal
             var currentPrincipal = new ClaimsPrincipal(new ClaimsIdentity());

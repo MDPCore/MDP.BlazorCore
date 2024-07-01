@@ -87,7 +87,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Methods
-        public async Task<string> AuthenticateAsync()
+        public async Task<AuthenticateToken> LoginAsync()
         {
             // CodeVerifier
             var codeVerifier = CreateCodeVerifier();
@@ -135,7 +135,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // AuthenticateToken
             var authenticateToken = await this.ExchangeCodeAsync(authenticateCode, codeVerifier);
-            if (string.IsNullOrEmpty(authenticateToken) == true) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
+            if (authenticateToken == null) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
 
             // Return
             return authenticateToken;
@@ -188,7 +188,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             return codeChallenge;
         }
 
-        private async Task<string> ExchangeCodeAsync(string authenticateCode, string codeVerifier)
+        private async Task<AuthenticateToken> ExchangeCodeAsync(string authenticateCode, string codeVerifier)
         {
             #region Contracts
 
@@ -230,74 +230,34 @@ namespace MDP.BlazorCore.Authentication.Maui
                 var accessToken = payload.RootElement.GetProperty("access_token").GetString();
                 if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
 
-                // Return
-                return accessToken;
-            }
-        }
-
-
-        public async Task<string> GetAccessTokenAsync(string authenticateToken)
-        {
-            #region Contracts
-
-            if (string.IsNullOrEmpty(authenticateToken) == true) throw new ArgumentException($"{nameof(authenticateToken)}=null");
-
-            #endregion
-
-            // Request
-            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
-                {"subject_token", authenticateToken},
-                {"subject_token_type", "urn:ietf:params:oauth:token-type:access_token"},
-                {"requested_token_type", "urn:ietf:params:oauth:token-type:jwt"}
-            });
-
-            // Response
-            var response = await this.Backchannel.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
-                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
-            }
-
-            // Payload
-            using (var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
-            {
-                // TokenType
-                var tokenType = payload.RootElement.GetProperty("token_type").GetString();
-                if (string.IsNullOrEmpty(tokenType) == true) throw new InvalidOperationException($"{nameof(tokenType)}=null");
-                if (tokenType.Equals("Bearer", StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(tokenType)}={tokenType}");
-
-                // IssuedTokenType
-                var issuedTokenType = payload.RootElement.GetProperty("issued_token_type").GetString();
-                if (string.IsNullOrEmpty(issuedTokenType) == true) throw new InvalidOperationException($"{nameof(issuedTokenType)}=null");
-                if (issuedTokenType.Equals("urn:ietf:params:oauth:token-type:jwt", StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(issuedTokenType)}={issuedTokenType}");
-
-                // AccessToken
-                var accessToken = payload.RootElement.GetProperty("access_token").GetString();
+                // RefreshToken
+                var refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
                 if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
 
                 // Return
-                return accessToken;
+                return new AuthenticateToken(tokenType, accessToken, refreshToken);
             }
         }
 
-        public async Task<ClaimsIdentity> GetUserInformationAsync(string authenticateToken)
+
+        public Task LogoutAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+
+        public async Task<ClaimsIdentity> GetUserInformationAsync(string accessToken)
         {
             #region Contracts
 
-            if (string.IsNullOrEmpty(authenticateToken) == true) throw new ArgumentException($"{nameof(authenticateToken)}=null");
+            if (string.IsNullOrEmpty(accessToken) == true) throw new ArgumentException($"{nameof(accessToken)}=null");
 
             #endregion
 
             // Request
             var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.UserInformationEndpoint);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authenticateToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             // Response
             var response = await this.Backchannel.SendAsync(request);

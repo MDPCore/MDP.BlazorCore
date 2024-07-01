@@ -11,11 +11,11 @@ namespace MDP.BlazorCore.Maui
     public abstract class AuthenticationStateManager
     {
         // Methods
-        public abstract Task<ClaimsPrincipal> GetPrincipalAsync();
+        public abstract Task<ClaimsPrincipal> GetAsync();
 
-        public abstract Task LoginAsync(ClaimsPrincipal principal);
+        public abstract Task SaveAsync(ClaimsPrincipal principal);
 
-        public abstract Task LogoutAsync();
+        public abstract Task ClearAsync();
 
 
         // Events

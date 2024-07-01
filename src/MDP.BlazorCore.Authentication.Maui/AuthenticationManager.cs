@@ -30,17 +30,17 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Methods
-        public Task LoginAsync(string scheme = null)
+        public Task LoginAsync(string authenticationScheme = null)
         {
             // AuthenticationProvider
             IAuthenticationProvider authenticationProvider = null;
-            if (string.IsNullOrEmpty(scheme) == true)
+            if (string.IsNullOrEmpty(authenticationScheme) == true)
             {
                 authenticationProvider = _authenticationProviderList.FirstOrDefault();
             }
             else
             {
-                authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.Name == scheme);
+                authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
             }
             if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
 
@@ -48,17 +48,17 @@ namespace MDP.BlazorCore.Authentication.Maui
             return authenticationProvider.LoginAsync();
         }
 
-        public Task LogoutAsync(string scheme = null)
+        public Task LogoutAsync(string authenticationScheme = null)
         {
             // AuthenticationProvider
             IAuthenticationProvider authenticationProvider = null;
-            if (string.IsNullOrEmpty(scheme) == true)
+            if (string.IsNullOrEmpty(authenticationScheme) == true)
             {
                 authenticationProvider = _authenticationProviderList.FirstOrDefault();
             }
             else
             {
-                authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.Name == scheme);
+                authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
             }
             if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
 

@@ -37,27 +37,25 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Properties
-        public string Name { get; private set; } = "OAuthSSO";
+        public string AuthenticationScheme { get; private set; } = OAuthSSODefaults.AuthenticationScheme;
 
 
         // Methods
         public async Task LoginAsync()
         {
             // AuthHandler
-            using(var authHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
+            using(var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
-                // AuthenticateToken
-                var authenticateToken = await authHandler.AuthenticateAsync();
-                if (string.IsNullOrEmpty(authenticateToken) == true) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
-
-                // AccessToken
-                var accessToken = await authHandler.GetAccessTokenAsync(authenticateToken);
-                if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
+                // Login
+                var authenticateToken = await authenticateHandler.LoginAsync();
+                if (authenticateToken == null) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
 
                 // ClaimsIdentity
-                var claimsIdentity = await authHandler.GetUserInformationAsync(authenticateToken);
+                var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
-                await _authenticationStateManager.LoginAsync(new ClaimsPrincipal(claimsIdentity));
+
+                // Save
+                await _authenticationStateManager.SaveAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
 
@@ -66,12 +64,11 @@ namespace MDP.BlazorCore.Authentication.Maui
             // AuthHandler
             using (var authHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
-                // AuthenticateToken
+                // Logout
+                await authHandler.LogoutAsync();
 
-                // AccessToken
-
-                // ClaimsIdentity
-                await _authenticationStateManager.LogoutAsync();
+                // Clear
+                await _authenticationStateManager.ClearAsync();
             }
         }
     }

@@ -9,7 +9,7 @@ namespace MDP.BlazorCore.Authentication.Maui
     public interface IAuthenticationProvider
     {
         // Properties
-        string Name { get; }
+        string AuthenticationScheme { get; }
 
 
         // Methods
