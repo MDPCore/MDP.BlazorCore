@@ -13,13 +13,16 @@ namespace MDP.BlazorCore.Maui
 
 
         // Constructors
-        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager = null)
+        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
         {
-            // Default
-            _authenticationStateManager = authenticationStateManager;
-            if(_authenticationStateManager==null) _authenticationStateManager = new MauiAuthenticationStateManager();
+            #region Contracts
 
-            // Event
+            ArgumentNullException.ThrowIfNull(authenticationStateManager);
+
+            #endregion
+
+            // AuthenticationStateManager
+            _authenticationStateManager = authenticationStateManager;
             _authenticationStateManager.PrincipalChanged += this.AuthenticationStateManager_PrincipalChanged;
         }
 
