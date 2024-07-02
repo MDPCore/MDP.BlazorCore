@@ -43,8 +43,8 @@ namespace MDP.BlazorCore.Authentication.Maui
         // Methods
         public async Task LoginAsync()
         {
-            // AuthHandler
-            using(var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
+            // AuthenticateHandler
+            using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
                 // Login
                 var authenticateToken = await authenticateHandler.LoginAsync();
@@ -55,17 +55,17 @@ namespace MDP.BlazorCore.Authentication.Maui
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
 
                 // Save
-                await _authenticationStateManager.SaveAsync(new ClaimsPrincipal(claimsIdentity));
+                await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
 
         public async Task LogoutAsync()
         {
-            // AuthHandler
-            using (var authHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
+            // AuthenticateHandler
+            using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
                 // Logout
-                await authHandler.LogoutAsync();
+                await authenticateHandler.LogoutAsync();
 
                 // Clear
                 await _authenticationStateManager.ClearAsync();

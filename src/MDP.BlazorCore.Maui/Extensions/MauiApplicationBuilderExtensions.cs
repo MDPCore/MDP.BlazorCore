@@ -80,7 +80,7 @@ namespace MDP.BlazorCore.Maui
                 });
 
                 // AuthenticationStateManager
-                applicationBuilder.Services.AddSingleton<AuthenticationStateManager, MauiAuthenticationStateManager>();
+                applicationBuilder.Services.AddSingleton<AuthenticationStateManager, AuthenticationStateManager>();
 
                 // AuthenticationStateProvider
                 applicationBuilder.Services.AddSingleton<AuthenticationStateProvider, MauiAuthenticationStateProvider>();               

@@ -32,7 +32,7 @@ namespace MDP.BlazorCore.Maui
         {
             // ClaimsPrincipal
             var claimsPrincipal = await _authenticationStateManager.GetAsync();
-            if(claimsPrincipal == null) throw new InvalidOperationException($"{nameof(claimsPrincipal)}=null");
+            if (claimsPrincipal == null) throw new InvalidOperationException($"{nameof(claimsPrincipal)}=null");
 
             // Return
             return new AuthenticationState(claimsPrincipal);
