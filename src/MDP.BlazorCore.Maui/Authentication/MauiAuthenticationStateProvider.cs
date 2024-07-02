@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MDP.BlazorCore.Maui
 {
-    internal class MauiAuthenticationStateProvider : AuthenticationStateProvider
+    internal class MauiAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
     {
         // Fields
         private readonly AuthenticationStateManager _authenticationStateManager;
@@ -24,6 +24,12 @@ namespace MDP.BlazorCore.Maui
             // AuthenticationStateManager
             _authenticationStateManager = authenticationStateManager;
             _authenticationStateManager.PrincipalChanged += this.AuthenticationStateManager_PrincipalChanged;
+        }
+
+        public void Dispose()
+        {
+            // AuthenticationStateManager
+            _authenticationStateManager.PrincipalChanged -= this.AuthenticationStateManager_PrincipalChanged;
         }
 
 

@@ -67,8 +67,8 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // Logout
                 await authenticateHandler.LogoutAsync();
 
-                // Clear
-                await _authenticationStateManager.ClearAsync();
+                // Save
+                await _authenticationStateManager.RemoveAsync();
             }
         }
     }
