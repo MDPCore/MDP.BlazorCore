@@ -67,7 +67,7 @@ namespace MDP.BlazorCore.Maui
 
             // Return
             return new ClaimsPrincipal(new ClaimsIdentity(claimList, authenticationType));
-        }        
+        }
 
         public Task ClearAsync()
         {
@@ -179,4 +179,63 @@ namespace MDP.BlazorCore.Maui
             }
         }
     }
+
+    public class AuthenticationStateManagerV1
+    {
+        private ClaimsPrincipal _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+        // Methods
+        public Task SetAsync(ClaimsPrincipal claimsPrincipal)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNull(claimsPrincipal);
+
+            #endregion
+
+            _claimsPrincipal = claimsPrincipal;
+
+            // Raise
+            this.OnPrincipalChanged(_claimsPrincipal);
+
+            // Return
+            return Task.CompletedTask;
+        }
+
+        public Task<ClaimsPrincipal> GetAsync()
+        {            
+            // Return
+            return Task.FromResult(_claimsPrincipal);
+        }
+
+        public Task ClearAsync()
+        {
+            _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+            // Raise
+            this.OnPrincipalChanged(_claimsPrincipal);
+
+            // Return
+            return Task.CompletedTask;
+        }
+
+
+        // Events
+        public event Action<ClaimsPrincipal> PrincipalChanged;
+        protected void OnPrincipalChanged(ClaimsPrincipal principal)
+        {
+            #region Contracts
+
+            if (principal == null) throw new ArgumentException($"{nameof(principal)}=null");
+
+            #endregion
+
+            // Raise
+            var handler = this.PrincipalChanged;
+            if (handler != null)
+            {
+                handler(principal);
+            }
+        }
+    }    
 }
