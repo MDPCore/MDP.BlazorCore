@@ -15,23 +15,26 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         private readonly IHostEnvironment _hostEnvironment = null;
 
+        private readonly AuthenticateTokenManager _authenticateTokenManager = null;
+
         private readonly AuthenticationStateManager _authenticationStateManager = null;
 
-
         // Constructors
-        public OAuthSSOAuthenticationProvider(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment, AuthenticationStateManager authenticationStateManager)
+        public OAuthSSOAuthenticationProvider(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment, AuthenticateTokenManager authenticateTokenManager, AuthenticationStateManager authenticationStateManager)
         {
             #region Contracts
 
-            if (authOptions == null) throw new ArgumentException($"{nameof(authOptions)}=null");
-            if (hostEnvironment == null) throw new ArgumentException($"{nameof(hostEnvironment)}=null");
-            if (authenticationStateManager == null) throw new ArgumentException($"{nameof(authenticationStateManager)}=null");
+            ArgumentNullException.ThrowIfNull(authOptions);
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+            ArgumentNullException.ThrowIfNull(authenticateTokenManager);
+            ArgumentNullException.ThrowIfNull(authenticationStateManager);
 
             #endregion
 
             // Default
             _authOptions = authOptions;
             _hostEnvironment = hostEnvironment;
+            _authenticateTokenManager = authenticateTokenManager;
             _authenticationStateManager = authenticationStateManager;
         }
 
@@ -55,6 +58,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
 
                 // Save
+                await _authenticateTokenManager.SetAsync(authenticateToken);
                 await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
@@ -68,6 +72,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 await authenticateHandler.LogoutAsync();
 
                 // Save
+                await _authenticateTokenManager.RemoveAsync();
                 await _authenticationStateManager.RemoveAsync();
             }
         }

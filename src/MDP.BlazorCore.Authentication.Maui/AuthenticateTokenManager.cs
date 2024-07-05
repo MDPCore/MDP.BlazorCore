@@ -12,8 +12,8 @@ namespace MDP.BlazorCore.Authentication.Maui
         // Methods
         public abstract Task<AuthenticateToken> GetAsync();
 
-        public abstract Task SaveAsync(AuthenticateToken authenticateToken);
+        public abstract Task SetAsync(AuthenticateToken authenticateToken);
 
-        public abstract Task ClearAsync();
+        public abstract Task RemoveAsync();
     }
 }
