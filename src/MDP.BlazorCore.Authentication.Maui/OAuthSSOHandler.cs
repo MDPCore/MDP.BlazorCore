@@ -102,7 +102,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             if (string.IsNullOrEmpty(state) == true) throw new InvalidOperationException($"{nameof(state)}=null");
 
             // RedirectUri
-            var redirectUri = $"{_authOptions.CallbackEndpoint}";
+            var redirectUri = $"{_authOptions.LoginCallbackEndpoint}";
             if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
 
             // ChallengeUrl
@@ -204,7 +204,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             {
                 {"grant_type", "authorization_code"},
                 {"client_id", _authOptions.ClientId},
-                {"redirect_uri", _authOptions.CallbackEndpoint},
+                {"redirect_uri", _authOptions.LoginCallbackEndpoint},
                 {"code", authenticateCode},
                 {"code_verifier", codeVerifier}
             });
@@ -240,9 +240,35 @@ namespace MDP.BlazorCore.Authentication.Maui
         }
 
 
-        public Task LogoutAsync()
+        public async Task LogoutAsync()
         {
-            return Task.CompletedTask;
+            // State
+            var state = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(state) == true) throw new InvalidOperationException($"{nameof(state)}=null");
+
+            // RedirectUri
+            var redirectUri = $"{_authOptions.LogoutCallbackEndpoint}";
+            if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
+
+            // ChallengeUrl
+            var challengeUrl = $"{_authOptions.LogoutEndpoint}?client_id={_authOptions.ClientId}&redirect_uri={redirectUri}&state={state}";
+            if (string.IsNullOrEmpty(challengeUrl) == true) throw new InvalidOperationException($"{nameof(challengeUrl)}=null");
+
+            // Authenticate
+            var authenticateResult = await WebAuthenticator.Default.AuthenticateAsync(
+                new Uri(challengeUrl),
+                new Uri(redirectUri)
+            );
+            if (authenticateResult == null) throw new InvalidOperationException($"{nameof(authenticateResult)}=null");
+
+            // CallbackState
+            string callbackState = null;
+            if (authenticateResult.Properties.ContainsKey("state") == true)
+            {
+                callbackState = authenticateResult.Properties["state"];
+            }
+            if (string.IsNullOrEmpty(callbackState) == true) throw new InvalidOperationException($"{nameof(callbackState)}=null");
+            if (callbackState != state) throw new InvalidOperationException($"{nameof(callbackState)}!={nameof(state)}");
         }
 
 

@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MDP.AspNetCore.Authentication;
 
-namespace MDP.AspNetCore.Authentication.Line.Lab
+namespace MDP.BlazorCore.Authentication.Web.Lab
 {
     public class AccountController : Controller
     {
@@ -15,13 +16,6 @@ namespace MDP.AspNetCore.Authentication.Line.Lab
         {
             // Return
             return this.View();
-        }
-
-        [AllowAnonymous]
-        public Task<ActionResult> Logout(string returnUrl = null)
-        {
-            // Return
-            return this.LogoutAsync(returnUrl);
         }
 
         [AllowAnonymous]
