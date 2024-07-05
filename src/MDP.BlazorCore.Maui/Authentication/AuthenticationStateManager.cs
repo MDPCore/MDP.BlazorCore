@@ -127,7 +127,7 @@ namespace MDP.BlazorCore.Maui
         public Task RemoveAsync()
         {
             // ClaimsPrincipal
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
             // Sync
             lock (_syncRoot)
