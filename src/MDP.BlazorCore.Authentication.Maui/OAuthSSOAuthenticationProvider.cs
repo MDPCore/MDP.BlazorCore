@@ -19,6 +19,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         private readonly AuthenticationStateManager _authenticationStateManager = null;
 
+
         // Constructors
         public OAuthSSOAuthenticationProvider(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment, AuthenticateTokenManager authenticateTokenManager, AuthenticationStateManager authenticationStateManager)
         {
@@ -71,9 +72,37 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // Logout
                 await authenticateHandler.LogoutAsync();
 
-                // Save
+                // Clear
                 await _authenticateTokenManager.RemoveAsync();
                 await _authenticationStateManager.RemoveAsync();
+            }
+        }
+
+        public async Task RefreshAsync()
+        {
+            // AuthenticateHandler
+            using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
+            {
+                // AuthenticateToken
+                var authenticateToken = await _authenticateTokenManager.GetAsync();
+                {
+                    // Clear
+                    await _authenticateTokenManager.RemoveAsync();
+                    await _authenticationStateManager.RemoveAsync();
+                }
+                if (authenticateToken == null) return;
+
+                // AuthenticateToken.Refresh
+                authenticateToken = await authenticateHandler.RefreshAsync(authenticateToken.RefreshToken);
+                if (authenticateToken == null) return;
+
+                // ClaimsIdentity
+                var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
+                if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
+
+                // Save
+                await _authenticateTokenManager.SetAsync(authenticateToken);
+                await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
             }
         }
     }

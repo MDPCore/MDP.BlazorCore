@@ -16,5 +16,7 @@ namespace MDP.BlazorCore.Authentication.Maui
         Task LoginAsync();
 
         Task LogoutAsync();
+
+        Task RefreshAsync();
     }
 }

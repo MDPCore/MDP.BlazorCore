@@ -35,6 +35,14 @@ Mail=@Principal.GetClaimValue(ClaimTypes.Email)<br />
 Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
 
+<!-- refresh -->
+<form action="/Account/Refresh" method="get">
+    <input type="hidden" name="returnUrl" value="/AuthorizeExample" />
+    <input type="submit" value="Refresh" /><br />
+    <br />
+</form>
+<hr />
+
 <!-- logout -->
 <form action="/Account/Logout" method="get">
     <input type="hidden" name="returnUrl" value="/" />

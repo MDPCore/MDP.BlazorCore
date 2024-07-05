@@ -18,17 +18,17 @@ namespace MDP.BlazorCore.Authorization.Web.Lab
         }
 
         [AllowAnonymous]
-        public ActionResult AccessDenied()
-        {
-            // Return
-            return this.View();
-        }
-
-        [AllowAnonymous]
         public Task<ActionResult> Logout(string returnUrl = null)
         {
             // Return
             return this.LogoutAsync(returnUrl);
+        }
+        
+        [AllowAnonymous]
+        public Task<ActionResult> Refresh(string returnUrl = null)
+        {
+            // Return
+            return this.RefreshAsync(returnUrl);
         }
 
         [AllowAnonymous]
@@ -69,6 +69,14 @@ namespace MDP.BlazorCore.Authorization.Web.Lab
 
             // Return
             return await this.SignInAsync(claimsIdentity, returnUrl);
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult AccessDenied()
+        {
+            // Return
+            return this.View();
         }
     }
 }

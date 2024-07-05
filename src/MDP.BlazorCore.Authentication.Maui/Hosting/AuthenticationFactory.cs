@@ -24,6 +24,9 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // AuthenticationManager
             serviceCollection.AddSingleton<AuthenticationManager, AuthenticationManager>();
+
+            // AuthenticateTokenManager
+            serviceCollection.AddSingleton<AuthenticateTokenManager, AuthenticateTokenManager>();
         }
 
 

@@ -74,9 +74,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Components\Account\AccessDenied.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Components\Account\Login.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <MauiAsset Update="Resources\Raw\Environment.ini">
       <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </MauiAsset>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Account\Logout.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Account\Logout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Refresh.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Account\Refresh.razor" />
   </ItemGroup>
 
 </Project>

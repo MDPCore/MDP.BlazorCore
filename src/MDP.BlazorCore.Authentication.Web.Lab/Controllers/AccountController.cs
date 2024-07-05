@@ -19,11 +19,25 @@ namespace MDP.BlazorCore.Authentication.Web.Lab
         }
 
         [AllowAnonymous]
+        public Task<ActionResult> Logout(string returnUrl = null)
+        {
+            // Return
+            return this.LogoutAsync(returnUrl);
+        }
+
+        [AllowAnonymous]
+        public Task<ActionResult> Refresh(string returnUrl = null)
+        {
+            // Return
+            return this.RefreshAsync(returnUrl);
+        }
+
+        [AllowAnonymous]
         public async Task<ActionResult> LoginByPassword(string username, string password = null, string returnUrl = null)
         {
             #region Contracts
 
-            if (string.IsNullOrEmpty(username) == true) throw new ArgumentException($"{nameof(username)}=null");
+            if (string.IsNullOrEmpty(username) == true) throw new ArgumentNullException($"{nameof(username)}=null");
 
             #endregion
 
@@ -38,6 +52,14 @@ namespace MDP.BlazorCore.Authentication.Web.Lab
 
             // Return
             return await this.SignInAsync(claimsIdentity, returnUrl);
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult AccessDenied()
+        {
+            // Return
+            return this.View();
         }
     }
 }

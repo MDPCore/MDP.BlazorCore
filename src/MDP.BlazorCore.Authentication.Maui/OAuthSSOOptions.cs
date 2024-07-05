@@ -17,6 +17,7 @@
             this.TokenEndpoint = OAuthSSODefaults.TokenEndpoint;
             this.UserInformationEndpoint = OAuthSSODefaults.UserInformationEndpoint;
             this.LoginCallbackEndpoint = OAuthSSODefaults.LoginCallbackEndpoint;
+            this.LogoutCallbackEndpoint = OAuthSSODefaults.LogoutCallbackEndpoint;
         }
 
 

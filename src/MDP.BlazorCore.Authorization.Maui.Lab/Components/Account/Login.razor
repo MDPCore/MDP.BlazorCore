@@ -18,14 +18,10 @@
     public AuthenticationManager AuthenticationManager { get; set; } = null;
 
 
-    // Properties
-   
-
-
     // Methods
     protected override async Task OnInitializedAsync()
-    {
-        // Execute
+    {        
+        // Execute        
         try
         {
             // Login
@@ -37,7 +33,7 @@
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
             // Redirect
-            this.NavigationManager.NavigateTo(returnUrl);
+            this.NavigationManager.NavigateTo(returnUrl, true);
         }
         catch (Exception exception)
         {

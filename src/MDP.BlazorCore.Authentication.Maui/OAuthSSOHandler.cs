@@ -3,6 +3,7 @@ using Microsoft.Maui.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -58,7 +59,8 @@ namespace MDP.BlazorCore.Authentication.Maui
         // Properties
         private HttpClient Backchannel
         {
-            get { 
+            get
+            {
 
                 // Sync
                 lock (_syncRoot)
@@ -105,13 +107,13 @@ namespace MDP.BlazorCore.Authentication.Maui
             var redirectUri = $"{_authOptions.LoginCallbackEndpoint}";
             if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
 
-            // ChallengeUrl
-            var challengeUrl = $"{_authOptions.AuthorizationEndpoint}?client_id={_authOptions.ClientId}&response_type=code&scope=openid profile email&redirect_uri={redirectUri}&code_challenge={codeChallenge}&code_challenge_method=S256&state={state}";
-            if (string.IsNullOrEmpty(challengeUrl) == true) throw new InvalidOperationException($"{nameof(challengeUrl)}=null");
+            // LoginUrl
+            var loginUrl = $"{_authOptions.AuthorizationEndpoint}?client_id={_authOptions.ClientId}&response_type=code&scope=openid profile email&redirect_uri={WebUtility.UrlEncode(redirectUri)}&code_challenge={codeChallenge}&code_challenge_method=S256&state={state}";
+            if (string.IsNullOrEmpty(loginUrl) == true) throw new InvalidOperationException($"{nameof(loginUrl)}=null");
 
-            // Authenticate
+            // Login
             var authenticateResult = await WebAuthenticator.Default.AuthenticateAsync(
-                new Uri(challengeUrl),
+                new Uri(loginUrl),
                 new Uri(redirectUri)
             );
             if (authenticateResult == null) throw new InvalidOperationException($"{nameof(authenticateResult)}=null");
@@ -232,7 +234,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
                 // RefreshToken
                 var refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
-                if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
+                if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
 
                 // Return
                 return new AuthenticateToken(tokenType, accessToken, refreshToken);
@@ -250,13 +252,13 @@ namespace MDP.BlazorCore.Authentication.Maui
             var redirectUri = $"{_authOptions.LogoutCallbackEndpoint}";
             if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
 
-            // ChallengeUrl
-            var challengeUrl = $"{_authOptions.LogoutEndpoint}?client_id={_authOptions.ClientId}&redirect_uri={redirectUri}&state={state}";
-            if (string.IsNullOrEmpty(challengeUrl) == true) throw new InvalidOperationException($"{nameof(challengeUrl)}=null");
+            // LogoutUrl
+            var logoutUrl = $"{_authOptions.LogoutEndpoint}?client_id={_authOptions.ClientId}&redirect_uri={WebUtility.UrlEncode(redirectUri)}&state={state}";
+            if (string.IsNullOrEmpty(logoutUrl) == true) throw new InvalidOperationException($"{nameof(logoutUrl)}=null");
 
-            // Authenticate
+            // Logout
             var authenticateResult = await WebAuthenticator.Default.AuthenticateAsync(
-                new Uri(challengeUrl),
+                new Uri(logoutUrl),
                 new Uri(redirectUri)
             );
             if (authenticateResult == null) throw new InvalidOperationException($"{nameof(authenticateResult)}=null");
@@ -271,6 +273,53 @@ namespace MDP.BlazorCore.Authentication.Maui
             if (callbackState != state) throw new InvalidOperationException($"{nameof(callbackState)}!={nameof(state)}");
         }
 
+        public async Task<AuthenticateToken> RefreshAsync(string refreshToken)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNullOrEmpty(refreshToken);
+
+            #endregion
+
+            // Request
+            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+            {
+                {"grant_type", "refresh_token"},
+                {"client_id", _authOptions.ClientId},
+                {"refresh_token", refreshToken}
+            });
+
+            // Response
+            var response = await this.Backchannel.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
+                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+            }
+
+            // Payload
+            using (var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
+            {
+                // TokenType
+                var tokenType = payload.RootElement.GetProperty("token_type").GetString();
+                if (string.IsNullOrEmpty(tokenType) == true) throw new InvalidOperationException($"{nameof(tokenType)}=null");
+                if (tokenType.Equals("Bearer", StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(tokenType)}={tokenType}");
+
+                // AccessToken
+                var accessToken = payload.RootElement.GetProperty("access_token").GetString();
+                if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
+
+                // RefreshToken
+                refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
+                if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
+
+                // Return
+                return new AuthenticateToken(tokenType, accessToken, refreshToken);
+            }
+        }
 
         public async Task<ClaimsIdentity> GetUserInformationAsync(string accessToken)
         {

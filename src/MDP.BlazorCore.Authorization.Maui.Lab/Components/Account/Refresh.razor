@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [AllowAnonymous]
-@page "/Account/Login"
+@page "/Account/Refresh"
 @code {
 
     // Properties
@@ -24,8 +24,8 @@
         // Execute        
         try
         {
-            // Login
-            await this.AuthenticationManager.LoginAsync();
+            // Refresh
+            await this.AuthenticationManager.RefreshAsync();
 
             // ReturnUrl
             var returnUrl = string.Empty;
@@ -44,7 +44,7 @@
 }
 
 <!-- title -->
-<h3>Login...</h3>
+<h3>Refresh...</h3>
 <hr />
 
 <!-- message -->

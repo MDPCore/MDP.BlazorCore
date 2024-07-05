@@ -1,0 +1,23 @@
+﻿@using MDP.BlazorCore
+@using MDP.BlazorCore.Maui
+@using MDP.BlazorCore.Authentication.Maui
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+@page "/Account/AccessDenied"
+@code {
+
+}
+
+
+<!-- title -->
+<h3>AccessDenied</h3>
+<hr />
+
+<!-- logout -->
+<form action="/Account/Logout" method="get">
+    <input type="hidden" name="returnUrl" value="/" />
+    <input type="submit" value="Logout" /><br />
+    <br />
+</form>
+<hr />
