@@ -54,52 +54,15 @@ namespace MDP.BlazorCore
 
 
         // Properties
+        public Type ServiceType { get { return _serviceType; } }
+
         public string RouteTemplate { get { return _routeTemplate; } }
 
         public bool IsAuthorizationRequired { get { return _isAuthorizationRequired; } }
 
 
         // Methods
-        public async Task<InteropResponse> InvokeAsync(InteropRequest interopRequest, ClaimsPrincipal principal, IServiceProvider serviceProvider)
-        {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNull(interopRequest);
-            ArgumentNullException.ThrowIfNull(principal);
-            ArgumentNullException.ThrowIfNull(serviceProvider);
-
-            #endregion
-
-            // Instance
-            var instance = serviceProvider.GetService(_serviceType);
-            if (instance == null) throw new InvalidOperationException($"{nameof(instance)}=null");
-
-            // InteropService
-            var interopService = instance as InteropService;
-            if (interopService == null) throw new InvalidOperationException($"The instance of type {instance.GetType().FullName} is not assignable to {typeof(InteropService).FullName}.");
-
-            // InteropService.Setup
-            {
-                // Properties
-                interopService.User = principal;
-            }
-
-            // ParameterProvider
-            var parameterProvider = this.CreateParameterProvider(interopRequest);
-            if (parameterProvider == null) throw new InvalidOperationException($"{nameof(parameterProvider)}=null");
-
-            // InvokeMethod
-            var result = await MDP.Reflection.Activator.InvokeMethodAsync(interopService, interopRequest.MethodName, parameterProvider);
-
-            // Return
-            return new InteropResponse()
-            {
-                Succeeded = true,
-                Result = result
-            };
-        }
-
-        public bool MatchRoute(InteropRequest interopRequest)
+        internal bool MatchRoute(InteropRequest interopRequest)
         {
             #region Contracts
 
@@ -136,7 +99,7 @@ namespace MDP.BlazorCore
             return true;
         }
 
-        private MDP.Reflection.ParameterProvider CreateParameterProvider(InteropRequest interopRequest)
+        internal InteropParameters CreateParameters(InteropRequest interopRequest)
         {
             #region Contracts
 
@@ -173,7 +136,7 @@ namespace MDP.BlazorCore
             }
 
             // Return
-            return new InteropParameterProvider(routeParameters, interopRequest.MethodParameters);
+            return new InteropParameters(routeParameters, interopRequest.MethodParameters);
         }
     }
 }

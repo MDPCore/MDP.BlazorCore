@@ -1,5 +1,6 @@
-﻿@attribute [Authorize]
+﻿@attribute [AllowAnonymous]
 @page "/PageServiceExample"
+@inherits PageComponent
 @code {
     
     // Class
@@ -8,12 +9,6 @@
         // Methods
         public async Task<string> Echo(string message)
         {
-            #region Contracts
-
-            ArgumentNullException.ThrowIfNullOrEmpty(message);
-
-            #endregion
-
             // Return
             return await Task.FromResult(message);
         }
@@ -26,21 +21,18 @@
         // blazorPageLoaded
         document.addEventListener("BlazorPageLoaded", function (event) {
 
-            // runDotNetButton
-            document.getElementById("runDotNetButton").addEventListener("click", function (event) {
+            // runButton
+            document.getElementById("runButton").addEventListener("click", function (event) {
 
                 // invokeMethod
                 mdp.blazor.interopManager.invokeAsync("Echo", {
-                    "message": "Hello World By Script"
+                    "message": "Hello World"
                 }).then(result => {
-                    alert(result);
+                    alert(result + " By PageService");
                 }).catch(error => {
                     alert(error.message);
                 });
             });
-
-            // message
-            document.getElementById("message").innerHTML += "BlazorPageLoaded";
         }, { once: true });
     </script>
 </PageScript>
@@ -49,9 +41,6 @@
 <h3>PageServiceExample</h3>
 <hr />
 
-<!-- Interop -->
-<button class="btn btn-primary" id="runDotNetButton">Run .NET</button><br />
-<br />
-
-<p id="message"></p><br />
+<!-- run -->
+<button class="btn btn-primary" id="runButton">Run</button><br />
 <br />

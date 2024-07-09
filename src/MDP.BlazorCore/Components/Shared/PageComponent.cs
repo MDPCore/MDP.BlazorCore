@@ -10,6 +10,15 @@ namespace MDP.BlazorCore
 {
     public class PageComponent : ComponentBase
     {
+        // Constructors
+        protected override async Task OnInitializedAsync()
+        {
+            // Base
+            await Task.Yield();
+            await base.OnInitializedAsync();
+        }
+
+
         // Properties
         [Inject]
         public InteropManager InteropManager { get; set; }
@@ -32,6 +41,10 @@ namespace MDP.BlazorCore
             // Base
             await base.OnInitializedAsync();
 
+            // Principal
+            var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+
             // NavigationUri
             var navigationUri = new Uri(this.NavigationManager.Uri);
             if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
@@ -39,10 +52,6 @@ namespace MDP.BlazorCore
             // ServiceUri
             var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
             if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
-
-            // Principal
-            var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
-            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
 
             // HasInitialize
             var hasInitialize = this.GetType().GetNestedTypes(BindingFlags.Public).Any(nestedType =>
@@ -59,11 +68,11 @@ namespace MDP.BlazorCore
             if (hasInitialize == true)
             {
                 // InvokeAsync
-                var interopResponse = await this.InteropManager.InvokeAsync(new InteropRequest
+                var interopResponse = await this.InteropManager.InvokeAsync(principal, new InteropRequest
                 (
                     new Uri(serviceUri),
                     nameof(OnInitializedAsync)
-                ), principal, this.ServiceProvider);
+                ));
                 if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
                 if (interopResponse.Succeeded == false) throw new InvalidOperationException(interopResponse.ErrorMessage);
 

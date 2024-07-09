@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace MDP.BlazorCore
 {
-    public class InteropParameterProvider : MDP.Reflection.ParameterProvider
+    internal class InteropParameters : MDP.Reflection.ParameterProvider
     {
         // Fields
         private readonly Dictionary<string, string> _routeParameters = null;
@@ -15,7 +15,7 @@ namespace MDP.BlazorCore
 
 
         // Constructors
-        public InteropParameterProvider(Dictionary<string, string> routeParameters, JsonDocument methodParameters)
+        public InteropParameters(Dictionary<string, string> routeParameters, JsonDocument methodParameters)
         {
             #region Contracts
 

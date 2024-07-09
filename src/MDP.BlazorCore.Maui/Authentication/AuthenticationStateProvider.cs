@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MDP.BlazorCore.Maui
 {
-    internal class MauiAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
+    internal class AuthenticationStateProvider : Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, IDisposable
     {
         // Fields
         private readonly AuthenticationStateManager _authenticationStateManager;
 
 
         // Constructors
-        public MauiAuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
+        public AuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
         {
             #region Contracts
 

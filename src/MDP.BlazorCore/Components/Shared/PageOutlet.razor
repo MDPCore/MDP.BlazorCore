@@ -67,6 +67,10 @@
         // Execute
         try
         {
+            // Principal
+            var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
+            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+
             // NavigationUri
             var navigationUri = new Uri(this.NavigationManager.Uri);
             if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
@@ -75,18 +79,13 @@
             var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
             if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
-            // Principal
-            var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
-            if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
-
             // InvokeAsync
-            var interopResponse = await _interopManager.InvokeAsync(new InteropRequest
+            var interopResponse = await _interopManager.InvokeAsync(principal, new InteropRequest
             (
                 new Uri(serviceUri),
                 methodName,
                 methodParameters
-
-            ), principal, this.ServiceProvider);
+            ));
             if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
             // Return

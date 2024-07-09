@@ -13,17 +13,23 @@ namespace MDP.BlazorCore
         // Fields
         private readonly Dictionary<string, InteropResource> _interopResourceDictionary = null;
 
+        private readonly InteropProvider _interopProvider = null;
+
+        private readonly IAuthorizationService _authorizationService = null;
+
         private readonly IAuthorizationPolicyProvider _authorizationPolicyProvider = null;
 
         private AuthorizationPolicy _authorizationPolicy = null;
 
 
         // Constructors
-        public InteropManager(List<InteropResource> interopResourceList, IAuthorizationPolicyProvider authorizationPolicyProvider)
+        public InteropManager(IList<InteropResource> interopResourceList, InteropProvider interopProvider, IAuthorizationService authorizationService, IAuthorizationPolicyProvider authorizationPolicyProvider)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(interopResourceList);
+            ArgumentNullException.ThrowIfNull(interopProvider);
+            ArgumentNullException.ThrowIfNull(authorizationService);
             ArgumentNullException.ThrowIfNull(authorizationPolicyProvider);
 
             #endregion
@@ -36,19 +42,21 @@ namespace MDP.BlazorCore
                 StringComparer.OrdinalIgnoreCase
             );
 
+            // InteropProvider
+            _interopProvider = interopProvider;
+
             // AuthorizationPolicyProvider
             _authorizationPolicyProvider = authorizationPolicyProvider;
         }
 
 
         // Methods
-        public async Task<InteropResponse> InvokeAsync(InteropRequest interopRequest, ClaimsPrincipal principal, IServiceProvider serviceProvider)
+        public async Task<InteropResponse> InvokeAsync(ClaimsPrincipal principal, InteropRequest interopRequest)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(interopRequest);
             ArgumentNullException.ThrowIfNull(principal);
-            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentNullException.ThrowIfNull(interopRequest);
 
             #endregion
 
@@ -56,24 +64,20 @@ namespace MDP.BlazorCore
             var interopResource = this.FindInteropResource(interopRequest);
             if (interopResource == null) throw new InvalidOperationException($"{nameof(interopResource)}=null");
 
-            // IsAuthorizationRequired
+            // Authorization
             if (interopResource.IsAuthorizationRequired == true)
             {
-                // AuthorizationService
-                var authorizationService = serviceProvider.GetService<IAuthorizationService>();
-                if (authorizationService == null) throw new InvalidOperationException($"{nameof(authorizationService)}=null");
-
                 // AuthorizationPolicy
                 var authorizationPolicy = await this.CreateAuthorizationPolicyAsync();
                 if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
 
                 // AuthorizationResult
-                var authorizationResult = await authorizationService.AuthorizeAsync(principal, interopRequest, authorizationPolicy);
+                var authorizationResult = await _authorizationService.AuthorizeAsync(principal, interopRequest, authorizationPolicy);
                 if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.RoutePath}'");
             }
 
             // InvokeAsync
-            return await interopResource.InvokeAsync(interopRequest, principal, serviceProvider);
+            return await _interopProvider.InvokeAsync(principal, interopRequest, interopResource);
         }
 
         private InteropResource FindInteropResource(InteropRequest interopRequest)
@@ -103,7 +107,7 @@ namespace MDP.BlazorCore
             // Require
             if (_authorizationPolicy != null) return _authorizationPolicy;
 
-            // Create
+            // AuthorizationPolicy
             var authorizationPolicy = await _authorizationPolicyProvider.GetDefaultPolicyAsync();
             if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
             _authorizationPolicy = authorizationPolicy;

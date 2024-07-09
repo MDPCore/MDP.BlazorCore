@@ -18,4 +18,10 @@
     <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Examples\PageServiceExample.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

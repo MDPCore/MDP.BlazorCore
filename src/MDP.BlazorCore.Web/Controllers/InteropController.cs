@@ -16,22 +16,18 @@ namespace MDP.BlazorCore.Web
         // Fields
         private readonly InteropManager _interopManager = null;
 
-        private readonly IServiceProvider _serviceProvider = null;
-
 
         // Constructors
-        public InteropController(InteropManager interopManager, IServiceProvider serviceProvider)
+        public InteropController(InteropManager interopManager)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(interopManager);
-            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             #endregion
 
             // Default
             _interopManager = interopManager;
-            _serviceProvider = serviceProvider;
         }
 
 
@@ -54,6 +50,10 @@ namespace MDP.BlazorCore.Web
             // Execute
             try
             {
+                // Principal
+                var principal = this.User;
+                if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+
                 // NavigationUri
                 var navigationUri = new Uri(actionModel.ServiceUri);
                 if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
@@ -62,18 +62,14 @@ namespace MDP.BlazorCore.Web
                 var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
                 if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
-                // Principal
-                var principal = this.User;
-                if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
-
                 // InvokeAsync
-                var interopResponse = await _interopManager.InvokeAsync(new InteropRequest
+                var interopResponse = await _interopManager.InvokeAsync(principal, new InteropRequest
                 (
                     new Uri(serviceUri),
                     actionModel.MethodName,
                     actionModel.MethodParameters
 
-                ), principal, _serviceProvider);
+                ));
                 if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
                 // Return

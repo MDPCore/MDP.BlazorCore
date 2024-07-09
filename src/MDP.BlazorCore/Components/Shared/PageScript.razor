@@ -7,7 +7,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Require
-        if (firstRender == false) return;
+        if (firstRender == true) return;
 
         // PageLoaded
         await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");

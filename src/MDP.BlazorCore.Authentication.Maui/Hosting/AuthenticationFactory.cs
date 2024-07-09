@@ -23,10 +23,10 @@ namespace MDP.BlazorCore.Authentication.Maui
             #endregion
 
             // AuthenticationManager
-            serviceCollection.AddSingleton<AuthenticationManager, AuthenticationManager>();
+            serviceCollection.AddSingleton<AuthenticationManager>();
 
             // AuthenticateTokenManager
-            serviceCollection.AddSingleton<AuthenticateTokenManager, AuthenticateTokenManager>();
+            serviceCollection.AddSingleton<AuthenticateTokenManager>();
         }
 
 

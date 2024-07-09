@@ -71,6 +71,9 @@ namespace MDP.BlazorCore.Web
 
                 // InteropManager
                 applicationBuilder.Services.AddInteropManager();
+
+                // InteropProvider
+                applicationBuilder.Services.AddSingleton<InteropProvider, LocalInteropProvider>();
             }
 
             // MiddlewareBuilder
