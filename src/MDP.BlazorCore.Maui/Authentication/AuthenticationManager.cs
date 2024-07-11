@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace MDP.BlazorCore.Authentication.Maui
+namespace MDP.BlazorCore.Maui
 {
     public class AuthenticationManager
     {

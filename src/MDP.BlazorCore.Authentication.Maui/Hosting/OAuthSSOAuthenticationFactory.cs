@@ -1,4 +1,5 @@
-﻿using MDP.Registration;
+﻿using MDP.BlazorCore.Maui;
+using MDP.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

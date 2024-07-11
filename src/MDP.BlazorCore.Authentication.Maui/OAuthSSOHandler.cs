@@ -1,3 +1,4 @@
+using MDP.BlazorCore.Maui;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Authentication;
 using System;

@@ -45,6 +45,9 @@ namespace MDP.BlazorCore
             // InteropProvider
             _interopProvider = interopProvider;
 
+            // AuthorizationService
+            _authorizationService = authorizationService;
+
             // AuthorizationPolicyProvider
             _authorizationPolicyProvider = authorizationPolicyProvider;
         }

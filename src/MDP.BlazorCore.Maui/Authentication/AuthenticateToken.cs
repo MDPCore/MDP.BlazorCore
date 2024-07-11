@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore.Authentication.Maui
+namespace MDP.BlazorCore.Maui
 {
     public class AuthenticateToken
     {

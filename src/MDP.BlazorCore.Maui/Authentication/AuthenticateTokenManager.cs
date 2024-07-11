@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore.Authentication.Maui
+namespace MDP.BlazorCore.Maui
 {
     public class AuthenticateTokenManager
     {

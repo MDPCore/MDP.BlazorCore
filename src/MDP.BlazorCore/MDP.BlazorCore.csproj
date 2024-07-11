@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\lib\mdp-blazor\css\mdp-blazor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
@@ -19,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.Network.Http" Version="8.0.7.19" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.3" />
     <PackageReference Include="MDP.Reflection" Version="8.0.7.19" />
     <PackageReference Include="MDP.Registration" Version="8.0.7.19" />
+    <PackageReference Include="MDP.Network.Http" Version="8.0.7.19" />
     <PackageReference Include="MDP.Security.Claims" Version="8.0.7.19" />
   </ItemGroup>
 
@@ -39,12 +35,6 @@
   <ItemGroup>
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="wwwroot\lib\mdp-blazor\js\mdp-blazor.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
