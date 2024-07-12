@@ -38,6 +38,8 @@ namespace MDP.BlazorCore.Authentication.Maui
                 authOptions.ClientId = setting.ClientId;
                 authOptions.ClientUrl = setting.ClientUrl;
                 authOptions.ServerUrl = setting.ServerUrl;
+                authOptions.UseCookies = setting.UseCookies;
+                authOptions.IgnoreServerCertificate = setting.IgnoreServerCertificate;
 
                 // Return
                 return authOptions;
@@ -54,6 +56,10 @@ namespace MDP.BlazorCore.Authentication.Maui
             public string ClientUrl { get; set; } = string.Empty;
 
             public string ServerUrl { get; set; } = string.Empty;
+
+            public bool UseCookies { get; set; } = false;
+
+            public bool IgnoreServerCertificate { get; set; } = false;
         }
     }
 }

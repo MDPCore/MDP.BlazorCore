@@ -69,5 +69,9 @@
         public string LoginCallbackEndpoint { get; private set; }
 
         public string LogoutCallbackEndpoint { get; private set; }
+
+        public bool UseCookies { get; set; } = false;
+
+        public bool IgnoreServerCertificate { get; set; } = false;
     }
 }

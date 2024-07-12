@@ -62,24 +62,27 @@ namespace MDP.BlazorCore.Authentication.Maui
         {
             get
             {
-
                 // Sync
                 lock (_syncRoot)
                 {
                     // Create
                     if (_httpClient == null)
                     {
-                        if (_hostEnvironment.IsDevelopment() == true)
+                        // HttpClientHandler
+                        var httpClientHandler = new HttpClientHandler();
                         {
-                            _httpClient = new HttpClient(new HttpClientHandler()
+                            // UseCookies
+                            httpClientHandler.UseCookies = _authOptions.UseCookies;
+
+                            // IgnoreCertificates
+                            if (_authOptions.IgnoreServerCertificate == true)
                             {
-                                ServerCertificateCustomValidationCallback = (HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors) => true
-                            });
+                                httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                            }
                         }
-                        else
-                        {
-                            _httpClient = new HttpClient();
-                        }
+
+                        // HttpClient
+                        _httpClient = new HttpClient(httpClientHandler);
                     }
 
                     // Return
