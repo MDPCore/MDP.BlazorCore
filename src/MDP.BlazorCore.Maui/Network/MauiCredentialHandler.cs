@@ -11,8 +11,8 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace MDP.BlazorCore.Maui
 {
-    [Service<HttpDelegatingHandler>(singleton: true, autoRegister: true)]
-    public class MauiCredentialHandler : HttpDelegatingHandler
+    [Service<HttpDelegatingHandler>(singleton: false, autoRegister: true)]
+    public class MauiCredentialHandler : HttpDelegatingHandler 
     {
         // Fields
         private readonly AuthenticationManager _authenticationManager = null;
