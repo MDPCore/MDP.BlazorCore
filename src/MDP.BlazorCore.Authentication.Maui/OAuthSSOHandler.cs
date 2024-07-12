@@ -297,6 +297,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // Response
             var response = await this.Backchannel.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.Unauthorized) return null;
             if (response.IsSuccessStatusCode == false)
             {
                 var content = await response.Content.ReadAsStringAsync();

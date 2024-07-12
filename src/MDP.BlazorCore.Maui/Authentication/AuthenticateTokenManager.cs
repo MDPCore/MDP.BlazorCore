@@ -12,56 +12,50 @@ namespace MDP.BlazorCore.Maui
     public class AuthenticateTokenManager
     {
         // Fields
-        private readonly object _syncRoot = new object();
-
         private bool _isCached = false;
 
         private AuthenticateToken _authenticateToken = null;
 
 
         // Methods
-        public Task<AuthenticateToken> GetAsync()
+        public async Task<AuthenticateToken> GetAsync()
         {
-            // Sync
-            lock (_syncRoot)
+            // Require
+            if (_isCached == true) return _authenticateToken;
+
+            // GetAsync   
+            var authenticateTokenString = await SecureStorage.GetAsync(this.GetType().FullName);
+            if (string.IsNullOrEmpty(authenticateTokenString) == true)
             {
-                // Require
-                if (_isCached == true) return Task.FromResult(_authenticateToken);
-
-                // GetAsync   
-                var authenticateTokenString = SecureStorage.GetAsync(this.GetType().FullName).GetAwaiter().GetResult();
-                if (string.IsNullOrEmpty(authenticateTokenString) == true)
-                {
-                    // Cache
-                    _isCached = true;
-                    _authenticateToken = null;
-
-                    // Return
-                    return Task.FromResult(_authenticateToken);
-                }
-
-                // AuthenticateToken
-                var authenticateToken = JsonSerializer.Deserialize<AuthenticateToken>(authenticateTokenString);
-                if (authenticateToken == null)
-                {
-                    // Cache
-                    _isCached = true;
-                    _authenticateToken = null;
-
-                    // Return
-                    return Task.FromResult(_authenticateToken);
-                }
-
                 // Cache
                 _isCached = true;
-                _authenticateToken = authenticateToken;
+                _authenticateToken = null;
 
                 // Return
-                return Task.FromResult(_authenticateToken);
+                return _authenticateToken;
             }
+
+            // AuthenticateToken
+            var authenticateToken = JsonSerializer.Deserialize<AuthenticateToken>(authenticateTokenString);
+            if (authenticateToken == null)
+            {
+                // Cache
+                _isCached = true;
+                _authenticateToken = null;
+
+                // Return
+                return _authenticateToken;
+            }
+
+            // Cache
+            _isCached = true;
+            _authenticateToken = authenticateToken;
+
+            // Return
+            return _authenticateToken;
         }
 
-        public Task SetAsync(AuthenticateToken authenticateToken)
+        public async Task SetAsync(AuthenticateToken authenticateToken)
         {
             #region Contracts
 
@@ -73,19 +67,15 @@ namespace MDP.BlazorCore.Maui
             var authenticateTokenString = JsonSerializer.Serialize(authenticateToken);
             if (string.IsNullOrEmpty(authenticateTokenString) == true) throw new InvalidOperationException($"{nameof(authenticateTokenString)}=null");
 
-            // Sync
-            lock (_syncRoot)
-            {
-                // SetAsync
-                SecureStorage.SetAsync(this.GetType().FullName, authenticateTokenString).GetAwaiter().GetResult();
+            // SetAsync
+            await SecureStorage.SetAsync(this.GetType().FullName, authenticateTokenString);
 
-                // Cache
-                _isCached = true;
-                _authenticateToken = authenticateToken;
-            }
+            // Cache
+            _isCached = true;
+            _authenticateToken = authenticateToken;
 
-            // Return
-            return Task.CompletedTask;
+            // Raise
+            this.OnTokenChanged(authenticateToken);
         }
 
         public Task RemoveAsync()
@@ -93,19 +83,31 @@ namespace MDP.BlazorCore.Maui
             // AuthenticateToken
             AuthenticateToken authenticateToken = null;
 
-            // Sync
-            lock (_syncRoot)
-            {
-                // RemoveAsync
-                SecureStorage.Remove(this.GetType().FullName);
+            // RemoveAsync
+            SecureStorage.Remove(this.GetType().FullName);
 
-                // Cache
-                _isCached = true;
-                _authenticateToken = authenticateToken;
-            }
+            // Cache
+            _isCached = true;
+            _authenticateToken = authenticateToken;
+
+            // Raise
+            this.OnTokenChanged(authenticateToken);
 
             // Return
             return Task.CompletedTask;
+        }
+
+
+        // Events
+        public event Action<AuthenticateToken> TokenChanged;
+        protected void OnTokenChanged(AuthenticateToken authenticateToken = null)
+        {
+            // Raise
+            var handler = this.TokenChanged;
+            if (handler != null)
+            {
+                handler(authenticateToken);
+            }
         }
     }
 }

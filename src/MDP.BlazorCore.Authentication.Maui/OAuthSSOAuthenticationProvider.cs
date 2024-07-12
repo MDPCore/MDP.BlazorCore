@@ -50,9 +50,21 @@ namespace MDP.BlazorCore.Authentication.Maui
             // AuthenticateHandler
             using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
+                // Clear
+                await _authenticateTokenManager.RemoveAsync();
+                await _authenticationStateManager.RemoveAsync();
+
                 // AuthenticateToken
                 var authenticateToken = await authenticateHandler.LoginAsync();
-                if (authenticateToken == null) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
+                if (authenticateToken == null)
+                {
+                    // Clear
+                    await _authenticateTokenManager.RemoveAsync();
+                    await _authenticationStateManager.RemoveAsync();
+
+                    // Return
+                    return;
+                }
 
                 // ClaimsIdentity
                 var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
@@ -69,12 +81,12 @@ namespace MDP.BlazorCore.Authentication.Maui
             // AuthenticateHandler
             using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
-                // Logout
-                await authenticateHandler.LogoutAsync();
-
                 // Clear
                 await _authenticateTokenManager.RemoveAsync();
                 await _authenticationStateManager.RemoveAsync();
+
+                // Logout
+                await authenticateHandler.LogoutAsync();
             }
         }
 
@@ -83,21 +95,39 @@ namespace MDP.BlazorCore.Authentication.Maui
             // AuthenticateHandler
             using (var authenticateHandler = new OAuthSSOHandler(_authOptions, _hostEnvironment))
             {
-                // AuthenticateToken
-                var authenticateToken = await _authenticateTokenManager.GetAsync();
-                if (authenticateToken == null) return;
+                // Execute
+                try
+                {
+                    // Require
+                    var authenticateToken = await _authenticateTokenManager.GetAsync();
+                    if (authenticateToken == null) return;
 
-                // AuthenticateToken.Refresh
-                authenticateToken = await authenticateHandler.RefreshAsync(authenticateToken.RefreshToken);
-                if (authenticateToken == null) return;
+                    // AuthenticateToken.Refresh
+                    authenticateToken = await authenticateHandler.RefreshAsync(authenticateToken.RefreshToken);
+                    if (authenticateToken == null)
+                    {
+                        // Clear
+                        await _authenticateTokenManager.RemoveAsync();
+                        await _authenticationStateManager.RemoveAsync();
 
-                // ClaimsIdentity.Refresh
-                var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
-                if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
+                        // Return
+                        return;
+                    }
 
-                // Save
-                await _authenticateTokenManager.SetAsync(authenticateToken);
-                await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
+                    // ClaimsIdentity.Refresh
+                    var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
+                    if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
+
+                    // Save
+                    await _authenticateTokenManager.SetAsync(authenticateToken);
+                    await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
+                }
+                catch (Exception)
+                {
+                    // Clear
+                    await _authenticateTokenManager.RemoveAsync();
+                    await _authenticationStateManager.RemoveAsync();
+                }
             }
         }
     }

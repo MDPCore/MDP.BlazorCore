@@ -45,16 +45,42 @@ namespace MDP.BlazorCore.Maui
 
             #endregion
 
-            // AuthenticateToken
-            var authenticateToken = await _authenticateTokenManager.GetAsync();
-            if (authenticateToken != null)
+            // Send
+            HttpResponseMessage response = null;
             {
-                // Headers
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);
+                // AuthenticateToken
+                var authenticateToken = await _authenticateTokenManager.GetAsync();
+                if (authenticateToken == null) return await base.SendAsync(request, cancellationToken);
+
+                // SendAsync
+                if (authenticateToken != null)
+                {
+                    // Headers
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);
+                }
+                response = await base.SendAsync(request, cancellationToken);
+                if (response == null) throw new InvalidOperationException($"{nameof(response)}=null");
+                if (response.StatusCode != System.Net.HttpStatusCode.Unauthorized) return response;
             }
 
-            // Return
-            return await base.SendAsync(request, cancellationToken);
+            // Re-Send
+            {
+                // Refresh
+                await _authenticationManager.RefreshAsync();
+
+                // AuthenticateToken
+                var authenticateToken = await _authenticateTokenManager.GetAsync();
+                if (authenticateToken == null) return response;
+
+                // SendAsync
+                var newRequest = await request.CloneAsync();
+                if (authenticateToken != null)
+                {
+                    // Headers
+                    newRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);
+                }
+                return await base.SendAsync(newRequest, cancellationToken);
+            }
         }
     }
 }

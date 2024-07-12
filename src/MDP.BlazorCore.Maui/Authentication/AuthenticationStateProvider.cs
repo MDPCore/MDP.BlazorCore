@@ -9,17 +9,25 @@ namespace MDP.BlazorCore.Maui
     internal class AuthenticationStateProvider : Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, IDisposable
     {
         // Fields
-        private readonly AuthenticationStateManager _authenticationStateManager;
+        private readonly AuthenticationManager _authenticationManager = null;
+
+        private readonly AuthenticationStateManager _authenticationStateManager = null;
+
+        private bool _initialized = false;
 
 
         // Constructors
-        public AuthenticationStateProvider(AuthenticationStateManager authenticationStateManager)
+        public AuthenticationStateProvider(AuthenticationManager authenticationManager, AuthenticationStateManager authenticationStateManager)
         {
             #region Contracts
 
+            ArgumentNullException.ThrowIfNull(authenticationManager);
             ArgumentNullException.ThrowIfNull(authenticationStateManager);
 
             #endregion
+
+            // AuthenticationManager
+            _authenticationManager = authenticationManager;
 
             // AuthenticationStateManager
             _authenticationStateManager = authenticationStateManager;
@@ -36,6 +44,16 @@ namespace MDP.BlazorCore.Maui
         // Methods
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
+            // Initialized
+            if (_initialized == false)
+            {
+                // Flag
+                _initialized = true;
+
+                // Refresh
+                await _authenticationManager.RefreshAsync();
+            }
+
             // ClaimsPrincipal
             var claimsPrincipal = await _authenticationStateManager.GetAsync();
             if (claimsPrincipal == null) throw new InvalidOperationException($"{nameof(claimsPrincipal)}=null");

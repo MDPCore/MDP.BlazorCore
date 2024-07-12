@@ -14,75 +14,69 @@ namespace MDP.BlazorCore.Maui
     public class AuthenticationStateManager
     {
         // Fields
-        private readonly object _syncRoot = new object();
-
         private bool _isCached = false;
 
         private ClaimsPrincipal _claimsPrincipal = null;
 
 
         // Methods
-        public Task<ClaimsPrincipal> GetAsync()
+        public async Task<ClaimsPrincipal> GetAsync()
         {
-            // Sync
-            lock (_syncRoot)
+            // Require
+            if (_isCached == true) return _claimsPrincipal;
+
+            // GetAsync   
+            var claimListString = await SecureStorage.GetAsync(this.GetType().FullName);
+            if (string.IsNullOrEmpty(claimListString) == true)
             {
-                // Require
-                if (_isCached == true) return Task.FromResult(_claimsPrincipal);
-
-                // GetAsync   
-                var claimListString = SecureStorage.GetAsync(this.GetType().FullName).GetAwaiter().GetResult();
-                if (string.IsNullOrEmpty(claimListString) == true)
-                {
-                    // Cache
-                    _isCached = true;
-                    _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
-                    // Return
-                    return Task.FromResult(_claimsPrincipal);
-                }
-
-                // ClaimList
-                var claimList = JsonSerializer.Deserialize<List<Claim>>(claimListString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
-                if (claimList == null)
-                {
-                    // Cache
-                    _isCached = true;
-                    _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
-                    // Return
-                    return Task.FromResult(_claimsPrincipal);
-                }
-
-                // AuthenticationType
-                var authenticationType = claimList.FirstOrDefault(o => o.Type == AuthenticationClaimTypes.AuthenticationType)?.Value;
-                if (string.IsNullOrEmpty(authenticationType) == true)
-                {
-                    // Cache
-                    _isCached = true;
-                    _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
-                    // Return
-                    return Task.FromResult(_claimsPrincipal);
-                }
-
-                // ClaimsPrincipal
-                {
-                    // ClaimList.Filter
-                    claimList.RemoveAll(o => o.Type == AuthenticationClaimTypes.AuthenticationType);
-                }
-                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claimList, authenticationType));
-
                 // Cache
                 _isCached = true;
-                _claimsPrincipal = claimsPrincipal;
+                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
                 // Return
-                return Task.FromResult(_claimsPrincipal);
+                return _claimsPrincipal;
             }
+
+            // ClaimList
+            var claimList = JsonSerializer.Deserialize<List<Claim>>(claimListString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
+            if (claimList == null)
+            {
+                // Cache
+                _isCached = true;
+                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+                // Return
+                return _claimsPrincipal;
+            }
+
+            // AuthenticationType
+            var authenticationType = claimList.FirstOrDefault(o => o.Type == AuthenticationClaimTypes.AuthenticationType)?.Value;
+            if (string.IsNullOrEmpty(authenticationType) == true)
+            {
+                // Cache
+                _isCached = true;
+                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+                // Return
+                return _claimsPrincipal;
+            }
+
+            // ClaimsPrincipal
+            {
+                // ClaimList.Filter
+                claimList.RemoveAll(o => o.Type == AuthenticationClaimTypes.AuthenticationType);
+            }
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claimList, authenticationType));
+
+            // Cache
+            _isCached = true;
+            _claimsPrincipal = claimsPrincipal;
+
+            // Return
+            return _claimsPrincipal;
         }
 
-        public Task SetAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task SetAsync(ClaimsPrincipal claimsPrincipal)
         {
             #region Contracts
 
@@ -106,22 +100,15 @@ namespace MDP.BlazorCore.Maui
             });
             if (string.IsNullOrEmpty(claimListString) == true) throw new InvalidOperationException($"{nameof(claimListString)}=null");
 
-            // Sync
-            lock (_syncRoot)
-            {
-                // SetAsync
-                SecureStorage.SetAsync(this.GetType().FullName, claimListString).GetAwaiter().GetResult();
+            // SetAsync
+            await SecureStorage.SetAsync(this.GetType().FullName, claimListString);
 
-                // Cache
-                _isCached = true;
-                _claimsPrincipal = claimsPrincipal;
-            }
+            // Cache
+            _isCached = true;
+            _claimsPrincipal = claimsPrincipal;
 
             // Raise
             this.OnPrincipalChanged(claimsPrincipal);
-
-            // Return
-            return Task.CompletedTask;
         }               
 
         public Task RemoveAsync()
@@ -129,16 +116,12 @@ namespace MDP.BlazorCore.Maui
             // ClaimsPrincipal
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
-            // Sync
-            lock (_syncRoot)
-            {
-                // RemoveAsync
-                SecureStorage.Remove(this.GetType().FullName);
+            // RemoveAsync
+            SecureStorage.Remove(this.GetType().FullName);
 
-                // Cache
-                _isCached = true;
-                _claimsPrincipal = claimsPrincipal;
-            }
+            // Cache
+            _isCached = true;
+            _claimsPrincipal = claimsPrincipal;
 
             // Raise
             this.OnPrincipalChanged(claimsPrincipal);
@@ -150,14 +133,8 @@ namespace MDP.BlazorCore.Maui
 
         // Events
         public event Action<ClaimsPrincipal> PrincipalChanged;
-        protected void OnPrincipalChanged(ClaimsPrincipal principal)
+        protected void OnPrincipalChanged(ClaimsPrincipal principal = null)
         {
-            #region Contracts
-
-            if (principal == null) throw new ArgumentException($"{nameof(principal)}=null");
-
-            #endregion
-
             // Raise
             var handler = this.PrincipalChanged;
             if (handler != null)
