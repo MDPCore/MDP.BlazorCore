@@ -16,6 +16,18 @@ Error.prototype.toJSON = function () {
 mdp.blazor.eventManager = (function () {
 
     // methods
+    function dispatchPageLoading() {
+
+        // style
+        document.body.classList.add("mdp-blazor-pageloading");
+
+        // raise
+        var pageLoadingEvent = new CustomEvent("BlazorPageLoading", {
+            detail: { }
+        });
+        document.dispatchEvent(pageLoadingEvent);
+    }
+
     function dispatchPageLoaded() {
 
         // pageData
@@ -32,7 +44,10 @@ mdp.blazor.eventManager = (function () {
             }
         }
 
-        // PageLoaded
+        // style
+        document.body.classList.remove("mdp-blazor-pageloading");
+
+        // raise
         var pageLoadedEvent = new CustomEvent("BlazorPageLoaded", {
             detail: { pageData: pageData }
         });
@@ -44,6 +59,7 @@ mdp.blazor.eventManager = (function () {
     return {
 
         // methods
+        dispatchPageLoading: dispatchPageLoading,
         dispatchPageLoaded: dispatchPageLoaded
     };
 })();
@@ -71,7 +87,7 @@ mdp.blazor.errorManager = (function () {
     }
 
     function raise(error) {
-
+                
         // raise
         const message = typeof error === 'object' ? JSON.stringify(error) : { message: error };
         handlers.forEach(function (handler) {

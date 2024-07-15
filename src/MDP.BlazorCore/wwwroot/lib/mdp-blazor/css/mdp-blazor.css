@@ -1,5 +1,14 @@
 /* ---------- global ---------- */
 
+/* root */
+:root {
+
+}
+
+
+/* ---------- wrapper ---------- */
+
+/* wrapper */
 .mdp-wrapper {
     width: 100%;
     height: 100dvh;
@@ -7,8 +16,9 @@
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
-    justify-content: start;
     align-items: normal;
+    justify-content: normal;
+    overscroll-behavior: none;
 }
 
 .mdp-wrapper a,
@@ -25,9 +35,12 @@
     margin-block: 0rem;
 }
 
-.mdp-wrapper svg {   
-    flex: 0 0 auto;
-    fill: currentColor;
+.mdp-wrapper *:focus {
+    box-shadow: none;
+}
+
+.mdp-wrapper a {
+    text-decoration: none;
 }
 
 
@@ -35,9 +48,11 @@
 
 /* grid*/
 .mdp-wrapper .row {
-    margin: 0;
-    padding: 0;
+    flex: 1 1 auto;
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
 }
+
 
 /* container */
 .mdp-wrapper .container-sm,
@@ -69,14 +84,12 @@
 }
 
 
-/* ---------- forms ---------- */
-
-
 /* ---------- components ---------- */
 
 /* image */
-.mdp-wrapper .img-svg {    
-    flex: 0 0 auto;
+.mdp-wrapper .img-svg {
+    width: 100%;
+    height: 100%;
     mask-size: 100%;
     mask-repeat: no-repeat;
     mask-position: center;
@@ -99,22 +112,69 @@
     box-shadow: none;
 }
 
-.mdp-wrapper .btn.disabled, .btn:disabled, fieldset:disabled .btn {    
+.mdp-wrapper .btn.disabled, 
+.mdp-wrapper .btn:disabled {    
     color: var(--bs-btn-color);
     background-color: var(--bs-btn-bg);
     border-color: var(--bs-btn-border-color);
-    opacity: 0.5;
+    opacity: 0.3;
     pointer-events: none;
 }
 
-.mdp-wrapper .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+.mdp-wrapper .btn.active,
+.mdp-wrapper .btn:active {
     color: var(--bs-btn-bg);
     background-color: var(--bs-btn-color);
     border-color: var(--bs-btn-border-color);
 }
 
+.mdp-wrapper .btn-fake {
+    opacity: 1;
+    pointer-events: none;
+}
+
+/* input-group */
+.mdp-wrapper .input-group {
+    margin: 0;
+    padding: 0;
+    --bs-input-color: var(--bs-body-color);
+    --bs-input-bg: var(--bs-tertiary-bg);
+    --bs-input-border-color: var(--bs-border-color);
+}
+
+.mdp-wrapper .input-group .input-group-text {
+    color: var(--bs-input-color);
+    background-color: var(--bs-input-bg);
+    border-color: var(--bs-input-border-color);
+}
+
+.mdp-wrapper .input-group .form-control {
+    color: var(--bs-input-color);
+    background-color: var(--bs-input-bg);
+    border-color: var(--bs-input-border-color);
+}
+
+.mdp-wrapper .input-group .form-control.disabled,
+.mdp-wrapper .input-group .form-control:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.mdp-wrapper .input-group .form-control.readonly {
+    pointer-events: none;
+}
+
+.mdp-wrapper .input-group .form-control::placeholder  {
+    color: var(--bs-input-color);
+    opacity: 0.5;
+}
 
 /* ---------- utilities ---------- */
+
+/* white-space */
+.mdp-wrapper .white-space-pre-wrap {
+    white-space: pre-wrap;
+}
 
 /* sticky */
 .mdp-wrapper .sticky-top-fixed {
@@ -127,8 +187,66 @@
 }
 
 .mdp-wrapper .sticky-top-fixed > * {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 0;
     overflow: visible;
+}
+
+/* ratio */
+.mdp-wrapper .ratio-1-1 {
+    position: relative;
+    width: 100%;
+}
+
+.mdp-wrapper .ratio-1-1::before {
+    content: "";
+    display: block;
+    padding-top: 100% 
+}
+
+.mdp-wrapper .ratio-1-1 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mdp-wrapper .ratio-4-3 {
+    position: relative;
+    width: 100%;
+}
+
+.mdp-wrapper .ratio-4-3::before {
+    content: "";
+    display: block;
+    padding-top: 75% 
+}
+
+.mdp-wrapper .ratio-4-3 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mdp-wrapper .ratio-16-9 {
+    position: relative;
+    width: 100%;
+}
+
+.mdp-wrapper .ratio-16-9::before {
+    content: "";
+    display: block;
+    padding-top: 56.25% 
+}
+
+.mdp-wrapper .ratio-16-9 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }

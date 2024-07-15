@@ -103,7 +103,14 @@ namespace MDP.BlazorCore
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             // Require
-            if (firstRender == true) return;
+            if (firstRender == true)
+            {
+                // PageLoading
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoading();");
+
+                // return
+                return;
+            }
             if (this.Initialized == false) return;
 
             // PageLoaded
