@@ -15,7 +15,24 @@
     private DotNetObjectReference<PageOutlet> _interopComponent = null;
 
 
-    // Constructors        
+    // Properties
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    [Inject]
+    public InteropManager InteropManager { get; set; }
+
+    [Inject]
+    public IServiceProvider ServiceProvider { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+
+    // Methods
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Require
@@ -35,25 +52,6 @@
         _interopComponent?.Dispose();
     }
 
-
-    // Properties
-    [Inject]
-    public InteropManager _interopManager { get; set; }
-
-    [Inject]
-    public IJSRuntime JSRuntime { get; set; }
-
-    [Inject]
-    public IServiceProvider ServiceProvider { get; set; }
-
-    [Inject]
-    public NavigationManager NavigationManager { get; set; }
-
-    [Inject]
-    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-
-
-    // Methods
     [JSInvokable]
     public async Task<InteropResponse> InvokeAsync(string methodName, JsonDocument methodParameters)
     {
@@ -80,7 +78,7 @@
             if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
 
             // InvokeAsync
-            var interopResponse = await _interopManager.InvokeAsync(principal, new InteropRequest
+            var interopResponse = await this.InteropManager.InvokeAsync(principal, new InteropRequest
             (
                 new Uri(serviceUri),
                 methodName,

@@ -3,29 +3,34 @@
 @namespace MDP.BlazorCore
 @code {
 
-    // Constructors
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Require
-        if (firstRender == true) return;
-
-        // PageLoaded
-        await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
-    }
-
-
     // Properties    
     [Parameter]
     public object PageData { get; set; } = null;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public MarkupString PageDataString { get; set; }
 
-    [Inject]
-    public IJSRuntime JSRuntime { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 
 
     // Methods
+    protected override void OnParametersSet()
+    {
+        // Base
+        base.OnParametersSet();
+
+        // PageData
+        if (this.PageData != null)
+        {
+            var pageDataString = this.CreatePageData();
+            if (this.PageDataString.Value != pageDataString.Value)
+            {
+                this.PageDataString = pageDataString;
+            }
+        }
+    }
+
     private MarkupString CreatePageData()
     {
         // Require
@@ -37,6 +42,6 @@
 }
 
 <SectionContent SectionId="@(PageOutlet.PageDataSectionId)">
-    <span id="mdp-blazor-pagedata" style="display:none;" data-value="@CreatePageData()"></span>
+    <span id="mdp-blazor-pagedata" style="display:none;" data-value="@PageDataString"></span>
 </SectionContent>
 <SectionContent SectionId="@(PageOutlet.PageScriptSectionId)" ChildContent="@ChildContent" />

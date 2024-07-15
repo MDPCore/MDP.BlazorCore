@@ -78,7 +78,7 @@ namespace MDP.BlazorCore.Maui
             {
                 authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
             }
-            if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
+            if (authenticationProvider == null) return Task.CompletedTask;
 
             // RefreshAsync
             return authenticationProvider.RefreshAsync();

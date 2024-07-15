@@ -9,7 +9,7 @@
         public Task<PageModel> OnInitializedAsync()
         {
             // Return
-            return Task.FromResult(new PageModel
+            return Task.FromResult( new PageModel
             {
                 Message = "Hello World"
             });
@@ -24,7 +24,7 @@
     }
 }
 
-<PageScript PageData="@CreatePageData()">
+<PageScript PageData="@this.PageData">
     <script>
 
         // blazorPageLoaded
