@@ -83,6 +83,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
                         // HttpClient
                         _httpClient = new HttpClient(httpClientHandler);
+                        _httpClient.Timeout = TimeSpan.FromSeconds(10);
                     }
 
                     // Return
