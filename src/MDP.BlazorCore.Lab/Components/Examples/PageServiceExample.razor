@@ -28,18 +28,20 @@
                     "message": "Hello World"
                 }).then(result => {
                     alert(result + " By PageService");
-                }).catch(error => {
-                    alert(error.message);
-                });
+                }).catch(mdp.blazor.errorManager.raise);
             });
         }, { once: true });
     </script>
 </PageScript>
 
-<!-- title -->
-<h3>PageServiceExample</h3>
-<hr />
+<PageView Context="@Context">
 
-<!-- run -->
-<button class="btn btn-primary" id="runButton">Run</button><br />
-<br />
+    <!-- title -->
+    <h3>PageServiceExample</h3>
+    <hr />
+
+    <!-- run -->
+    <button class="btn btn-primary" id="runButton">Run</button><br />
+    <br />
+
+</PageView>

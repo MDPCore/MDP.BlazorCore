@@ -77,6 +77,9 @@ namespace MDP.BlazorCore.Web
             }
             catch (Exception exception)
             {
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
+
                 // Return
                 return new InteropResponse()
                 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,10 @@ namespace MDP.BlazorCore
         public bool Initialized { get; set; } = false;
 
         [Parameter]
-        public TModel Model { get; set; }
+        public TModel Model { get; set; } = null;
 
         [Parameter]
-        public object PageData { get; set; }
+        public PageContext Context { get; set; } = null;
 
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
@@ -45,6 +46,10 @@ namespace MDP.BlazorCore
         // Methods
         protected override async Task OnInitializedAsync()
         {
+            // Variables
+            Exception pageError = null;
+
+            // Execute
             try
             {
                 // Base
@@ -84,40 +89,54 @@ namespace MDP.BlazorCore
                         nameof(OnInitializedAsync)
                     ));
                     if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
-                    if (interopResponse.Succeeded == false) throw new InvalidOperationException(interopResponse.ErrorMessage);
+                    if (interopResponse.Succeeded == false) throw new ApplicationException(interopResponse.ErrorMessage);
 
                     // PageModel
                     this.Model = interopResponse.Result as TModel;
-
-                    // PageData
-                    this.PageData = this.CreatePageData();
                 }
+            }
+            catch (Exception exception)
+            {
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
+
+                // PageError
+                pageError = exception;
             }
             finally
             {
                 // Initialized
                 this.Initialized = true;
-            }
+
+                // Context
+                this.Context = new PageContext(this.CreatePageData(), pageError);
+            }            
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            // Require
+            // PageLoading
             if (firstRender == true)
             {
-                // PageLoading
+                // Invoke
                 await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoading();");
 
-                // return
+                // Return
                 return;
-            }
-            if (this.Initialized == false) return;
+            }            
 
             // PageLoaded
-            await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
+            if (this.Initialized == true)
+            {
+                // Invoke
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
+
+                // Return
+                return;
+            }
         }
 
-        private object CreatePageData()
+        private Dictionary<string, object> CreatePageData()
         {
             // Require
             if (this.Model == null) return null;

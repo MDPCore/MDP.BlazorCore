@@ -5,6 +5,10 @@
 
 }
 
+html, body {
+  overscroll-behavior: none;
+}
+
 
 /* ---------- wrapper ---------- */
 

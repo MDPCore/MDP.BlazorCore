@@ -3,27 +3,15 @@ var mdp = mdp || {};
 mdp.blazor = mdp.blazor || {};
 
 
-// mdp.blazor.global 
-Error.prototype.toJSON = function () {
-    return {
-        name: this.name,
-        message: this.message
-    };
-};
-
-
 // mdp.blazor.eventManager
 mdp.blazor.eventManager = (function () {
 
     // methods
     function dispatchPageLoading() {
 
-        // style
-        document.body.classList.add("mdp-blazor-pageloading");
-
         // raise
         var pageLoadingEvent = new CustomEvent("BlazorPageLoading", {
-            detail: { }
+            detail: {}
         });
         document.dispatchEvent(pageLoadingEvent);
     }
@@ -44,12 +32,27 @@ mdp.blazor.eventManager = (function () {
             }
         }
 
-        // style
-        document.body.classList.remove("mdp-blazor-pageloading");
+        // pageError
+        var pageError = {};
+        var pageErrorElement = document.getElementById("mdp-blazor-pageerror");
+        if (pageErrorElement) {
+            var pageErrorString = pageErrorElement.getAttribute("data-value");
+            if (pageErrorString) {
+                try {
+                    pageError = JSON.parse(pageErrorString);
+                } catch (error) {
+                    console.error("pageError=null, error=", error.message);
+                }
+            }
+        }
+        if (Object.keys(pageError).length === 0) pageError = null;
 
         // raise
         var pageLoadedEvent = new CustomEvent("BlazorPageLoaded", {
-            detail: { pageData: pageData }
+            detail: {
+                pageData: pageData,
+                pageError: pageError
+            }
         });
         document.dispatchEvent(pageLoadedEvent);
     }
@@ -88,11 +91,22 @@ mdp.blazor.errorManager = (function () {
 
     function raise(error) {
                 
-        // raise
+        // message
         const message = typeof error === 'object' ? JSON.stringify(error) : { message: error };
-        handlers.forEach(function (handler) {
-            handler(message);
-        });
+
+        // raise
+        if (handlers.length > 0) {
+
+            // handlers
+            handlers.forEach(function (handler) {
+                handler(message);
+            });
+        }
+        else {
+
+            // alert
+            alert("Error= " + message);
+        }
     }
 
 
@@ -155,7 +169,7 @@ mdp.blazor.interopManager = (function () {
 })();
 
 
-// httpClient
+// mdp.blazor.httpClient
 mdp.blazor.httpClient = (function () {
 
     // methods
@@ -260,3 +274,50 @@ mdp.blazor.httpClient = (function () {
         getStatusText: getStatusText
     };
 })();
+
+
+// mdp.blazor.prototype 
+Error.prototype.toJSON = function () {
+    return {
+        name: this.name,
+        message: this.message
+    };
+};
+
+
+// mdp.blazor.handlers
+(function () {
+
+    // BlazorPageLoaded
+    document.addEventListener("BlazorPageLoading", function (event) {
+
+        // style
+        document.body.classList.add("mdp-blazor-loading");
+
+        // scroll
+        document.querySelectorAll(".mdp-wrapper").forEach(function (wrapperElement) {
+            wrapperElement.scrollTo({ top: 0, behavior: 'auto' });
+        });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+
+    // BlazorPageLoaded
+    document.addEventListener("BlazorPageLoaded", function (event) {
+
+        // style
+        document.body.classList.remove("mdp-blazor-loading");
+
+        // scroll
+        document.querySelectorAll(".mdp-wrapper").forEach(function (wrapperElement) {
+            wrapperElement.scrollTo({ top: 0, behavior: 'auto' });
+        });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+
+        // error
+        if (event.detail.pageError) {
+            mdp.blazor.errorManager.raise(new Error(event.detail.pageError.message));
+        } 
+    });
+})();
+
+

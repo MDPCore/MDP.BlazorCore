@@ -6,10 +6,10 @@
     public class PageService : InteropService
     {
         // Methods
-        public Task<PageModel> OnInitializedAsync()
+        public async Task<PageModel> OnInitializedAsync()
         {
             // Return
-            return Task.FromResult(new PageModel
+            return await Task.FromResult(new PageModel
             {
                 Message = "Hello World"
             });
@@ -42,11 +42,15 @@
     </script>
 </PageScript>
 
-<!-- title -->
-<h3>PageModelExample</h3>
-<hr />
+<PageView Context="@Context">
 
-<!-- run -->
-<div id="messaage" style="display:none">@Model?.Message</div>
-<button class="btn btn-primary" id="runButton">Run</button>
-<br />
+    <!-- title -->
+    <h3>PageModelExample</h3>
+    <hr />
+
+    <!-- run -->
+    <div id="messaage" style="display:none">@Model?.Message</div>
+    <button class="btn btn-primary" id="runButton">Run</button>
+    <br />
+
+</PageView>

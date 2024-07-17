@@ -1,0 +1,70 @@
+﻿@using System.Text.Json
+
+@namespace MDP.BlazorCore
+@code {
+
+    // Properties    
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public PageContext Context { get; set; } = null;
+
+    [Parameter]
+    public MarkupString PageDataString { get; set; }
+
+    [Parameter]
+    public MarkupString PageErrorString { get; set; }
+
+
+    // Methods
+    protected override void OnParametersSet()
+    {
+        // Base
+        base.OnParametersSet();
+
+        // PageData
+        var pageDataString = this.CreatePageData();
+        if (this.PageDataString.Value != pageDataString.Value)
+        {
+            this.PageDataString = pageDataString;
+        }
+
+        // PageError
+        var pageErrorString = this.CreatePageError();
+        if (this.PageErrorString.Value != pageErrorString.Value)
+        {
+            this.PageErrorString = pageErrorString;
+        }
+    }
+
+    private MarkupString CreatePageData()
+    {
+        // Require
+        if (this.Context?.PageData == null) return new MarkupString("{}");
+
+        // Return
+        return new MarkupString(JsonSerializer.Serialize(this.Context?.PageData));
+    }
+
+    private MarkupString CreatePageError()
+    {
+        // Require
+        if (this.Context?.PageError == null) return new MarkupString("{}");
+
+        // PageError
+        var pageError = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        pageError["source"] = this.Context?.PageError.Source;
+        pageError["message"] = this.Context?.PageError.Message;
+
+        // Return
+        return new MarkupString(JsonSerializer.Serialize(pageError));
+    }
+}
+
+<!-- content -->
+@ChildContent
+
+<!-- context -->
+<span id="mdp-blazor-pagedata" style="display:none;" data-value="@PageDataString"></span>
+<span id="mdp-blazor-pageerror" style="display:none;" data-value="@PageErrorString"></span>

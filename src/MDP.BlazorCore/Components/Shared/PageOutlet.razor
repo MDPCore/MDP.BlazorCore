@@ -6,8 +6,6 @@
 @code {
 
     // Constants    
-    internal static readonly object PageDataSectionId = new();
-
     internal static readonly object PageScriptSectionId = new();
 
 
@@ -91,6 +89,9 @@
         }
         catch (Exception exception)
         {
+            // Require
+            while (exception.InnerException != null) exception = exception.InnerException;
+
             // Return
             return new InteropResponse()
             {
@@ -101,8 +102,6 @@
     }
 }
 
-
-<SectionOutlet SectionId="@PageDataSectionId" />
 <SectionOutlet SectionId="@PageScriptSectionId" />
 <script>
 

@@ -6,10 +6,10 @@
     public class PageService : InteropService
     {
         // Methods
-        public Task<PageModel> OnInitializedAsync()
+        public async Task<PageModel> OnInitializedAsync()
         {
             // Return
-            return Task.FromResult(new PageModel
+            return await Task.FromResult(new PageModel
             {
                 Message = "Hello World"
             });
@@ -24,7 +24,7 @@
     }
 }
 
-<PageScript PageData="@PageData">
+<PageScript>
     <script>
 
         // blazorPageLoaded
@@ -46,10 +46,14 @@
     </script>
 </PageScript>
 
-<!-- title -->
-<h3>PageDataExample</h3>
-<hr />
+<PageView Context="@Context">
 
-<!-- run -->
-<button class="btn btn-primary" id="runButton">Run</button><br />
-<br />
+    <!-- title -->
+    <h3>PageDataExample</h3>
+    <hr />
+
+    <!-- run -->
+    <button class="btn btn-primary" id="runButton">Run</button><br />
+    <br />
+
+</PageView>
