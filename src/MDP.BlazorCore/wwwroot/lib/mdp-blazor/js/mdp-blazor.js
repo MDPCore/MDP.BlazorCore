@@ -276,19 +276,10 @@ mdp.blazor.httpClient = (function () {
 })();
 
 
-// mdp.blazor.prototype 
-Error.prototype.toJSON = function () {
-    return {
-        name: this.name,
-        message: this.message
-    };
-};
-
-
 // mdp.blazor.handlers
 (function () {
 
-    // BlazorPageLoaded
+    // BlazorPageLoading
     document.addEventListener("BlazorPageLoading", function (event) {
 
         // style
@@ -318,6 +309,19 @@ Error.prototype.toJSON = function () {
             mdp.blazor.errorManager.raise(new Error(event.detail.pageError.message));
         } 
     });
+})();
+
+
+// mdp.blazor.global 
+(function () {
+
+    // Error
+    Error.prototype.toJSON = function () {
+        return {
+            name: this.name,
+            message: this.message
+        };
+    };
 })();
 
 
