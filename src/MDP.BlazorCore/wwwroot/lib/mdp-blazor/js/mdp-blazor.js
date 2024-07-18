@@ -1,5 +1,8 @@
-﻿// namespace
+﻿// mdp
 var mdp = mdp || {};
+
+
+// mdp.blazor
 mdp.blazor = mdp.blazor || {};
 
 
@@ -135,27 +138,51 @@ mdp.blazor.interopManager = (function () {
         _interopComponent = interopComponent;
     }
 
-    function invokeAsync(methodName, methodParameters) {
+    function invokeAsync(methodName, methodParameters, isBackground = false) {
 
-        // localInvoke
-        if (_interopComponent) {
+        // invokingEvent
+        (function () {
+            if (isBackground == false) {
+                var invokingEvent = new CustomEvent("BlazorInvoking", {
+                    detail: {}
+                });
+                document.dispatchEvent(invokingEvent);
+            }            
+        })();
+
+        // invokedEvent
+        var invokedTask = function () {
+            if (isBackground == false) {
+                var invokedEvent = new CustomEvent("BlazorInvoked", {
+                    detail: {}
+                });
+                document.dispatchEvent(invokedEvent);
+            }
+        };
+
+        // execute
+        if (_interopComponent) {            
+
+            // localInvoke
             return _interopComponent.invokeMethodAsync("InvokeAsync", methodName, methodParameters).then(function (response) {
                 if (response.succeeded == true) {
                     return response.result;
                 } else {
                     throw new Error(response.errorMessage);
                 }
-            });
-        } 
+            }).finally(invokedTask);;
+        }
+        else {
 
-        // remoteInvoke
-        return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "serviceUri": window.location.href, "methodName": methodName, "methodParameters": methodParameters }).then(function (response) {
-            if (response.succeeded == true) {
-                return response.result;
-            } else {
-                throw new Error(response.errorMessage);
-            }
-        });
+            // remoteInvoke
+            return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "serviceUri": window.location.href, "methodName": methodName, "methodParameters": methodParameters }).then(function (response) {
+                if (response.succeeded == true) {
+                    return response.result;
+                } else {
+                    throw new Error(response.errorMessage);
+                }
+            }).finally(invokedTask);;
+        }        
     };
 
 
@@ -276,7 +303,7 @@ mdp.blazor.httpClient = (function () {
 })();
 
 
-// mdp.blazor.handlers
+/* ---------- mdp-blazor ---------- */
 (function () {
 
     // BlazorPageLoading
@@ -309,10 +336,26 @@ mdp.blazor.httpClient = (function () {
             mdp.blazor.errorManager.raise(new Error(event.detail.pageError.message));
         } 
     });
+
+
+    // BlazorInvoking
+    document.addEventListener("BlazorInvoking", function (event) {
+
+        // style
+        document.body.classList.add("mdp-blazor-invoking");
+    });
+
+    // BlazorInvoked
+    document.addEventListener("BlazorInvoked", function (event) {
+
+        // style
+        document.body.classList.remove("mdp-blazor-invoking");
+
+    });
 })();
 
 
-// mdp.blazor.global 
+/* ---------- script ---------- */
 (function () {
 
     // Error

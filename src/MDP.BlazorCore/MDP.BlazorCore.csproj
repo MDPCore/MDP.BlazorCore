@@ -35,6 +35,7 @@
   <ItemGroup>
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
+    <None Include="wwwroot\lib\mdp-blazor\js\mdp-blazor.js" />
   </ItemGroup>
 
 </Project>
