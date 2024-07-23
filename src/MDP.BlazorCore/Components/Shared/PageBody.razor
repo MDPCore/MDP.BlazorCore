@@ -44,7 +44,10 @@
         if (this.Context?.PageData == null) return new MarkupString("{}");
 
         // Return
-        return new MarkupString(JsonSerializer.Serialize(this.Context?.PageData));
+        return new MarkupString(JsonSerializer.Serialize(this.Context?.PageData, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        }));
     }
 
     private MarkupString CreatePageError()
@@ -58,7 +61,10 @@
         pageError["message"] = this.Context?.PageError.Message;
 
         // Return
-        return new MarkupString(JsonSerializer.Serialize(pageError));
+        return new MarkupString(JsonSerializer.Serialize(pageError, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        }));
     }
 }
 
