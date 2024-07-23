@@ -43,8 +43,15 @@
         // Require
         if (this.Context?.PageData == null) return new MarkupString("{}");
 
+        // PageData
+        var pageData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        foreach (var dataPair in this.Context?.PageData)
+        {
+            pageData[JsonNamingPolicy.CamelCase.ConvertName(dataPair.Key)] = dataPair.Value;
+        }
+
         // Return
-        return new MarkupString(JsonSerializer.Serialize(this.Context?.PageData, new JsonSerializerOptions
+        return new MarkupString(JsonSerializer.Serialize(pageData, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         }));
