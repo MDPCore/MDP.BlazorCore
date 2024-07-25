@@ -60,21 +60,6 @@ namespace MDP.BlazorCore
             // ValueType
             if (parameterType.IsValueType == true || parameterType == typeof(string))
             {
-                // MethodParameters
-                if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
-                {
-                    if (parameterType == typeof(string))
-                    {
-                        var parameter = parameterElement.GetString();
-                        if (string.IsNullOrEmpty(parameter) == false) return parameter;
-                    }
-                    else
-                    {
-                        var parameter = TypeDescriptor.GetConverter(parameterType).ConvertFromString(parameterElement.GetString());
-                        if (parameter != null) return parameter;
-                    }
-                }
-
                 // RouteParameters
                 if (_routeParameters.ContainsKey(parameterName) == true)
                 {
@@ -86,6 +71,21 @@ namespace MDP.BlazorCore
                     else
                     {
                         var parameter = TypeDescriptor.GetConverter(parameterType).ConvertFromString(_routeParameters[parameterName]);
+                        if (parameter != null) return parameter;
+                    }
+                }
+
+                // MethodParameters
+                if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
+                {
+                    if (parameterType == typeof(string))
+                    {
+                        var parameter = parameterElement.GetString();
+                        if (string.IsNullOrEmpty(parameter) == false) return parameter;
+                    }
+                    else
+                    {
+                        var parameter = TypeDescriptor.GetConverter(parameterType).ConvertFromString(parameterElement.GetString());
                         if (parameter != null) return parameter;
                     }
                 }
