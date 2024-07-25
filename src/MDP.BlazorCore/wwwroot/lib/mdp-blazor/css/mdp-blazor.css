@@ -184,18 +184,12 @@ html, body {
 .mdp-wrapper .sticky-top-fixed {
     position: sticky;
     top: 0;
+    left: 0;
     width: 100%;
     height: 0;
     overflow: visible;
     z-index: 999;
-}
-
-.mdp-wrapper .sticky-top-fixed > * {
-    position: absolute;
-    width: 100%;
-    height: 0;
-    overflow: visible;
-}
+} 
 
 /* ratio */
 .mdp-wrapper .ratio-1-1 {
