@@ -127,18 +127,22 @@ mdp.blazor.errorManager = (function () {
 // mdp.blazor.scrollManager
 mdp.blazor.scrollManager = (function () {
 
-    // fields
-    var _scrollTop = 0;
-    var _scrollState = null;
-    var _scrollThreshold = 100;
-
-
     // methods
-    function start() {
-        window.addEventListener("scroll", () => {
+    function initialize(scrollElement) {
+
+        // require
+        if (!scrollElement) scrollElement = window;
+
+        // fields
+        var _scrollTop = 0;
+        var _scrollState = null;
+        var _scrollThreshold = 100;
+
+        // methods
+        scrollElement.addEventListener("scroll", () => {
             
             // scrollTop
-            var scrollTop = document.documentElement.scrollTop;
+            var scrollTop = scrollElement.scrollTop;
             if (Math.abs(_scrollTop - scrollTop) < _scrollThreshold) return;
 
             // dispatch
@@ -153,7 +157,9 @@ mdp.blazor.scrollManager = (function () {
 
                 // scrollUppedEvent
                 var scrollUppedEvent = new CustomEvent("BlazorScrollUpped", {
-                    detail: {}
+                    detail: {
+                        scrollElement: scrollElement
+                    }
                 });
                 document.dispatchEvent(scrollUppedEvent);
             } else {
@@ -167,7 +173,9 @@ mdp.blazor.scrollManager = (function () {
 
                 // scrollDownedEvent
                 var scrollDownedEvent = new CustomEvent("BlazorScrollDowned", {
-                    detail: {}
+                    detail: {
+                        scrollElement: scrollElement
+                    }
                 });
                 document.dispatchEvent(scrollDownedEvent);
             }
@@ -178,7 +186,7 @@ mdp.blazor.scrollManager = (function () {
     return {
 
         // methods
-        start: start
+        initialize: initialize
     };
 })();
 
@@ -427,7 +435,7 @@ mdp.blazor.httpClient = (function () {
         // style
         document.body.classList.remove("mdp-blazor-scrollUpped");
         document.body.classList.add("mdp-blazor-scrollDowned");
-    });
+    });    
 })();
 
 
