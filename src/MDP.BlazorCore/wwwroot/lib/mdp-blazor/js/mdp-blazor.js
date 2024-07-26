@@ -124,6 +124,65 @@ mdp.blazor.errorManager = (function () {
 })();
 
 
+// mdp.blazor.scrollManager
+mdp.blazor.scrollManager = (function () {
+
+    // fields
+    var _scrollTop = 0;
+    var _scrollState = null;
+    var _scrollThreshold = 100;
+
+
+    // methods
+    function start() {
+        window.addEventListener("scroll", () => {
+            
+            // scrollTop
+            var scrollTop = document.documentElement.scrollTop;
+            if (Math.abs(_scrollTop - scrollTop) < _scrollThreshold) return;
+
+            // dispatch
+            if (_scrollTop > scrollTop) {
+
+                // scrollTop
+                _scrollTop = scrollTop;
+
+                // scrollState
+                if (_scrollState == "upped") return;
+                _scrollState = "upped";
+
+                // scrollUppedEvent
+                var scrollUppedEvent = new CustomEvent("BlazorScrollUpped", {
+                    detail: {}
+                });
+                document.dispatchEvent(scrollUppedEvent);
+            } else {
+
+                // scrollTop
+                _scrollTop = scrollTop;
+
+                // scrollState
+                if (_scrollState == "downed") return;
+                _scrollState = "downed";
+
+                // scrollDownedEvent
+                var scrollDownedEvent = new CustomEvent("BlazorScrollDowned", {
+                    detail: {}
+                });
+                document.dispatchEvent(scrollDownedEvent);
+            }
+        });
+    }
+
+    // return
+    return {
+
+        // methods
+        start: start
+    };
+})();
+
+
 // mdp.blazor.interopManager
 mdp.blazor.interopManager = (function () {
 
@@ -351,6 +410,23 @@ mdp.blazor.httpClient = (function () {
         // style
         document.body.classList.remove("mdp-blazor-invoking");
 
+    });
+
+
+    // BlazorScrollUpped
+    document.addEventListener("BlazorScrollUpped", function (event) {
+
+        // style
+        document.body.classList.add("mdp-blazor-scrollUpped");
+        document.body.classList.remove("mdp-blazor-scrollDowned");
+    });
+
+    // BlazorScrollDowned
+    document.addEventListener("BlazorScrollDowned", function (event) {
+
+        // style
+        document.body.classList.remove("mdp-blazor-scrollUpped");
+        document.body.classList.add("mdp-blazor-scrollDowned");
     });
 })();
 
