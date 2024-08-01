@@ -41,13 +41,13 @@ namespace MDP.BlazorCore
             // InvokeAsync
             object invokeResult = null;
             {
-                // InteropService
-                var interopService = _serviceProvider.GetService(interopResource.ServiceType) as InteropService;
-                if (interopService == null) throw new InvalidOperationException($"{nameof(interopService)}=null");
-                if (interopService != null)
+                // InteropController
+                var interopController = _serviceProvider.GetService(interopResource.ServiceType) as InteropController;
+                if (interopController == null) throw new InvalidOperationException($"{nameof(interopController)}=null");
+                if (interopController != null)
                 {
                     // Properties
-                    interopService.User = principal;
+                    interopController.User = principal;
                 }
 
                 // InteropParameters
@@ -55,7 +55,7 @@ namespace MDP.BlazorCore
                 if (interopParameters == null) throw new InvalidOperationException($"{nameof(interopParameters)}=null");
 
                 // InvokeMethod
-                invokeResult = await MDP.Reflection.Activator.InvokeMethodAsync(interopService, interopRequest.MethodName, interopParameters);
+                invokeResult = await MDP.Reflection.Activator.InvokeMethodAsync(interopController, interopRequest.ActionName, interopParameters);
             }
 
             // Return

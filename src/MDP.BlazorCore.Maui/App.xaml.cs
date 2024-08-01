@@ -13,7 +13,7 @@ namespace MDP.BlazorCore.Maui
             this.InitializeComponent();
 
             // MainPage
-            this.MainPage = new MainPage();
+            this.MainPage = new MDP.BlazorCore.Maui.AppPage();
         }
     }
 }

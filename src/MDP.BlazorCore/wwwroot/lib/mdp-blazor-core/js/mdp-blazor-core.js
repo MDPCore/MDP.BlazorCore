@@ -2,18 +2,18 @@
 var mdp = mdp || {};
 
 
-// mdp.blazor
-mdp.blazor = mdp.blazor || {};
+// mdp.blazorCore
+mdp.blazorCore = mdp.blazorCore || {};
 
 
-// mdp.blazor.eventManager
-mdp.blazor.eventManager = (function () {
+// mdp.blazorCore.eventManager
+mdp.blazorCore.eventManager = (function () {
 
     // methods
     function dispatchPageLoading() {
 
         // raise
-        var pageLoadingEvent = new CustomEvent("BlazorPageLoading", {
+        var pageLoadingEvent = new CustomEvent("MDPPageLoading", {
             detail: {}
         });
         document.dispatchEvent(pageLoadingEvent);
@@ -23,7 +23,7 @@ mdp.blazor.eventManager = (function () {
 
         // pageData
         var pageData = {};
-        var pageDataElement = document.getElementById("mdp-blazor-pagedata");
+        var pageDataElement = document.getElementById("mdp-blazor-core-pagedata");
         if (pageDataElement) {
             var pageDataString = pageDataElement.getAttribute("data-value");
             if (pageDataString) {
@@ -37,7 +37,7 @@ mdp.blazor.eventManager = (function () {
 
         // pageError
         var pageError = {};
-        var pageErrorElement = document.getElementById("mdp-blazor-pageerror");
+        var pageErrorElement = document.getElementById("mdp-blazor-core-pageerror");
         if (pageErrorElement) {
             var pageErrorString = pageErrorElement.getAttribute("data-value");
             if (pageErrorString) {
@@ -51,7 +51,7 @@ mdp.blazor.eventManager = (function () {
         if (Object.keys(pageError).length === 0) pageError = null;
 
         // raise
-        var pageLoadedEvent = new CustomEvent("BlazorPageLoaded", {
+        var pageLoadedEvent = new CustomEvent("MDPPageLoaded", {
             detail: {
                 pageData: pageData,
                 pageError: pageError
@@ -71,8 +71,8 @@ mdp.blazor.eventManager = (function () {
 })();
 
 
-// mdp.blazor.errorManager
-mdp.blazor.errorManager = (function () {
+// mdp.blazorCore.errorManager
+mdp.blazorCore.errorManager = (function () {
 
     // fields
     var handlers = [];
@@ -124,8 +124,8 @@ mdp.blazor.errorManager = (function () {
 })();
 
 
-// mdp.blazor.scrollManager
-mdp.blazor.scrollManager = (function () {
+// mdp.blazorCore.scrollManager
+mdp.blazorCore.scrollManager = (function () {
 
     // methods
     function initialize(scrollElement) {
@@ -142,9 +142,10 @@ mdp.blazor.scrollManager = (function () {
         scrollElement.addEventListener("scroll", () => {
             
             // scrollTop
-            var scrollTop = scrollElement.scrollTop;
-            if (Math.abs(_scrollTop - scrollTop) < _scrollThreshold) return;
-
+            var scrollTop = scrollElement.scrollY || scrollElement.scrollTop;
+            if (!scrollTop) scrollTop = 0;
+            if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
+            
             // dispatch
             if (_scrollTop > scrollTop) {
 
@@ -152,11 +153,11 @@ mdp.blazor.scrollManager = (function () {
                 _scrollTop = scrollTop;
 
                 // scrollState
-                if (_scrollState == "upped") return;
-                _scrollState = "upped";
+                if (_scrollState == "scrollUpped") return;
+                _scrollState = "scrollUpped";
 
                 // scrollUppedEvent
-                var scrollUppedEvent = new CustomEvent("BlazorScrollUpped", {
+                var scrollUppedEvent = new CustomEvent("MDPScrollUpped", {
                     detail: {
                         scrollElement: scrollElement
                     }
@@ -168,11 +169,11 @@ mdp.blazor.scrollManager = (function () {
                 _scrollTop = scrollTop;
 
                 // scrollState
-                if (_scrollState == "downed") return;
-                _scrollState = "downed";
+                if (_scrollState == "scrollDowned") return;
+                _scrollState = "scrollDowned";
 
                 // scrollDownedEvent
-                var scrollDownedEvent = new CustomEvent("BlazorScrollDowned", {
+                var scrollDownedEvent = new CustomEvent("MDPScrollDowned", {
                     detail: {
                         scrollElement: scrollElement
                     }
@@ -191,8 +192,8 @@ mdp.blazor.scrollManager = (function () {
 })();
 
 
-// mdp.blazor.interopManager
-mdp.blazor.interopManager = (function () {
+// mdp.blazorCore.interopManager
+mdp.blazorCore.interopManager = (function () {
 
     // fields
     var _interopComponent = null;
@@ -205,12 +206,12 @@ mdp.blazor.interopManager = (function () {
         _interopComponent = interopComponent;
     }
 
-    function invokeAsync(methodName, methodParameters, isBackground = false) {
+    function invokeAsync(actionName, actionParameters, isBackground = false) {
 
         // invokingEvent
         (function () {
             if (isBackground == false) {
-                var invokingEvent = new CustomEvent("BlazorInvoking", {
+                var invokingEvent = new CustomEvent("MDPActionInvoking", {
                     detail: {}
                 });
                 document.dispatchEvent(invokingEvent);
@@ -220,7 +221,7 @@ mdp.blazor.interopManager = (function () {
         // invokedEvent
         var invokedTask = function () {
             if (isBackground == false) {
-                var invokedEvent = new CustomEvent("BlazorInvoked", {
+                var invokedEvent = new CustomEvent("MDPActionInvoked", {
                     detail: {}
                 });
                 document.dispatchEvent(invokedEvent);
@@ -231,7 +232,7 @@ mdp.blazor.interopManager = (function () {
         if (_interopComponent) {            
 
             // localInvoke
-            return _interopComponent.invokeMethodAsync("InvokeAsync", methodName, methodParameters).then(function (response) {
+            return _interopComponent.invokeMethodAsync("InvokeAsync", actionName, actionParameters).then(function (response) {
                 if (response.succeeded == true) {
                     return response.result;
                 } else {
@@ -242,7 +243,7 @@ mdp.blazor.interopManager = (function () {
         else {
 
             // remoteInvoke
-            return mdp.blazor.httpClient.sendAsync("/.blazor/interop/invoke", { "serviceUri": window.location.href, "methodName": methodName, "methodParameters": methodParameters }).then(function (response) {
+            return mdp.blazorCore.httpClient.sendAsync("/.blazor/interop/invokeAsync", { "controllerUri": window.location.href, "actionName": actionName, "actionParameters": actionParameters }).then(function (response) {
                 if (response.succeeded == true) {
                     return response.result;
                 } else {
@@ -263,8 +264,8 @@ mdp.blazor.interopManager = (function () {
 })();
 
 
-// mdp.blazor.httpClient
-mdp.blazor.httpClient = (function () {
+// mdp.blazorCore.httpClient
+mdp.blazorCore.httpClient = (function () {
 
     // methods
     function sendAsync(url, body, headers, method) {
@@ -373,76 +374,88 @@ mdp.blazor.httpClient = (function () {
 /* ---------- mdp-blazor ---------- */
 (function () {
 
-    // BlazorPageLoading
-    document.addEventListener("BlazorPageLoading", function (event) {
+    // pageLoading
+    document.addEventListener("MDPPageLoading", function (event) {
 
         // style
-        document.body.classList.add("mdp-blazor-loading");
+        document.body.classList.add("mdp-page-loading");
 
         // scroll
-        document.querySelectorAll(".mdp-wrapper").forEach(function (wrapperElement) {
-            wrapperElement.scrollTo({ top: 0, behavior: 'auto' });
-        });
         window.scrollTo({ top: 0, behavior: 'auto' });
     });
 
-    // BlazorPageLoaded
-    document.addEventListener("BlazorPageLoaded", function (event) {
+    // pageLoaded
+    document.addEventListener("MDPPageLoaded", function (event) {
 
         // style
-        document.body.classList.remove("mdp-blazor-loading");
+        document.body.classList.remove("mdp-page-loading");
 
         // scroll
-        document.querySelectorAll(".mdp-wrapper").forEach(function (wrapperElement) {
-            wrapperElement.scrollTo({ top: 0, behavior: 'auto' });
-        });
         window.scrollTo({ top: 0, behavior: 'auto' });
 
         // error
         if (event.detail.pageError) {
-            mdp.blazor.errorManager.raise(new Error(event.detail.pageError.message));
+            mdp.blazorCore.errorManager.raise(new Error(event.detail.pageError.message));
         } 
     });
 
 
-    // BlazorInvoking
-    document.addEventListener("BlazorInvoking", function (event) {
+    // actionInvoking
+    document.addEventListener("MDPActionInvoking", function (event) {
 
         // style
-        document.body.classList.add("mdp-blazor-invoking");
+        document.body.classList.add("mdp-action-invoking");
     });
 
-    // BlazorInvoked
-    document.addEventListener("BlazorInvoked", function (event) {
+    // actionInvoked
+    document.addEventListener("MDPActionInvoked", function (event) {
 
         // style
-        document.body.classList.remove("mdp-blazor-invoking");
-
+        document.body.classList.remove("mdp-action-invoking");
     });
 
 
-    // BlazorScrollUpped
-    document.addEventListener("BlazorScrollUpped", function (event) {
+    // scrollUpped
+    document.addEventListener("MDPScrollUpped", function (event) {
 
         // style
-        document.body.classList.add("mdp-blazor-scrollUpped");
-        document.body.classList.remove("mdp-blazor-scrollDowned");
+        document.body.classList.add("mdp-scroll-upped");
+        document.body.classList.remove("mdp-scroll-downed");
     });
 
-    // BlazorScrollDowned
-    document.addEventListener("BlazorScrollDowned", function (event) {
+    // scrollDowned
+    document.addEventListener("MDPScrollDowned", function (event) {
 
         // style
-        document.body.classList.remove("mdp-blazor-scrollUpped");
-        document.body.classList.add("mdp-blazor-scrollDowned");
-    });    
+        document.body.classList.remove("mdp-scroll-upped");
+        document.body.classList.add("mdp-scroll-downed");
+    });
+
+
+    // textarea.autoHeight
+    document.addEventListener('MDPPageLoaded', function () {
+        document.querySelectorAll('textarea').forEach(function (textareaElement) {
+
+            // require
+            if (!textareaElement) return;
+            if (textareaElement.autoHeight) return;
+            textareaElement.autoHeight = true;
+
+            // style
+            textareaElement.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+            textareaElement.style.height = textareaElement.scrollHeight + 'px';
+        });
+    });
 })();
 
 
-/* ---------- script ---------- */
+/* ---------- native-script ---------- */
 (function () {
 
-    // Error
+    // error.toJSON
     Error.prototype.toJSON = function () {
         return {
             name: this.name,
@@ -450,5 +463,3 @@ mdp.blazor.httpClient = (function () {
         };
     };
 })();
-
-

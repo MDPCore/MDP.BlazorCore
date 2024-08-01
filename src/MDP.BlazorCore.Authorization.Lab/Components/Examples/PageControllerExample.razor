@@ -1,9 +1,10 @@
-﻿@page "/PageServiceExample"
+﻿@attribute [Authorize]
+@page "/PageControllerExample"
 @inherits PageComponent
 @code {
     
     // Class
-    public class PageService : InteropService
+    public class PageController : InteropController
     {
         // Methods
         public async Task<string> Echo(string message)
@@ -18,17 +19,19 @@
     <script>
 
         // blazorPageLoaded
-        document.addEventListener("BlazorPageLoaded", function (event) {
+        document.addEventListener("MDPPageLoaded", function (event) {
 
             // runButton
             document.getElementById("runButton").addEventListener("click", function (event) {
 
                 // invokeMethod
-                mdp.blazor.interopManager.invokeAsync("Echo", {
+                mdp.blazorCore.interopManager.invokeAsync("Echo", {
                     "message": "Hello World"
                 }).then(result => {
-                    alert(result + " By PageService");
-                }).catch(mdp.blazor.errorManager.raise);
+                    alert(result + " By PageController");
+                }).catch(error => {
+                    alert(error.message);
+                });
             });
         }, { once: true });
     </script>
@@ -37,7 +40,7 @@
 <PageBody Context="@Context">
 
     <!-- title -->
-    <h3>PageServiceExample</h3>
+    <h3>PageControllerExample</h3>
     <hr />
 
     <!-- run -->

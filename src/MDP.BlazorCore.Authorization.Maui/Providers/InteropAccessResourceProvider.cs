@@ -14,7 +14,7 @@ namespace MDP.BlazorCore.Authorization.Maui
             if (interopRequest == null) return null;
 
             // Uri
-            var uri = interopRequest.ServiceUri;
+            var uri = interopRequest.ControllerUri;
             if (uri == null) return null;
 
             // AccessResource

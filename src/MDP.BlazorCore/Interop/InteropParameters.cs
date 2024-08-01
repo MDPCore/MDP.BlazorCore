@@ -11,22 +11,22 @@ namespace MDP.BlazorCore
         // Fields
         private readonly Dictionary<string, string> _routeParameters = null;
 
-        private readonly JsonDocument _methodParameters = null;
+        private readonly JsonDocument _actionParameters = null;
 
 
         // Constructors
-        public InteropParameters(Dictionary<string, string> routeParameters, JsonDocument methodParameters)
+        public InteropParameters(Dictionary<string, string> routeParameters, JsonDocument actionParameters)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(routeParameters);
-            ArgumentNullException.ThrowIfNull(methodParameters);
+            ArgumentNullException.ThrowIfNull(actionParameters);
 
             #endregion
 
             // Default
             _routeParameters = routeParameters;
-            _methodParameters = methodParameters;
+            _actionParameters = actionParameters;
         }
 
 
@@ -45,8 +45,8 @@ namespace MDP.BlazorCore
             {
                 if (parameterType.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) != null)
                 {
-                    // MethodParameters
-                    if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
+                    // ActionParameters
+                    if (_actionParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
                     {
                         var parameter = JsonSerializer.Deserialize(parameterElement.GetRawText(), parameterType, new JsonSerializerOptions
                         {
@@ -75,8 +75,8 @@ namespace MDP.BlazorCore
                     }
                 }
 
-                // MethodParameters
-                if (_methodParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
+                // ActionParameters
+                if (_actionParameters.RootElement.TryGetProperty(parameterName, out JsonElement parameterElement) == true)
                 {
                     if (parameterType == typeof(string))
                     {

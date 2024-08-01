@@ -3,7 +3,7 @@
 @code {
 
     // Class
-    public class PageService : InteropService
+    public class PageController : InteropController
     {
         // Methods
         public async Task<PageModel> OnInitializedAsync()
@@ -27,7 +27,7 @@
     <script>
 
         // blazorPageLoaded
-        document.addEventListener("BlazorPageLoaded", function (event) {
+        document.addEventListener("MDPPageLoaded", function (event) {
 
             // runButton
             document.getElementById("runButton").addEventListener("click", function (event) {

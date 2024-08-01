@@ -136,7 +136,7 @@ namespace MDP.BlazorCore
             }
 
             // Return
-            return new InteropParameters(routeParameters, interopRequest.MethodParameters);
+            return new InteropParameters(routeParameters, interopRequest.ActionParameters);
         }
     }
 }

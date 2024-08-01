@@ -25,7 +25,7 @@
     <ApplicationTitle>MDP.BlazorCore.Authorization.Maui.Lab</ApplicationTitle>
 
     <!-- App Identifier -->
-    <ApplicationId>com.companyname.mdp.blazorcore.authorization.maui.lab</ApplicationId>
+    <ApplicationId>mdp.blazorcore.authorization.maui.lab</ApplicationId>
 
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

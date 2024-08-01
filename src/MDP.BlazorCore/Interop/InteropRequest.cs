@@ -12,25 +12,25 @@ namespace MDP.BlazorCore
 
 
         // Constructors
-        public InteropRequest(Uri serviceUri, string methodName, JsonDocument methodParameters = null)
+        public InteropRequest(Uri controllerUri, string actionName, JsonDocument actionParameters = null)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(serviceUri);
-            ArgumentNullException.ThrowIfNullOrEmpty(methodName);
+            ArgumentNullException.ThrowIfNull(controllerUri);
+            ArgumentNullException.ThrowIfNullOrEmpty(actionName);
 
             #endregion
 
             // Require
-            if (methodParameters == null) methodParameters = _emptyDocument;
+            if (actionParameters == null) actionParameters = _emptyDocument;
 
             // Default
-            this.ServiceUri = serviceUri;
-            this.MethodName = methodName;
-            this.MethodParameters = methodParameters;
+            this.ControllerUri = controllerUri;
+            this.ActionName = actionName;
+            this.ActionParameters = actionParameters;
 
             // RoutePath
-            var routePath = this.ServiceUri.AbsolutePath;
+            var routePath = this.ControllerUri.AbsolutePath;
             if (routePath.StartsWith("/") == false) routePath = "/" + routePath;
             if (routePath.EndsWith("/") == true) routePath = routePath.TrimEnd('/');
             if (string.IsNullOrEmpty(routePath) == true) throw new InvalidOperationException($"{nameof(routePath)}=null");
@@ -45,11 +45,11 @@ namespace MDP.BlazorCore
 
 
         // Properties
-        public Uri ServiceUri { get; private set; }
+        public Uri ControllerUri { get; private set; }
 
-        public string MethodName { get; private set; }
+        public string ActionName { get; private set; }
 
-        public JsonDocument MethodParameters { get; private set; }
+        public JsonDocument ActionParameters { get; private set; }
 
 
         internal string RoutePath { get; private set; }

@@ -64,15 +64,15 @@ namespace MDP.BlazorCore
                 var navigationUri = new Uri(this.NavigationManager.Uri);
                 if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
 
-                // ServiceUri
-                var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
-                if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
+                // ControllerUri
+                var controllerUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
+                if (controllerUri == null) throw new InvalidOperationException($"{nameof(controllerUri)}=null");
 
                 // HasInitialize
                 var hasInitialize = this.GetType().GetNestedTypes(BindingFlags.Public).Any(nestedType =>
                 {
                     // Require
-                    if (nestedType.IsSubclassOf(typeof(InteropService)) == false) return false;
+                    if (nestedType.IsSubclassOf(typeof(InteropController)) == false) return false;
                     if (nestedType.GetMethod(nameof(OnInitializedAsync)) == null) return false;
 
                     // Return
@@ -85,7 +85,7 @@ namespace MDP.BlazorCore
                     // InvokeAsync
                     var interopResponse = await this.InteropManager.InvokeAsync(principal, new InteropRequest
                     (
-                        new Uri(serviceUri),
+                        new Uri(controllerUri),
                         nameof(OnInitializedAsync)
                     ));
                     if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
@@ -119,7 +119,7 @@ namespace MDP.BlazorCore
             if (firstRender == true)
             {
                 // Invoke
-                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoading();");
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.eventManager.dispatchPageLoading();");
 
                 // Return
                 return;
@@ -129,7 +129,7 @@ namespace MDP.BlazorCore
             if (this.Initialized == true)
             {
                 // Invoke
-                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazor.eventManager.dispatchPageLoaded();");
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.eventManager.dispatchPageLoaded();");
 
                 // Return
                 return;

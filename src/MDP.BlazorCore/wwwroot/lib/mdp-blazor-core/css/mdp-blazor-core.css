@@ -5,24 +5,26 @@
 
 }
 
+/* reset */
 html, body {
-  overscroll-behavior: none;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: none;
 }
 
 
 /* ---------- wrapper ---------- */
 
 /* wrapper */
-.mdp-wrapper {
+.mdp-wrapper {    
     width: 100%;
-    height: 100dvh;
-    overflow: auto;
+    height: fit-content;
+    min-height: 100dvh;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
     align-items: normal;
     justify-content: normal;
-    overscroll-behavior: none;
 }
 
 .mdp-wrapper a,
@@ -35,16 +37,16 @@ html, body {
 .mdp-wrapper h5,
 .mdp-wrapper h6,
 .mdp-wrapper h7 {
-    margin: 0rem;
-    margin-block: 0rem;
-}
-
-.mdp-wrapper *:focus {
-    box-shadow: none;
+    margin: 0;
+    padding: 0;
 }
 
 .mdp-wrapper a {
     text-decoration: none;
+}
+
+.mdp-wrapper *:focus {
+    box-shadow: none !important;
 }
 
 
@@ -90,6 +92,14 @@ html, body {
 
 /* ---------- components ---------- */
 
+/* textarea */
+.mdp-wrapper textarea {
+    resize: none;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
 /* image */
 .mdp-wrapper .img-svg {
     width: 100%;
@@ -101,77 +111,100 @@ html, body {
 }
 
 /* button */
+.mdp-wrapper .btn {
+    --mdp-btn-color: var(--bs-btn-color);
+    --mdp-btn-border-color: var(--bs-btn-border-color);
+    --mdp-btn-background-color: var(--bs-btn-bg);
+}
+
 .mdp-wrapper .btn:hover {
-    color: var(--bs-btn-color);
-    background-color: var(--bs-btn-bg);
-    border-color: var(--bs-btn-border-color);
+    color: var(--mdp-btn-color);
+    background-color: var(--mdp-btn-background-color);
+    border-color: var(--mdp-btn-border-color);
     opacity: 0.8;
 }
 
 .mdp-wrapper .btn:focus-visible {
-    color: var(--bs-btn-color);
-    background-color: var(--bs-btn-bg);
-    border-color: var(--bs-btn-border-color);
+    color: var(--mdp-btn-color);
+    background-color: var(--mdp-btn-background-color);
+    border-color: var(--mdp-btn-border-color);
     outline: 0;
     box-shadow: none;
 }
 
 .mdp-wrapper .btn.disabled, 
 .mdp-wrapper .btn:disabled {    
-    color: var(--bs-btn-color);
-    background-color: var(--bs-btn-bg);
-    border-color: var(--bs-btn-border-color);
+    color: var(--mdp-btn-color);
+    background-color: var(--mdp-btn-background-color);
+    border-color: var(--mdp-btn-border-color);
     opacity: 0.3;
     pointer-events: none;
 }
 
 .mdp-wrapper .btn.active,
 .mdp-wrapper .btn:active {
-    color: var(--bs-btn-bg);
-    background-color: var(--bs-btn-color);
-    border-color: var(--bs-btn-border-color);
+    color: var(--mdp-btn-background-color);
+    background-color: var(--mdp-btn-color);
+    border-color: var(--mdp-btn-border-color);
 }
 
-.mdp-wrapper .btn-fake {
+.mdp-wrapper .btn.readonly {
     opacity: 1;
     pointer-events: none;
 }
 
 /* input-group */
 .mdp-wrapper .input-group {
-    margin: 0;
-    padding: 0;
-    --bs-input-color: var(--bs-body-color);
-    --bs-input-bg: var(--bs-tertiary-bg);
-    --bs-input-border-color: var(--bs-border-color);
+    font-size: var(--bs-body-font-size);
+    line-height: var(--bs-body-line-height);
+    --mdp-input-color: var(--bs-body-color);
+    --mdp-input-border-color: var(--bs-border-color);
+    --mdp-input-background-color: var(--bs-body-bg);
+    --mdp-input-invalid-color: var(--bs-form-invalid-color);
 }
 
 .mdp-wrapper .input-group .input-group-text {
-    color: var(--bs-input-color);
-    background-color: var(--bs-input-bg);
-    border-color: var(--bs-input-border-color);
+    font-size: inherit;
+    line-height: inherit;
+    color: var(--mdp-input-color);
+    border-color: var(--mdp-input-border-color);
+    background-color: var(--mdp-input-background-color);
 }
 
 .mdp-wrapper .input-group .form-control {
-    color: var(--bs-input-color);
-    background-color: var(--bs-input-bg);
-    border-color: var(--bs-input-border-color);
+    font-size: inherit;
+    line-height: inherit;
+    color: var(--mdp-input-color);
+    border-color: var(--mdp-input-border-color);
+    background-color: var(--mdp-input-background-color);
 }
 
 .mdp-wrapper .input-group .form-control.disabled,
 .mdp-wrapper .input-group .form-control:disabled {
+    color: var(--mdp-input-color);
+    border-color: var(--mdp-input-border-color);
+    background-color: var(--mdp-input-background-color);
     opacity: 0.3;
     pointer-events: none;
 }
 
-.mdp-wrapper .input-group .form-control.readonly {
-    pointer-events: none;
+.mdp-wrapper .input-group .form-control.is-invalid,
+.mdp-wrapper .input-group .form-control.invalid
+.mdp-wrapper .input-group .form-control:invalid {   
+    color: var(--mdp-input-color);
+    border-color: var(--mdp-input-invalid-color);
+    background-color: var(--mdp-input-background-color);
 }
 
 .mdp-wrapper .input-group .form-control::placeholder  {
-    color: var(--bs-input-color);
+    font-size: inherit;
+    line-height: inherit;
+    color: var(--mdp-input-color);
+    border-color: var(--mdp-input-border-color);
+    background-color: var(--mdp-input-background-color);
     opacity: 0.5;
 }
+
 
 /* ---------- utilities ---------- */
 

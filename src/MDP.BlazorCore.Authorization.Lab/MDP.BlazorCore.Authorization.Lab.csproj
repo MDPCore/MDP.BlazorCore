@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Components\Examples\PageServiceExample.razor">
+    <Content Update="Components\Examples\PageControllerExample.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

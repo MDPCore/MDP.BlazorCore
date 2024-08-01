@@ -6,10 +6,10 @@ using System.Reflection;
 
 namespace MDP.BlazorCore.Maui
 {
-    public partial class MainPage : ContentPage
+    public partial class AppPage : ContentPage
     {
         // Constructors
-        public MainPage()
+        public AppPage()
         {
             // Initialize
             this.InitializeComponent();

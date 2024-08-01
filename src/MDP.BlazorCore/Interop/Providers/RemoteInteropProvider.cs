@@ -52,16 +52,16 @@ namespace MDP.BlazorCore
             if (httpClient == null) throw new InvalidOperationException($"{nameof(httpClient)}=null");
 
             // GetAsync
-            var interopResponse = await httpClient.PostAsync<InteropResponse>("/.blazor/interop/invoke", content: new
+            var interopResponse = await httpClient.PostAsync<InteropResponse>("/.blazor/interop/invokeAsync", content: new
             {
-                serviceUri = $"{httpClient.BaseAddress.Scheme}://{httpClient.BaseAddress.Host}{interopRequest.ServiceUri.PathAndQuery}",
-                methodName = interopRequest.MethodName,
-                methodParameters = interopRequest.MethodParameters
+                controllerUri = $"{httpClient.BaseAddress.Scheme}://{httpClient.BaseAddress.Host}{interopRequest.ControllerUri.PathAndQuery}",
+                actionName = interopRequest.ActionName,
+                actionParameters = interopRequest.ActionParameters
             });
             if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
             // MethodInfo
-            var methodInfo = interopResource.ServiceType.GetMethod(interopRequest.MethodName);
+            var methodInfo = interopResource.ServiceType.GetMethod(interopRequest.ActionName);
             if (methodInfo == null) throw new InvalidOperationException($"{nameof(methodInfo)}=null");
 
             // ResultType

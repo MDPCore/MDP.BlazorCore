@@ -41,7 +41,7 @@
         if (_interopComponent == null) throw new InvalidOperationException($"{nameof(_interopComponent)}=null");
 
         // Initialize
-        await this.JSRuntime.InvokeVoidAsync("mdp.blazor.interopManager.initialize", _interopComponent);
+        await this.JSRuntime.InvokeVoidAsync("mdp.blazorCore.interopManager.initialize", _interopComponent);
     }
 
     public void Dispose()
@@ -51,12 +51,12 @@
     }
 
     [JSInvokable]
-    public async Task<InteropResponse> InvokeAsync(string methodName, JsonDocument methodParameters)
+    public async Task<InteropResponse> InvokeAsync(string actionName, JsonDocument actionParameters)
     {
         #region Contracts
 
-        ArgumentNullException.ThrowIfNullOrEmpty(methodName);
-        ArgumentNullException.ThrowIfNull(methodParameters);
+        ArgumentNullException.ThrowIfNullOrEmpty(actionName);
+        ArgumentNullException.ThrowIfNull(actionParameters);
 
         #endregion
                 
@@ -71,16 +71,16 @@
             var navigationUri = new Uri(this.NavigationManager.Uri);
             if (navigationUri == null) throw new InvalidOperationException($"{nameof(navigationUri)}=null");
 
-            // ServiceUri
-            var serviceUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
-            if (serviceUri == null) throw new InvalidOperationException($"{nameof(serviceUri)}=null");
+            // ControllerUri
+            var controllerUri = $"{navigationUri.Scheme}://{navigationUri.Host}{navigationUri.AbsolutePath}";
+            if (controllerUri == null) throw new InvalidOperationException($"{nameof(controllerUri)}=null");
 
             // InvokeAsync
             var interopResponse = await this.InteropManager.InvokeAsync(principal, new InteropRequest
             (
-                new Uri(serviceUri),
-                methodName,
-                methodParameters
+                new Uri(controllerUri),
+                actionName,
+                actionParameters
             ));
             if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
@@ -109,6 +109,6 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         // pageLoaded
-        mdp.blazor.eventManager.dispatchPageLoaded();
+        mdp.blazorCore.eventManager.dispatchPageLoaded();
     }, { once: true });
 </script>

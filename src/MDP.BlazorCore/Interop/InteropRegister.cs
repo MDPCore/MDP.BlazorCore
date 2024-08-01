@@ -19,30 +19,30 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // InteropServiceTypeList
-            IList<Type> interopServiceTypeList = null;
+            // InteropControllerTypeList
+            IList<Type> interopControllerTypeList = null;
             {
                 // FindAll
-                interopServiceTypeList = MDP.Reflection.Type.FindAllApplicationType();
-                if (interopServiceTypeList == null) throw new InvalidOperationException($"{nameof(interopServiceTypeList)}=null");
+                interopControllerTypeList = MDP.Reflection.Type.FindAllApplicationType();
+                if (interopControllerTypeList == null) throw new InvalidOperationException($"{nameof(interopControllerTypeList)}=null");
 
                 // Filter
-                interopServiceTypeList = interopServiceTypeList.AsParallel().Where(interopServiceType =>
+                interopControllerTypeList = interopControllerTypeList.AsParallel().Where(interopControllerType =>
                 {
                     // Require
-                    if (interopServiceType.IsNested == false) return false;
-                    if (interopServiceType.DeclaringType == null) return false;
-                    if (interopServiceType.IsAssignableTo(typeof(InteropService)) == false) return false;
+                    if (interopControllerType.IsNested == false) return false;
+                    if (interopControllerType.DeclaringType == null) return false;
+                    if (interopControllerType.IsAssignableTo(typeof(InteropController)) == false) return false;
 
                     // Return
                     return true;
                 }).ToList();
 
                 // Register
-                foreach (var interopServiceType in interopServiceTypeList)
+                foreach (var interopControllerType in interopControllerTypeList)
                 {
                     // Add
-                    serviceCollection.AddTransient(interopServiceType);
+                    serviceCollection.AddTransient(interopControllerType);
                 }
             }
 
@@ -50,14 +50,14 @@ namespace MDP.BlazorCore
             var interopResourceList = new List<InteropResource>();
             {
                 // FindAll
-                foreach (var interopServiceType in interopServiceTypeList)
+                foreach (var interopControllerType in interopControllerTypeList)
                 {
                     // RouteAttributeList
-                    var routeAttributeList = interopServiceType.DeclaringType.GetCustomAttributes<RouteAttribute>();
+                    var routeAttributeList = interopControllerType.DeclaringType.GetCustomAttributes<RouteAttribute>();
                     if (routeAttributeList == null) throw new InvalidOperationException($"{nameof(routeAttributeList)}=null");
 
                     // Add
-                    interopResourceList.AddRange(routeAttributeList.Select(routeAttribute => new InteropResource(interopServiceType, routeAttribute.Template)));
+                    interopResourceList.AddRange(routeAttributeList.Select(routeAttribute => new InteropResource(interopControllerType, routeAttribute.Template)));
                 }
 
                 // Register

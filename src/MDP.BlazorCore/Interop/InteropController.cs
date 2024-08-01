@@ -2,7 +2,7 @@
 
 namespace MDP.BlazorCore
 {
-    public abstract class InteropService
+    public abstract class InteropController
     {
         // Properties
         public ClaimsPrincipal User { get; internal set; }
