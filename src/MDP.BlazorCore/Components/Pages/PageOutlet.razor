@@ -105,10 +105,10 @@
 <SectionOutlet SectionId="@PageScriptSectionId" />
 <script>
 
-    // blazorPageLoaded
+    // contentLoaded
     document.addEventListener("DOMContentLoaded", function () {
 
         // pageLoaded
-        mdp.blazorCore.eventManager.dispatchPageLoaded();
+        mdp.blazorCore.pageManager.onPageLoaded();
     }, { once: true });
 </script>

@@ -5,12 +5,11 @@ var mdp = mdp || {};
 // mdp.blazorCore
 mdp.blazorCore = mdp.blazorCore || {};
 
-
-// mdp.blazorCore.eventManager
-mdp.blazorCore.eventManager = (function () {
+// mdp.blazorCore.pageManager
+mdp.blazorCore.pageManager = (function () {
 
     // methods
-    function dispatchPageLoading() {
+    function onPageLoading() {
 
         // raise
         var pageLoadingEvent = new CustomEvent("MDPPageLoading", {
@@ -19,7 +18,7 @@ mdp.blazorCore.eventManager = (function () {
         document.dispatchEvent(pageLoadingEvent);
     }
 
-    function dispatchPageLoaded() {
+    function onPageLoaded() {
 
         // pageData
         var pageData = {};
@@ -65,31 +64,30 @@ mdp.blazorCore.eventManager = (function () {
     return {
 
         // methods
-        dispatchPageLoading: dispatchPageLoading,
-        dispatchPageLoaded: dispatchPageLoaded
+        onPageLoading: onPageLoading,
+        onPageLoaded: onPageLoaded
     };
 })();
-
 
 // mdp.blazorCore.errorManager
 mdp.blazorCore.errorManager = (function () {
 
     // fields
-    var handlers = [];
+    var _handlers = [];
 
 
     // methods
     function addHandler(handler) {
 
         // add
-        handlers.push(handler);
+        _handlers.push(handler);
     }
 
     function removeHandler(handler) {
 
         // remove
-        var index = handlers.indexOf(handler);
-        if (index >= 0) handlers.splice(index, 1);
+        var index = _handlers.indexOf(handler);
+        if (index >= 0) _handlers.splice(index, 1);
     }
 
     function raise(error) {
@@ -98,10 +96,10 @@ mdp.blazorCore.errorManager = (function () {
         const message = typeof error === 'object' ? JSON.stringify(error) : { message: error };
 
         // raise
-        if (handlers.length > 0) {
+        if (_handlers.length > 0) {
 
             // handlers
-            handlers.forEach(function (handler) {
+            _handlers.forEach(function (handler) {
                 handler(message);
             });
         }
@@ -123,7 +121,6 @@ mdp.blazorCore.errorManager = (function () {
     };
 })();
 
-
 // mdp.blazorCore.scrollManager
 mdp.blazorCore.scrollManager = (function () {
 
@@ -140,12 +137,12 @@ mdp.blazorCore.scrollManager = (function () {
 
         // methods
         scrollElement.addEventListener("scroll", () => {
-            
+
             // scrollTop
             var scrollTop = scrollElement.scrollY || scrollElement.scrollTop;
             if (!scrollTop) scrollTop = 0;
             if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
-            
+
             // dispatch
             if (_scrollTop > scrollTop) {
 
@@ -156,13 +153,8 @@ mdp.blazorCore.scrollManager = (function () {
                 if (_scrollState == "scrollUpped") return;
                 _scrollState = "scrollUpped";
 
-                // scrollUppedEvent
-                var scrollUppedEvent = new CustomEvent("MDPScrollUpped", {
-                    detail: {
-                        scrollElement: scrollElement
-                    }
-                });
-                document.dispatchEvent(scrollUppedEvent);
+                // scrollUpped
+                onScrollUpped(scrollElement);
             } else {
 
                 // scrollTop
@@ -172,25 +164,50 @@ mdp.blazorCore.scrollManager = (function () {
                 if (_scrollState == "scrollDowned") return;
                 _scrollState = "scrollDowned";
 
-                // scrollDownedEvent
-                var scrollDownedEvent = new CustomEvent("MDPScrollDowned", {
-                    detail: {
-                        scrollElement: scrollElement
-                    }
-                });
-                document.dispatchEvent(scrollDownedEvent);
+                // scrollDowned
+                onScrollDowned(scrollElement);
             }
         });
     }
+
+    function onScrollUpped(scrollElement) {
+
+        // require
+        if (!scrollElement) scrollElement = window;
+
+        // scrollUppedEvent
+        var scrollUppedEvent = new CustomEvent("MDPScrollUpped", {
+            detail: {
+                scrollElement: scrollElement
+            }
+        });
+        document.dispatchEvent(scrollUppedEvent);
+    }
+
+    function onScrollDowned(scrollElement) {
+
+        // require
+        if (!scrollElement) scrollElement = window;
+
+        // scrollDownedEvent
+        var scrollDownedEvent = new CustomEvent("MDPScrollDowned", {
+            detail: {
+                scrollElement: scrollElement
+            }
+        });
+        document.dispatchEvent(scrollDownedEvent);
+    }
+
 
     // return
     return {
 
         // methods
-        initialize: initialize
+        initialize: initialize,
+        onScrollUpped: onScrollUpped,
+        onScrollDowned: onScrollDowned
     };
 })();
-
 
 // mdp.blazorCore.interopManager
 mdp.blazorCore.interopManager = (function () {
@@ -262,7 +279,6 @@ mdp.blazorCore.interopManager = (function () {
         invokeAsync: invokeAsync
     };
 })();
-
 
 // mdp.blazorCore.httpClient
 mdp.blazorCore.httpClient = (function () {
@@ -393,7 +409,26 @@ mdp.blazorCore.httpClient = (function () {
         // scroll
         window.scrollTo({ top: 0, behavior: 'auto' });
 
-        // error
+        // textarea
+        document.querySelectorAll('textarea').forEach(function (textareaElement) {
+
+            // require
+            if (!textareaElement) return;
+            if (textareaElement.autoHeight) return;
+            textareaElement.autoHeight = true;
+
+            // style
+            textareaElement.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+            textareaElement.style.height = textareaElement.scrollHeight + 'px';
+        });
+
+        // mdp.blazorCore.scrollManager
+        mdp.blazorCore.scrollManager.initialize();
+
+        // mdp.blazorCore.errorManager
         if (event.detail.pageError) {
             mdp.blazorCore.errorManager.raise(new Error(event.detail.pageError.message));
         } 
@@ -429,25 +464,6 @@ mdp.blazorCore.httpClient = (function () {
         // style
         document.body.classList.remove("mdp-scroll-upped");
         document.body.classList.add("mdp-scroll-downed");
-    });
-
-
-    // textarea.autoHeight
-    document.addEventListener('MDPPageLoaded', function () {
-        document.querySelectorAll('textarea').forEach(function (textareaElement) {
-
-            // require
-            if (!textareaElement) return;
-            if (textareaElement.autoHeight) return;
-            textareaElement.autoHeight = true;
-
-            // style
-            textareaElement.addEventListener('input', function () {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
-            textareaElement.style.height = textareaElement.scrollHeight + 'px';
-        });
     });
 })();
 
