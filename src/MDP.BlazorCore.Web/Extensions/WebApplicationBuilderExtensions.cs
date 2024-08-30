@@ -60,13 +60,19 @@ namespace MDP.BlazorCore.Web
                         if (configureDeveloperTool != null) configureDeveloperTool(options);
                     });
 
-                // RoutesOptions
+                // Routes
                 applicationBuilder.Services.AddSingleton<RoutesOptions>(serviceProvider => {
                     return new RoutesOptions()
                     {
                         AppAssembly = entryAssembly,
                         DefaultLayout = defaultLayout
                     };
+                });
+
+                // SignalR
+                applicationBuilder.Services.AddSignalR(options =>
+                {
+                    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
                 });
 
                 // InteropManager

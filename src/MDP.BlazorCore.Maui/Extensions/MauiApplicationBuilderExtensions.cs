@@ -70,7 +70,7 @@ namespace MDP.BlazorCore.Maui
                 applicationBuilder.Services.AddMauiBlazorWebView();
                 applicationBuilder.Services.AddAuthorizationCore();
 
-                // RoutesOptions
+                // Routes
                 applicationBuilder.Services.AddSingleton<RoutesOptions>(serviceProvider => { 
                     return new RoutesOptions()
                     {
