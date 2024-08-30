@@ -68,13 +68,13 @@ namespace MDP.BlazorCore
             var resultType = methodInfo.ReturnType;
             {
                 // Task
-                if (resultType == typeof(Task))
+                if (resultType != null && resultType == typeof(Task))
                 {
                     resultType = null;
                 }
 
                 // Task<>
-                if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
+                if (resultType != null && resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
                 {
                     resultType = resultType.GetGenericArguments().FirstOrDefault();
                 }
