@@ -1,6 +1,36 @@
-﻿// mdp
-var mdp = mdp || {};
+﻿/* ---------- global ---------- */
 
+// error.toJSON
+Error.prototype.toJSON = function () {
+    return {
+        name: this.name,
+        message: this.message
+    };
+};
+
+// textarea.autoHeight
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('textarea').forEach(function (textareaElement) {
+
+        // require
+        if (!textareaElement) return;
+        if (textareaElement.autoHeight) return;
+        textareaElement.autoHeight = true;
+
+        // handlers
+        textareaElement.addEventListener('input', function () {
+            textareaElement.style.height = 'auto';
+            textareaElement.style.height = this.scrollHeight + 'px';
+        });
+        textareaElement.dispatchEvent(new Event('input'));
+    });
+});   
+
+
+/* ---------- platform ---------- */
+
+// mdp
+window.mdp = window.mdp || {};
 
 // mdp.blazorCore
 mdp.blazorCore = mdp.blazorCore || {};
@@ -8,8 +38,8 @@ mdp.blazorCore = mdp.blazorCore || {};
 // mdp.blazorCore.pageManager
 mdp.blazorCore.pageManager = (function () {
 
-    // events
-    function onPageLoading() {
+    // methods
+    function dispatchPageLoading() {
 
         // pageLoading
         var pageLoadingEvent = new CustomEvent("MDPPageLoading", {
@@ -18,7 +48,7 @@ mdp.blazorCore.pageManager = (function () {
         document.dispatchEvent(pageLoadingEvent);
     }
 
-    function onPageLoaded() {
+    function dispatchPageLoaded() {
 
         // pageData
         var pageData = {};
@@ -63,11 +93,127 @@ mdp.blazorCore.pageManager = (function () {
     // return
     return {
 
-        // events
-        onPageLoading: onPageLoading,
-        onPageLoaded: onPageLoaded
+        // methods
+        dispatchPageLoading: dispatchPageLoading,
+        dispatchPageLoaded: dispatchPageLoaded
     };
 })();
+
+document.addEventListener("MDPPageLoading", function (event) {
+
+    // style
+    document.body.classList.add("mdp-page-loading");
+
+    // scroll
+    window.scrollTo({ top: 0, behavior: 'auto' });
+});
+
+document.addEventListener("MDPPageLoaded", function (event) {
+
+    // style
+    document.body.classList.remove("mdp-page-loading");
+
+    // scroll
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // mdp.blazorCore.errorManager
+    if (event.detail.pageError) {
+        mdp.blazorCore.errorManager.dispatchError(new Error(event.detail.pageError.message));
+    }
+});
+
+// mdp.blazorCore.interopManager
+mdp.blazorCore.interopManager = (function () {
+
+    // fields
+    var _interopComponent = null;
+
+
+    // methods
+    function initialize(interopComponent) {
+
+        // default
+        _interopComponent = interopComponent;
+    }
+
+    function invokeAsync(actionName, actionParameters, isBackground = false) {
+
+        // invokingEvent
+        if (isBackground == false) {
+            var invokingEvent = new CustomEvent("MDPActionInvoking", {
+                detail: {}
+            });
+            document.dispatchEvent(invokingEvent);
+        }    
+
+        // invoke
+        if (_interopComponent) {            
+
+            // localInvoke
+            return _interopComponent.invokeMethodAsync("InvokeAsync", actionName, actionParameters).then(function (response) {
+
+                // response
+                if (response.succeeded == true) {
+                    return response.result;
+                } else {
+                    throw new Error(response.errorMessage);
+                }
+            }).finally(function () {
+
+                // invokedEvent
+                if (isBackground == false) {
+                    var invokedEvent = new CustomEvent("MDPActionInvoked", {
+                        detail: {}
+                    });
+                    document.dispatchEvent(invokedEvent);
+                }
+            });
+        }
+        else {
+
+            // remoteInvoke
+            return mdp.blazorCore.httpClient.sendAsync("/.blazor/interop/invokeAsync", { "controllerUri": window.location.href, "actionName": actionName, "actionParameters": actionParameters }).then(function (response) {
+
+                // response
+                if (response.succeeded == true) {
+                    return response.result;
+                } else {
+                    throw new Error(response.errorMessage);
+                }
+            }).finally(function () {
+
+                // invokedEvent
+                if (isBackground == false) {
+                    var invokedEvent = new CustomEvent("MDPActionInvoked", {
+                        detail: {}
+                    });
+                    document.dispatchEvent(invokedEvent);
+                }
+            });
+        }        
+    };
+
+
+    // return
+    return {
+
+        // methods
+        initialize: initialize,
+        invokeAsync: invokeAsync
+    };
+})();
+
+document.addEventListener("MDPActionInvoking", function (event) {
+
+    // style
+    document.body.classList.add("mdp-action-invoking");
+});
+
+document.addEventListener("MDPActionInvoked", function (event) {
+
+    // style
+    document.body.classList.remove("mdp-action-invoking");
+});
 
 // mdp.blazorCore.taskManager
 mdp.blazorCore.taskManager = (function () {
@@ -214,86 +360,17 @@ mdp.blazorCore.taskManager = (function () {
     };
 })();
 
-// mdp.blazorCore.interopManager
-mdp.blazorCore.interopManager = (function () {
+document.addEventListener("MDPTaskInvoking", function (event) {
 
-    // fields
-    var _interopComponent = null;
+    // style
+    document.body.classList.add("mdp-task-invoking");
+});
 
+document.addEventListener("MDPTaskInvoked", function (event) {
 
-    // methods
-    function initialize(interopComponent) {
-
-        // default
-        _interopComponent = interopComponent;
-    }
-
-    function invokeAsync(actionName, actionParameters, isBackground = false) {
-
-        // invokingEvent
-        if (isBackground == false) {
-            var invokingEvent = new CustomEvent("MDPActionInvoking", {
-                detail: {}
-            });
-            document.dispatchEvent(invokingEvent);
-        }    
-
-        // invoke
-        if (_interopComponent) {            
-
-            // localInvoke
-            return _interopComponent.invokeMethodAsync("InvokeAsync", actionName, actionParameters).then(function (response) {
-
-                // response
-                if (response.succeeded == true) {
-                    return response.result;
-                } else {
-                    throw new Error(response.errorMessage);
-                }
-            }).finally(function () {
-
-                // invokedEvent
-                if (isBackground == false) {
-                    var invokedEvent = new CustomEvent("MDPActionInvoked", {
-                        detail: {}
-                    });
-                    document.dispatchEvent(invokedEvent);
-                }
-            });
-        }
-        else {
-
-            // remoteInvoke
-            return mdp.blazorCore.httpClient.sendAsync("/.blazor/interop/invokeAsync", { "controllerUri": window.location.href, "actionName": actionName, "actionParameters": actionParameters }).then(function (response) {
-
-                // response
-                if (response.succeeded == true) {
-                    return response.result;
-                } else {
-                    throw new Error(response.errorMessage);
-                }
-            }).finally(function () {
-
-                // invokedEvent
-                if (isBackground == false) {
-                    var invokedEvent = new CustomEvent("MDPActionInvoked", {
-                        detail: {}
-                    });
-                    document.dispatchEvent(invokedEvent);
-                }
-            });
-        }        
-    };
-
-
-    // return
-    return {
-
-        // methods
-        initialize: initialize,
-        invokeAsync: invokeAsync
-    };
-})();
+    // style
+    document.body.classList.remove("mdp-task-invoking");
+});
 
 // mdp.blazorCore.httpClient
 mdp.blazorCore.httpClient = (function () {
@@ -404,8 +481,8 @@ mdp.blazorCore.httpClient = (function () {
 // mdp.blazorCore.errorManager
 mdp.blazorCore.errorManager = (function () {
 
-    // events
-    function onError(error) {
+    // methods
+    function dispatchError(error) {
 
         // require
         if (!error) return;
@@ -427,16 +504,19 @@ mdp.blazorCore.errorManager = (function () {
     // return
     return {
 
-        // events
-        onError: onError
+        // methods
+        dispatchError: dispatchError
     };
 })();
+
+
+/* ---------- utilities ---------- */
 
 // mdp.blazorCore.transformManager
 mdp.blazorCore.transformManager = (function () {
 
-    // const
-    const _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    // fields
+    var _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
 
     // methods
@@ -456,12 +536,11 @@ mdp.blazorCore.transformManager = (function () {
                 outputName = outputName + "." + outputFormat;
 
                 // transform
-                //if (typeof OffscreenCanvas === "undefined") {
-                //    resolve(transformImageByCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName));
-                //} else {
-                //    resolve(transformImageByOffscreenCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName));
-                //}
-                resolve(transformImageByCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName));
+                if (typeof OffscreenCanvas === "undefined") {
+                    resolve(transformImageByCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName));
+                } else {
+                    resolve(transformImageByOffscreenCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName));
+                }
             }
             catch (error) {
 
@@ -659,571 +738,525 @@ mdp.blazorCore.transformManager = (function () {
 
     // return
     return {
+
+        // methods
         transformImageAsync: transformImageAsync
     };
 })();
 
 
-/* ---------- native ---------- */
-(function () {
+/* ---------- components ---------- */
 
-    // textarea
-    document.addEventListener("MDPPageLoaded", function (event) {
-        document.querySelectorAll('textarea').forEach(function (textareaElement) {
+// mdp.blazorCore.Fade
+mdp.blazorCore.Fade = function (fadeElement) {
 
-            // require
-            if (!textareaElement) return;
-            if (textareaElement.autoHeight) return;
-            textareaElement.autoHeight = true;
-
-            // handlers
-            textareaElement.addEventListener('input', function () {
-                textareaElement.style.height = 'auto';
-                textareaElement.style.height = this.scrollHeight + 'px';
-            });
-            textareaElement.dispatchEvent(new Event('input'));
-        });
-    });
-
-    // error
-    Error.prototype.toJSON = function () {
-        return {
-            name: this.name,
-            message: this.message
-        };
-    };
-})();
+    // require
+    if (!fadeElement) return;
+    if (fadeElement.fade) return fadeElement.fade;
 
 
-/* ---------- bootstrap ---------- */
-(function () {
+    // methods
+    function show(duration) {
 
-    // fade
-    document.addEventListener("MDPPageLoaded", function (event) {
-        document.querySelectorAll('.fade').forEach(function (fadeElement) {
-
-            // require
-            if (!fadeElement) return;
-            if (fadeElement.fade) return;
-
-            // fade
-            var fade = (function () {
-
-                // methods
-                function show(duration) {
-
-                    // duration
-                    if (!duration && fadeElement.getAttribute('data-show-duration')) {
-                        duration = parseInt(fadeElement.getAttribute('data-show-duration'), 10);
-                    }
-
-                    // show
-                    fadeElement.classList.add('show');
-
-                    // auto-hide
-                    if (duration) {
-                        setTimeout(function () {
-                            fadeElement.classList.remove('show');
-                        }, duration);
-                    };
-                };
-
-                function hide() {
-                    fadeElement.classList.remove('show');
-                };
-
-                function toggle(duration) {
-                    if (fadeElement.classList.contains('fade-end') == true) {
-                        fadeElement.fade.show(duration);
-                    }
-                    else {
-                        fadeElement.fade.hide();
-                    }
-                };
-
-
-                // return
-                return {
-
-                    // methods
-                    show: show,
-                    hide: hide,
-                    toggle: toggle
-                };
-            })();
-            fadeElement.fade = fade;
-
-            // handlers
-            fadeElement.addEventListener('transitionend', function () {
-                if (window.getComputedStyle(fadeElement).getPropertyValue('opacity') == 0) {
-                    fadeElement.classList.add('fade-end');
-                }
-                else {
-                    fadeElement.classList.remove('fade-end');
-                }
-            });
-            fadeElement.dispatchEvent(new Event('transitionend'));
-        });
-    });
-})();
-
-
-/* ---------- mdp-blazor-core ---------- */
-(function () {
-    
-    // pageLoading
-    document.addEventListener("MDPPageLoading", function (event) {
-
-        // style
-        document.body.classList.add("mdp-page-loading");
-
-        // scroll
-        window.scrollTo({ top: 0, behavior: 'auto' });
-    });
-
-    // pageLoaded
-    document.addEventListener("MDPPageLoaded", function (event) {
-
-        // style
-        document.body.classList.remove("mdp-page-loading");
-
-        // scroll
-        window.scrollTo({ top: 0, behavior: 'auto' });        
-
-        // mdp.blazorCore.errorManager
-        if (event.detail.pageError) {
-            mdp.blazorCore.errorManager.onError(new Error(event.detail.pageError.message));
+        // duration
+        if (!duration && fadeElement.getAttribute('data-show-duration')) {
+            duration = parseInt(fadeElement.getAttribute('data-show-duration'), 10);
         }
-    });    
 
-    // actionInvoking
-    document.addEventListener("MDPActionInvoking", function (event) {
+        // show
+        fadeElement.classList.add('show');
+        if (!duration) return Promise.resolve();
 
-        // style
-        document.body.classList.add("mdp-action-invoking");
-    });
-
-    // actionInvoked
-    document.addEventListener("MDPActionInvoked", function (event) {
-
-        // style
-        document.body.classList.remove("mdp-action-invoking");
-    });
-
-    // taskInvoking
-    document.addEventListener("MDPTaskInvoking", function (event) {
-
-        // style
-        document.body.classList.add("mdp-task-invoking");
-    });
-
-    // taskInvoked
-    document.addEventListener("MDPTaskInvoked", function (event) {
-
-        // style
-        document.body.classList.remove("mdp-task-invoking");
-    });
-
-
-    // scrollMonitor
-    document.addEventListener("MDPPageLoaded", function (event) {
-        document.querySelectorAll('.scroll-monitor').forEach(function (scrollMonitorElement) {
-            
-            // require
-            if (!scrollMonitorElement) return;
-            if (scrollMonitorElement.scrollMonitor) return;
-            if (scrollMonitorElement === document.body) scrollMonitorElement = window;
-            if (scrollMonitorElement === document.documentElement) scrollMonitorElement = window;
-            
-            // scrollMonitor
-            var scrollMonitor = (function () {
-
-                // fields
-                var _scrollTop = 0;
-                var _scrollState = null;
-                var _scrollThreshold = 100;
-
-
-                // handlers
-                scrollMonitorElement.addEventListener("scroll", () => {
-
-                    // scrollTop
-                    var scrollTop = scrollMonitorElement.scrollY || scrollMonitorElement.scrollTop;
-                    if (!scrollTop) scrollTop = 0;
-                    if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
-
-                    // dispatch
-                    if (_scrollTop > scrollTop) {
-
-                        // scrollTop
-                        _scrollTop = scrollTop;
-
-                        // scrollState
-                        if (_scrollState == "scrollUpped") return;
-                        _scrollState = "scrollUpped";
-
-                        // onScrollUpped
-                        onScrollUpped();
-                    } else {
-
-                        // scrollTop
-                        _scrollTop = scrollTop;
-
-                        // scrollState
-                        if (_scrollState == "scrollDowned") return;
-                        _scrollState = "scrollDowned";
-
-                        // onScrollDowned
-                        onScrollDowned();
-                    }
-                });
-
-
-                // events
-                function onScrollUpped() {
-
-                    // style
-                    if (scrollMonitorElement === window) {
-                        document.body.classList.remove("mdp-scroll-downed");
-                    }
-                    else {
-                        scrollMonitorElement.classList.remove("mdp-scroll-downed");
-                    }
+        // auto-hide
+        return new Promise((resolve, reject) => {
+            setTimeout(function () {
+                try {
+                    fadeElement.fade.hide();
+                    resolve();
+                } catch (error) {
+                    reject(error);
                 }
-
-                function onScrollDowned() {
-
-                    // style
-                    if (scrollMonitorElement === window) {
-                        document.body.classList.add("mdp-scroll-downed");
-                    }
-                    else {
-                        scrollMonitorElement.classList.add("mdp-scroll-downed");
-                    }
-                }
-
-
-                // return
-                return {
-
-                    // events
-                    onScrollUpped: onScrollUpped,
-                    onScrollDowned: onScrollDowned
-                };
-            })();
-            scrollMonitorElement.scrollMonitor = scrollMonitor;
-            if (scrollMonitorElement === window) document.body.scrollMonitor = scrollMonitor;
+            }, duration);
         });
+    };
+
+    function hide() {
+        fadeElement.classList.remove('show');
+    };
+
+    function toggle(duration) {
+        if (fadeElement.classList.contains('fade-end') == true) {
+            fadeElement.fade.show(duration);
+        }
+        else {
+            fadeElement.fade.hide();
+        }
+    };
+
+
+    // handlers
+    fadeElement.addEventListener('transitionend', function () {
+
+        // style
+        if (window.getComputedStyle(fadeElement).getPropertyValue('opacity') == 0) {
+            fadeElement.classList.add('fade-end');
+        }
+        else {
+            fadeElement.classList.remove('fade-end');
+        }
+    });
+    fadeElement.dispatchEvent(new Event('transitionend'));
+
+
+    // return
+    fadeElement.fade = {
+
+        // methods
+        show: show,
+        hide: hide,
+        toggle: toggle
+    };
+    return fadeElement.fade;
+};
+
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.fade:not([data-auto-start="false"]').forEach(function (fadeElement) {
+        new mdp.blazorCore.Fade(fadeElement);
+    });
+});
+
+// mdp.blazorCore.ScrollMonitor
+mdp.blazorCore.ScrollMonitor = function (scrollMonitorElement) {
+
+    // require
+    if (!scrollMonitorElement) return;
+    if (scrollMonitorElement.scrollMonitor) return scrollMonitorElement.scrollMonitor;
+    if (scrollMonitorElement === document.body) scrollMonitorElement = window;
+    if (scrollMonitorElement === document.documentElement) scrollMonitorElement = window;
+
+    // fields
+    var _scrollTop = 0;
+    var _scrollState = null;
+    var _scrollThreshold = 100;
+    
+
+    // methods
+    function dispatchScrollUpped() {
+
+        // style
+        if (scrollMonitorElement === window) {
+            document.body.classList.remove("mdp-scroll-downed");
+        }
+        else {
+            scrollMonitorElement.classList.remove("mdp-scroll-downed");
+        }
+
+        // event
+        if (scrollMonitorElement === window) {
+            document.body.dispatchEvent(new Event('scrollUpped'));
+        }
+        else {
+            scrollMonitorElement.dispatchEvent(new Event('scrollUpped'));
+        }
+    }
+
+    function dispatchScrollDowned() {
+
+        // style
+        if (scrollMonitorElement === window) {
+            document.body.classList.add("mdp-scroll-downed");
+        }
+        else {
+            scrollMonitorElement.classList.add("mdp-scroll-downed");
+        }
+
+        // event
+        if (scrollMonitorElement === window) {
+            document.body.dispatchEvent(new Event('scrollDowned'));
+        }
+        else {
+            scrollMonitorElement.dispatchEvent(new Event('scrollDowned'));
+        }
+    }
+
+
+    // handlers
+    scrollMonitorElement.addEventListener("scroll", () => {
+
+        // scrollTop
+        var scrollTop = scrollMonitorElement.scrollY || scrollMonitorElement.scrollTop;
+        if (!scrollTop) scrollTop = 0;
+        if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
+
+        // dispatch
+        if (_scrollTop > scrollTop) {
+
+            // scrollTop
+            _scrollTop = scrollTop;
+
+            // scrollState
+            if (_scrollState == "scrollUpped") return;
+            _scrollState = "scrollUpped";
+
+            // dispatchScrollUpped
+            dispatchScrollUpped();
+        } else {
+
+            // scrollTop
+            _scrollTop = scrollTop;
+
+            // scrollState
+            if (_scrollState == "scrollDowned") return;
+            _scrollState = "scrollDowned";
+
+            // dispatchScrollDowned
+            dispatchScrollDowned();
+        }
     });
 
-    // filePicker
-    document.addEventListener("MDPPageLoaded", function (event) {
-        document.querySelectorAll('.file-picker').forEach(function (filePickerElement) {
 
-            // require
-            if (!filePickerElement) return;
-            if (filePickerElement.filePicker) return;
+    // return
+    scrollMonitorElement.scrollMonitor = {
 
-            // variables
-            var accept = filePickerElement.getAttribute('data-accept') || "";
+        // methods
+        dispatchScrollUpped: dispatchScrollUpped,
+        dispatchScrollDowned: dispatchScrollDowned
+    };
+    return scrollMonitorElement.scrollMonitor;
+};
 
-            // previewFileElement
-            var previewFileElement = document.createElement("div");
-            previewFileElement.className = "preview-file";
-            filePickerElement.appendChild(previewFileElement);
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.scroll-monitor:not([data-auto-start="false"]').forEach(function (scrollMonitorElement) {
+        new mdp.blazorCore.ScrollMonitor(scrollMonitorElement);
+    });
+});
+
+
+/* ---------- picker ---------- */
+
+// mdp.blazorCore.FilePicker
+mdp.blazorCore.FilePicker = function (filePickerElement) {
+
+    // require
+    if (!filePickerElement) return;
+    if (filePickerElement.filePicker) return filePickerElement.filePicker;
+
+
+    // fields
+    var _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    var _src = filePickerElement.getAttribute('data-src') || "";    
+    var _accept = filePickerElement.getAttribute('data-accept') || "";
+    
+    // previewFileElement
+    var previewFileElement = document.createElement("div");
+    previewFileElement.className = "preview-file";
+    filePickerElement.appendChild(previewFileElement);
+
+    // previewImageElement
+    var previewImageElement = document.createElement("img");
+    previewImageElement.className = "preview-image";
+    filePickerElement.appendChild(previewImageElement);
+
+    // fileInputElement
+    var fileInputElement = document.createElement("input");
+    fileInputElement.type = "file";
+    fileInputElement.className = "file-input";
+    fileInputElement.accept = _accept;
+    filePickerElement.appendChild(fileInputElement);
+
+    
+    // methods
+    function clear() {
+
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
+        fileInputElement.value = "";
+    }
+
+    function reset() {
+
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
+        fileInputElement.value = "";
+
+        // fileName
+        var fileName = null;
+        if (_src) {
+            fileName = new URL(_src).pathname.split('/').pop();
+        }
+        if (!fileName) return;
+        if (fileName.includes('.') == false) return;
+        if (fileName.startsWith('.') == true) return;
+
+        // fileExtension
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+        if (!fileExtension) return;
+
+        // src.type
+        if (_imageExtensionList.includes(fileExtension) == true) {
+
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
 
             // previewImageElement
-            var previewImageElement = document.createElement("img");
-            previewImageElement.className = "preview-image";
-            filePickerElement.appendChild(previewImageElement);
+            previewImageElement.src = _src;
+            previewImageElement.style.opacity = "1";
+        } else {
 
-            // fileInputElement
-            var fileInputElement = document.createElement("input");
-            fileInputElement.type = "file";
-            fileInputElement.className = "file-input";
-            fileInputElement.accept = accept;
-            filePickerElement.appendChild(fileInputElement);
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
 
-            // filePicker
-            var filePicker = (function () {
+            // previewFileElement
+            previewFileElement.textContent = file.name;
+            previewFileElement.style.opacity = "1";
+        }
+    }
 
-                // const
-                const _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    function hasFile() {
 
+        // require
+        if (fileInputElement.files.length <= 0) return false;
 
-                // fields
-                var _src = filePickerElement.getAttribute('data-src') || "";
+        // return
+        return true;
+    }
 
+    function getFile() {
 
-                // methods
-                function clear() {
+        // require
+        if (fileInputElement.files.length <= 0) return null;
 
-                    // clear
-                    filePickerElement.classList.remove("file-selected");
-                    previewImageElement.src = "";
-                    previewImageElement.style.opacity = "0";
-                    previewFileElement.textContent = "";
-                    previewFileElement.style.opacity = "0";
-                    fileInputElement.value = "";
-                }
+        // return
+        return fileInputElement.files[0];
+    }
 
-                function reset() {
+    function hasImage() {
 
-                    // clear
-                    filePickerElement.classList.remove("file-selected");
-                    previewImageElement.src = "";
-                    previewImageElement.style.opacity = "0";
-                    previewFileElement.textContent = "";
-                    previewFileElement.style.opacity = "0";
-                    fileInputElement.value = "";
+        // require
+        if (fileInputElement.files.length <= 0) return false;
 
-                    // fileName
-                    var fileName = null;
-                    if (_src) {
-                        fileName = new URL(_src).pathname.split('/').pop();
-                    }
-                    if (!fileName) return;
-                    if (fileName.includes('.') == false) return;
-                    if (fileName.startsWith('.') == true) return;
+        // fileExtension
+        var fileExtension = fileInputElement.files[0].name.split('.').pop().toLowerCase();
+        if (_imageExtensionList.includes(fileExtension) == false) return false;
 
-                    // fileExtension
-                    var fileExtension = fileName.split('.').pop().toLowerCase();
-                    if (!fileExtension) return;
+        // return
+        return true;
+    }
 
-                    // src.type
-                    if (_imageExtensionList.includes(fileExtension) == true) {
+    function getImage() {
 
-                        // filePickerElement
-                        filePickerElement.classList.add("file-selected");
+        // require
+        if (hasImage() == false) return null;
 
-                        // previewImageElement
-                        previewImageElement.src = _src;
-                        previewImageElement.style.opacity = "1";
-                    } else {
-
-                        // filePickerElement
-                        filePickerElement.classList.add("file-selected");
-
-                        // previewFileElement
-                        previewFileElement.textContent = file.name;
-                        previewFileElement.style.opacity = "1";
-                    }
-                }
-                
-                function hasFile() {
-
-                    // require
-                    if (fileInputElement.files.length <= 0) return false;
-
-                    // return
-                    return true;
-                }
-
-                function getFile() {
-
-                    // require
-                    if (fileInputElement.files.length <= 0) return null;
-
-                    // return
-                    return fileInputElement.files[0];
-                }
-
-                function hasImage() {
-
-                    // require
-                    if (fileInputElement.files.length <= 0) return false;
-
-                    // fileExtension
-                    var fileExtension = fileInputElement.files[0].name.split('.').pop().toLowerCase();
-                    if (_imageExtensionList.includes(fileExtension) == false) return false;
-
-                    // return
-                    return true;
-                }
-
-                function getImage() {
-
-                    // require
-                    if (hasImage() == false) return null;
-
-                    // return
-                    return fileInputElement.files[0];
-                }
+        // return
+        return fileInputElement.files[0];
+    }
 
 
-                // handlers
-                fileInputElement.addEventListener('change', function (event) {
+    // handlers
+    fileInputElement.addEventListener('change', function (event) {
 
-                    // require
-                    var file = event.target.files[0];
-                    if (!file) return;        
+        // require
+        var file = event.target.files[0];
+        if (!file) return;
 
-                    // clear
-                    filePickerElement.classList.remove("file-selected");
-                    previewImageElement.src = "";
-                    previewImageElement.style.opacity = "0";
-                    previewFileElement.textContent = "";
-                    previewFileElement.style.opacity = "0";
-                    
-                    // file.type
-                    if (file.type.startsWith("image/") == true) {
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
 
-                        // filePickerElement
-                        filePickerElement.classList.add("file-selected");
+        // file.type
+        if (file.type.startsWith("image/") == true) {
 
-                        // previewImageElement
-                        var fileReader = new FileReader();
-                        fileReader.onload = function (e) {
-                            previewImageElement.src = e.target.result;
-                            previewImageElement.style.opacity = "1"; 
-                        };
-                        fileReader.readAsDataURL(file);
-                    } else {
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
 
-                        // filePickerElement
-                        filePickerElement.classList.add("file-selected");
+            // previewImageElement
+            var fileReader = new FileReader();
+            fileReader.onload = function (e) {
+                previewImageElement.src = e.target.result;
+                previewImageElement.style.opacity = "1";
+            };
+            fileReader.readAsDataURL(file);
+        } else {
 
-                        // previewFileElement
-                        previewFileElement.textContent = file.name;
-                        previewFileElement.style.opacity = "1";
-                    }
-                });
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
 
-
-                // constructors
-                (function () {
-
-                    // reset
-                    reset();
-                })();
-
-
-                // return
-                return {
-                    clear: clear,
-                    reset: reset,
-                    hasFile: hasFile,
-                    getFile: getFile,
-                    hasImage: hasImage,
-                    getImage: getImage
-                };
-            })();
-            filePickerElement.filePicker = filePicker;
-        });
+            // previewFileElement
+            previewFileElement.textContent = file.name;
+            previewFileElement.style.opacity = "1";
+        }
     });
-})();
+
+
+    // constructors
+    (function () {
+
+        // reset
+        reset();
+    })();
+
+
+    // return
+    filePickerElement.filePicker = {
+
+        // methods
+        clear: clear,
+        reset: reset,
+        hasFile: hasFile,
+        getFile: getFile,
+        hasImage: hasImage,
+        getImage: getImage
+    };
+    return filePickerElement.filePicker;
+};
+
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.file-picker:not([data-auto-start="false"]').forEach(function (filePickerElement) {
+        new mdp.blazorCore.FilePicker(filePickerElement);
+    });
+});
 
 
 /* ---------- swiper ---------- */
-(function () {
 
-    // swiperSlider
-    document.addEventListener('MDPPageLoaded', function () {
-        document.querySelectorAll('.mdp-wrapper .swiper-slider').forEach(swiperSliderElement => {
+// mdp.blazorCore.SwiperSlider
+mdp.blazorCore.SwiperSlider = function (swiperSliderElement) {
 
-            // require
-            if (!swiperSliderElement) return;
-            if (swiperSliderElement.swiperSlider) return;
+    // require
+    if (!swiperSliderElement) return;
+    if (swiperSliderElement.swiperSlider) return swiperSliderElement.swiperSlider;
 
-            // variables
-            var loop = swiperSliderElement.getAttribute('data-loop') == 'true' || false;
-            var spaceBetween = parseInt(swiperSliderElement.getAttribute('data-space-between')) || 10;
-            var pagination = swiperSliderElement.getAttribute('data-pagination') || ".swiper-pagination";
-            var nextButton = swiperSliderElement.getAttribute('data-next-button') || ".swiper-button-next";
-            var prevButton = swiperSliderElement.getAttribute('data-prev-button') || ".swiper-button-prev";
-            var closeButton = swiperSliderElement.getAttribute('data-close-button') || ".swiper-button-close";
-            
-            // lazyPreloaderElement
-            swiperSliderElement.querySelectorAll('.swiper-slide').forEach(slideElement => {
+    // fields
+    var loop = swiperSliderElement.getAttribute('data-loop') == 'true' || false;
+    var spaceBetween = parseInt(swiperSliderElement.getAttribute('data-space-between')) || 10;
+    var pagination = swiperSliderElement.getAttribute('data-pagination') || ".swiper-pagination";
+    var nextButton = swiperSliderElement.getAttribute('data-next-button') || ".swiper-button-next";
+    var prevButton = swiperSliderElement.getAttribute('data-prev-button') || ".swiper-button-prev";
+    var closeButton = swiperSliderElement.getAttribute('data-close-button') || ".swiper-button-close";
 
-                // require
-                var imageElement = slideElement.querySelector('img');
-                if (!imageElement) return;
+    // slideElement
+    swiperSliderElement.querySelectorAll('.swiper-slide').forEach(slideElement => {
 
-                // create
-                var lazyPreloaderElement = document.createElement('div');
-                lazyPreloaderElement.className = 'swiper-lazy-preloader swiper-lazy-preloader-white';
-                slideElement.appendChild(lazyPreloaderElement);
-            });
+        // require
+        var imageElement = slideElement.querySelector('img');
+        if (!imageElement) return;
 
-            // swiperSlider
-            var swiperSlider = new Swiper(swiperSliderElement, {
-                loop: loop,
-                spaceBetween: spaceBetween,
-                lazy: true,
-                autoHeight: true,
-                slidesPerView: 1,
-                pagination: {
-                    el: pagination,
-                    clickable: true
-                },
-                navigation: {
-                    nextEl: nextButton,
-                    prevEl: prevButton,
-                }
-            });
-            swiperSliderElement.swiperSlider = swiperSlider;
+        // create
+        var lazyPreloaderElement = document.createElement('div');
+        lazyPreloaderElement.className = 'swiper-lazy-preloader swiper-lazy-preloader-white';
+        slideElement.appendChild(lazyPreloaderElement);
+    });
 
-            // swiperSlider.handlers
-            swiperSliderElement.querySelectorAll('.swiper-slide').forEach(slideElement => {
-                slideElement.addEventListener('click', function () {
+    // swiper
+    var swiper = new Swiper(swiperSliderElement, {
+        loop: loop,
+        spaceBetween: spaceBetween,
+        lazy: true,
+        autoHeight: true,
+        slidesPerView: 1,
+        pagination: {
+            el: pagination,
+            clickable: true
+        },
+        navigation: {
+            nextEl: nextButton,
+            prevEl: prevButton,
+        }
+    });
 
-                    // show
-                    swiperSliderElement.classList.toggle("swiper-fullscreen");
-                    document.body.classList.toggle("swiper-fullscreen");
-                });
-            });
 
-            swiperSliderElement.querySelectorAll(closeButton).forEach(closeButtonElement => {
-                closeButtonElement.addEventListener('click', function () {
+    // handlers
+    swiperSliderElement.querySelectorAll('.swiper-slide').forEach(slideElement => {
+        slideElement.addEventListener('click', function () {
 
-                    // hide
-                    swiperSliderElement.classList.toggle("swiper-fullscreen");
-                    document.body.classList.toggle("swiper-fullscreen");
-                });
-            });
+            // show
+            swiperSliderElement.classList.toggle("swiper-fullscreen");
+            document.body.classList.toggle("swiper-fullscreen");
         });
     });
 
-    // swiperWheel
-    document.addEventListener('MDPPageLoaded', function () {
-        document.querySelectorAll('.mdp-wrapper .swiper-wheel').forEach(swiperWheelElement => {
+    swiperSliderElement.querySelectorAll(closeButton).forEach(closeButtonElement => {
+        closeButtonElement.addEventListener('click', function () {
 
-            // require
-            if (!swiperWheelElement) return;
-            if (swiperWheelElement.swiperWheel) return;
-
-            // variables
-            var slidesPerView = parseInt(swiperWheelElement.getAttribute('data-slides-perview')) || 5;
-
-            // topMaskElement
-            var topMaskElement = document.createElement('div');
-            topMaskElement.className = 'swiper-mask-top';
-            swiperWheelElement.appendChild(topMaskElement);
-
-            // bottomMaskElement
-            var bottomMaskElement = document.createElement('div');
-            bottomMaskElement.className = 'swiper-mask-bottom';
-            swiperWheelElement.appendChild(bottomMaskElement);
-
-            // swiperWheel
-            var swiperWheel = new Swiper(swiperWheelElement, {
-                direction: "vertical",
-                slidesPerView: slidesPerView,
-                mousewheel: true,
-                spaceBetween: 0,
-                centeredSlides: true,
-                slideToClickedSlide: true
-            });
-            swiperWheelElement.swiperWheel = swiperWheel;
-
-            // maskHeight
-            var slideHeight = swiperWheel.slides[swiperWheel.activeIndex].offsetHeight;
-            var spaceHeight = swiperWheel.params.spaceBetween;
-            var maskSlideCount = Math.floor(slidesPerView / 2);
-            var maskHeight = (slideHeight + spaceHeight) * maskSlideCount;
-            topMaskElement.style.height = maskHeight + "px";
-            bottomMaskElement.style.height = maskHeight + "px";
+            // hide
+            swiperSliderElement.classList.toggle("swiper-fullscreen");
+            document.body.classList.toggle("swiper-fullscreen");
         });
-    });    
-})();
+    });
+
+
+    // return
+    swiperSliderElement.swiperSlider = {
+
+    };
+    return swiperSliderElement.swiperSlider;
+};
+
+document.addEventListener('MDPPageLoaded', function () {
+    document.querySelectorAll('.mdp-wrapper .swiper-slider:not([data-auto-start="false"]').forEach(swiperSliderElement => {
+        new mdp.blazorCore.SwiperSlider(swiperSliderElement);
+    });
+});
+
+// mdp.blazorCore.SwiperWheel
+mdp.blazorCore.SwiperWheel = function (swiperWheelElement) {
+
+    // require
+    if (!swiperWheelElement) return;
+    if (swiperWheelElement.swiperWheel) return swiperWheelElement.swiperWheel;
+
+    // fields
+    var slidesPerView = parseInt(swiperWheelElement.getAttribute('data-slides-perview')) || 5;
+
+    // topMaskElement
+    var topMaskElement = document.createElement('div');
+    topMaskElement.className = 'swiper-mask-top';
+    swiperWheelElement.appendChild(topMaskElement);
+
+    // bottomMaskElement
+    var bottomMaskElement = document.createElement('div');
+    bottomMaskElement.className = 'swiper-mask-bottom';
+    swiperWheelElement.appendChild(bottomMaskElement);
+
+    // swiper
+    var swiper = new Swiper(swiperWheelElement, {
+        direction: "vertical",
+        slidesPerView: slidesPerView,
+        mousewheel: true,
+        spaceBetween: 0,
+        centeredSlides: true,
+        slideToClickedSlide: true
+    });
+
+    // maskHeight
+    var slideHeight = swiper.slides[swiper.activeIndex].offsetHeight;
+    var spaceHeight = swiper.params.spaceBetween;
+    var maskSlideCount = Math.floor(slidesPerView / 2);
+    var maskHeight = (slideHeight + spaceHeight) * maskSlideCount;
+    topMaskElement.style.height = maskHeight + "px";
+    bottomMaskElement.style.height = maskHeight + "px";
+
+    // return
+    swiperSliderElement.swiperWheel = {
+
+    };
+    return swiperSliderElement.swiperWheel;
+};
+
+document.addEventListener('MDPPageLoaded', function () {
+    document.querySelectorAll('.mdp-wrapper .swiper-wheel:not([data-auto-start="false"]').forEach(swiperWheelElement => {
+        new mdp.blazorCore.SwiperWheel(swiperWheelElement);
+    });
+});

@@ -119,7 +119,7 @@ namespace MDP.BlazorCore
             if (firstRender == true)
             {
                 // Invoke
-                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.pageManager.onPageLoading();");
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.pageManager.dispatchPageLoading();");
 
                 // Return
                 return;
@@ -129,7 +129,7 @@ namespace MDP.BlazorCore
             if (this.Initialized == true)
             {
                 // Invoke
-                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.pageManager.onPageLoaded();");
+                await this.JSRuntime.InvokeVoidAsync("eval", "mdp.blazorCore.pageManager.dispatchPageLoaded();");
 
                 // Return
                 return;
