@@ -75,6 +75,9 @@ namespace MDP.BlazorCore.Web
                     options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
                 });
 
+                // AuthorizationManager
+                applicationBuilder.Services.AddSingleton<AuthorizationManager>();
+
                 // InteropManager
                 applicationBuilder.Services.AddInteropManager();
 

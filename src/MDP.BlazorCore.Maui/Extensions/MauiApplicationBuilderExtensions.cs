@@ -89,7 +89,10 @@ namespace MDP.BlazorCore.Maui
                 applicationBuilder.Services.AddSingleton<AuthenticationStateManager>();
 
                 // AuthenticationStateProvider
-                applicationBuilder.Services.AddSingleton<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, MDP.BlazorCore.Maui.AuthenticationStateProvider>();               
+                applicationBuilder.Services.AddSingleton<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, MDP.BlazorCore.Maui.AuthenticationStateProvider>();
+
+                // AuthorizationManager
+                applicationBuilder.Services.AddSingleton<AuthorizationManager>();
 
                 // InteropManager
                 applicationBuilder.Services.AddInteropManager();

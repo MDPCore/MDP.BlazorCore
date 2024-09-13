@@ -15,22 +15,17 @@ namespace MDP.BlazorCore
 
         private readonly InteropProvider _interopProvider = null;
 
-        private readonly IAuthorizationService _authorizationService = null;
-
-        private readonly IAuthorizationPolicyProvider _authorizationPolicyProvider = null;
-
-        private AuthorizationPolicy _authorizationPolicy = null;
+        private readonly AuthorizationManager _authorizationManager = null;
 
 
         // Constructors
-        public InteropManager(IList<InteropResource> interopResourceList, InteropProvider interopProvider, IAuthorizationService authorizationService, IAuthorizationPolicyProvider authorizationPolicyProvider)
+        public InteropManager(IList<InteropResource> interopResourceList, InteropProvider interopProvider, AuthorizationManager authorizationManager)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(interopResourceList);
             ArgumentNullException.ThrowIfNull(interopProvider);
-            ArgumentNullException.ThrowIfNull(authorizationService);
-            ArgumentNullException.ThrowIfNull(authorizationPolicyProvider);
+            ArgumentNullException.ThrowIfNull(authorizationManager);
 
             #endregion
 
@@ -45,11 +40,8 @@ namespace MDP.BlazorCore
             // InteropProvider
             _interopProvider = interopProvider;
 
-            // AuthorizationService
-            _authorizationService = authorizationService;
-
-            // AuthorizationPolicyProvider
-            _authorizationPolicyProvider = authorizationPolicyProvider;
+            // AuthorizationManager
+            _authorizationManager = authorizationManager;
         }
 
 
@@ -70,12 +62,9 @@ namespace MDP.BlazorCore
             // Authorization
             if (interopResource.IsAuthorizationRequired == true)
             {
-                // AuthorizationPolicy
-                var authorizationPolicy = await this.CreateAuthorizationPolicyAsync();
-                if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
-
                 // AuthorizationResult
-                var authorizationResult = await _authorizationService.AuthorizeAsync(principal, interopRequest, authorizationPolicy);
+                var authorizationResult = await _authorizationManager.AuthorizeAsync(principal, interopRequest);
+                if (authorizationResult == null) throw new InvalidOperationException($"{nameof(authorizationResult)}=null");
                 if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.RoutePath}'");
             }
 
@@ -103,20 +92,6 @@ namespace MDP.BlazorCore
 
             // Return
             return null;
-        }
-
-        private async Task<AuthorizationPolicy> CreateAuthorizationPolicyAsync()
-        {
-            // Require
-            if (_authorizationPolicy != null) return _authorizationPolicy;
-
-            // AuthorizationPolicy
-            var authorizationPolicy = await _authorizationPolicyProvider.GetDefaultPolicyAsync();
-            if (authorizationPolicy == null) throw new InvalidOperationException($"{nameof(authorizationPolicy)}=null");
-            _authorizationPolicy = authorizationPolicy;
-
-            // Return
-            return _authorizationPolicy;
         }
     }
 }
