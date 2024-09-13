@@ -47,6 +47,7 @@ namespace MDP.BlazorCore.Authorization.Maui
             serviceCollection.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
 
             // AccessResourceProvider
+            serviceCollection.AddTransient<IAccessResourceProvider, UriAccessResourceProvider>();
             serviceCollection.AddTransient<IAccessResourceProvider, BlazorAccessResourceProvider>();
             serviceCollection.AddTransient<IAccessResourceProvider, InteropAccessResourceProvider>();
 
