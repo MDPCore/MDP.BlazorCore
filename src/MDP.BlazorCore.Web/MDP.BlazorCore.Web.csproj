@@ -16,8 +16,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
-    <PackageReference Include="MDP.AspNetCore" Version="8.0.7.22" />
-    <PackageReference Include="MDP.Registration" Version="8.0.7.21" />
+    <PackageReference Include="MDP.AspNetCore" Version="8.0.7.42" />
+    <PackageReference Include="MDP.Registration" Version="8.0.7.42" />
   </ItemGroup>
 
   <ItemGroup>
