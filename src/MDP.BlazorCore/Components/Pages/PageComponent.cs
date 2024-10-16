@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MDP.BlazorCore
@@ -26,6 +27,9 @@ namespace MDP.BlazorCore
 
         [Parameter]
         public PageContext Context { get; set; } = null;
+
+        [Parameter]
+        public ClaimsPrincipal User { get; set; } = null;
 
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
@@ -59,6 +63,7 @@ namespace MDP.BlazorCore
                 // Principal
                 var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
                 if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+                if (principal != null) this.User = principal;
 
                 // NavigationUri
                 var navigationUri = new Uri(this.NavigationManager.Uri);
