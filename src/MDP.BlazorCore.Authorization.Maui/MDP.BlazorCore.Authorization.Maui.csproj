@@ -19,14 +19,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore.Authorization\MDP.BlazorCore.Authorization.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Maui\MDP.BlazorCore.Maui.csproj" />
+    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.92" />
+    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.92" />
+    <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.92" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore.Maui\MDP.BlazorCore.Maui.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authorization\MDP.BlazorCore.Authorization.csproj" />
+ </ItemGroup>
 
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
-    <description>MDP.BlazorCore Library</description>
+    <description>MDPCore Library</description>
     <PackageIcon>Package.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

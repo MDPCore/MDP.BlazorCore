@@ -17,16 +17,22 @@
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.92" />
+    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.92" />
+    <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.92" />
+  </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Maui\MDP.BlazorCore.Maui.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
-    <description>MDP.BlazorCore Library</description>
+    <description>MDPCore Library</description>
     <PackageIcon>Package.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -36,5 +42,5 @@
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
-
+  
 </Project>

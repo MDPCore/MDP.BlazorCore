@@ -7,15 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <PropertyGroup>
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-  </ItemGroup>
 
 </Project>

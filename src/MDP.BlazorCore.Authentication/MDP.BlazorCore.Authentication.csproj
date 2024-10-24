@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MDP.Registration" Version="8.0.7.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
@@ -14,18 +22,10 @@
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MDP.Registration" Version="8.0.7.42" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
-    <description>MDP.BlazorCore Library</description>
+    <description>MDPCore Library</description>
     <PackageIcon>Package.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

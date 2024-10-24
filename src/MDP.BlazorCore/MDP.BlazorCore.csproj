@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MDP.Reflection" Version="8.0.7.47" />
+    <PackageReference Include="MDP.Registration" Version="8.0.7.47" />
+    <PackageReference Include="MDP.Network.Http" Version="8.0.7.47" />
+    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.47" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
@@ -14,19 +23,10 @@
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.3" />
-    <PackageReference Include="MDP.Reflection" Version="8.0.7.42" />
-    <PackageReference Include="MDP.Registration" Version="8.0.7.42" />
-    <PackageReference Include="MDP.Network.Http" Version="8.0.7.42" />
-    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.42" />
-  </ItemGroup>
-
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
-    <description>MDP.BlazorCore Library</description>
+    <description>MDPCore Library</description>
     <PackageIcon>Package.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -35,7 +35,6 @@
   <ItemGroup>
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
-    <None Include="wwwroot\lib\mdp-blazor-core\js\mdp-blazor-core.js" />
   </ItemGroup>
 
 </Project>

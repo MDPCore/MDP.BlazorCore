@@ -40,6 +40,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.92" />
+    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.92" />
+    <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.92" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication.Lab\MDP.BlazorCore.Authentication.Lab.csproj" />
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication.Maui\MDP.BlazorCore.Authentication.Maui.csproj" />
+ </ItemGroup>
+
+  <ItemGroup>
+    
     <!-- App Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
@@ -58,14 +70,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore.Authentication.Lab\MDP.BlazorCore.Authentication.Lab.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Authentication.Maui\MDP.BlazorCore.Authentication.Maui.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="appsettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <MauiAsset Update="Resources\Raw\Environment.ini">
+      <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </MauiAsset>
+  </ItemGroup>
+
 </Project>
