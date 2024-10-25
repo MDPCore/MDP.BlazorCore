@@ -10,16 +10,16 @@
     <meta charset="utf-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <link rel="icon" type="image/png" href="favicon.png" />
 
     <!-- styles -->
-    <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="lib/mdp-blazor-core/css/mdp-blazor-core.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="MDP.BlazorCore.Authentication.Web.Lab.styles.css" />
 
     <!-- scripts -->
-    <script src="/lib/mdp-blazor-core/js/mdp-blazor-core.js"></script>
     <HeadOutlet @rendermode="@this.HeadOutletRenderMode" />
 </head>
 <body>
@@ -28,13 +28,14 @@
     <Routes @rendermode="@this.RoutesRenderMode" />
 
     <!-- scripts -->
+    <script src="/lib/mdp-blazor-core/js/mdp-blazor-core.js"></script>
     <script src="_framework/blazor.web.js" autostart="false"></script>
     <script>
         Blazor.start({
             ssr: { disableDomPreservation: true }
         });
     </script>
-    <PageOutlet @rendermode="@this.PageOutletRenderMode" />
+    <PageOutlet @rendermode="@PageOutletRenderMode" />
 </body>
 </html>
 
@@ -52,4 +53,11 @@
     private IComponentRenderMode RoutesRenderMode { get; set; } = RenderMode.InteractiveServer;
 
     private IComponentRenderMode PageOutletRenderMode { get; set; } = new InteractiveServerRenderMode(prerender: false);
+
+    // RenderMode
+    // private IComponentRenderMode HeadOutletRenderMode { get; set; } = null;
+
+    // private IComponentRenderMode RoutesRenderMode { get; set; } = null;
+
+    // private IComponentRenderMode PageOutletRenderMode { get; set; } = null;
 }

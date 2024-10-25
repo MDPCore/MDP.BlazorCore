@@ -35,6 +35,69 @@ window.mdp = window.mdp || {};
 // mdp.blazorCore
 mdp.blazorCore = mdp.blazorCore || {};
 
+
+// mdp.blazorCore.validationManager  
+mdp.blazorCore.validationManager = (function () {
+
+    // methods
+    function isNumber(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'number') return false;
+
+        // return
+        return !isNaN(value);
+    }
+
+    function isNullOrEmpty(value) {
+
+        // require
+        if (value == null) return true;
+        if (typeof value !== 'string') return true;
+
+        // return
+        return value.trim() === '';
+    }
+
+    function validateMail(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'string') return false;
+
+        // variables
+        const mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // return
+        return mailRegex.test(value);
+    }
+
+    function validatePhone(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'string') return false;
+
+        // variables
+        const phoneRegex = /^(09)[0-9]{8}$/;
+
+        // return
+        return phoneRegex.test(value);
+    }
+
+
+    // return
+    return {
+
+        // methods
+        isNumber: isNumber,
+        isNullOrEmpty: isNullOrEmpty,
+        validateMail: validateMail,
+        validatePhone: validatePhone
+    };
+})();
+
 // mdp.blazorCore.pageManager
 mdp.blazorCore.pageManager = (function () {
 
@@ -103,20 +166,17 @@ document.addEventListener("MDPPageLoading", function (event) {
 
     // style
     document.body.classList.add("mdp-page-loading");
-
-    // scroll
-    window.scrollTo({ top: 0, behavior: 'auto' });
 });
 
 document.addEventListener("MDPPageLoaded", function (event) {
 
+    // scroll
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    
     // style
     document.body.classList.remove("mdp-page-loading");
 
-    // scroll
-    window.scrollTo({ top: 0, behavior: 'auto' });
-
-    // mdp.blazorCore.errorManager
+    // error
     if (event.detail.pageError) {
         mdp.blazorCore.errorManager.dispatchError(new Error(event.detail.pageError.message));
     }
@@ -512,6 +572,79 @@ mdp.blazorCore.errorManager = (function () {
 
 /* ---------- utilities ---------- */
 
+// mdp.blazorCore.scrollManager
+mdp.blazorCore.scrollManager = (function () {
+
+    // fields
+    var _scrollTop = 0;
+    var _scrollState = null;
+    var _scrollThreshold = 100;
+
+
+    // methods
+    function dispatchScrollUpped() {
+
+        // style
+        document.body.classList.remove("mdp-scroll-downed");
+
+        // event
+        document.body.dispatchEvent(new Event('scrollUpped'));
+    }
+
+    function dispatchScrollDowned() {
+
+        // style
+        document.body.classList.add("mdp-scroll-downed");
+
+        // event
+        document.body.dispatchEvent(new Event('scrollDowned'));
+    }
+
+
+    // handlers
+    window.addEventListener("scroll", () => {
+
+        // scrollTop
+        var scrollTop = window.scrollY || window.scrollTop;
+        if (!scrollTop) scrollTop = 0;
+        if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
+
+        // dispatch
+        if (_scrollTop > scrollTop) {
+
+            // scrollTop
+            _scrollTop = scrollTop;
+
+            // scrollState
+            if (_scrollState == "scrollUpped") return;
+            _scrollState = "scrollUpped";
+
+            // dispatchScrollUpped
+            dispatchScrollUpped();
+        } else {
+
+            // scrollTop
+            _scrollTop = scrollTop;
+
+            // scrollState
+            if (_scrollState == "scrollDowned") return;
+            _scrollState = "scrollDowned";
+
+            // dispatchScrollDowned
+            dispatchScrollDowned();
+        }
+    });
+
+
+    // return
+    return {
+
+        // methods
+        dispatchScrollUpped: dispatchScrollUpped,
+        dispatchScrollDowned: dispatchScrollDowned
+    };
+})();
+
 // mdp.blazorCore.transformManager
 mdp.blazorCore.transformManager = (function () {
 
@@ -558,7 +691,7 @@ mdp.blazorCore.transformManager = (function () {
                 var fileReader = new FileReader();
                 fileReader.onload = function (event) {
                     try {
-                                                
+
                         // image
                         var image = new Image();
                         image.onload = function () {
@@ -587,7 +720,7 @@ mdp.blazorCore.transformManager = (function () {
                                     mdp.blazorCore.taskManager.invokeWorkerAsync((parameters) => {
                                         return new Promise((resolve, reject) => {
                                             try {
-                                                
+
                                                 // variables
                                                 var blob = parameters.blob;
                                                 var outputName = parameters.outputName;
@@ -631,7 +764,7 @@ mdp.blazorCore.transformManager = (function () {
 
                         // reject
                         reject(error);
-                    }                    
+                    }
                 };
                 fileReader.error = reject;
                 fileReader.readAsDataURL(file);
@@ -646,17 +779,17 @@ mdp.blazorCore.transformManager = (function () {
     function transformImageByOffscreenCanvasAsync(file, outputWidth, outputHeight, outputFormat, outputQuality, outputName) {
         return new Promise((resolve, reject) => {
             try {
-                
+
                 // fileReader
                 var fileReader = new FileReader();
                 fileReader.onload = function (event) {
                     try {
-                        
+
                         // image
                         var image = new Image();
                         image.onload = function () {
                             try {
-                                
+
                                 // size
                                 var width = image.width;
                                 var height = image.height;
@@ -678,7 +811,7 @@ mdp.blazorCore.transformManager = (function () {
                                     return mdp.blazorCore.taskManager.invokeWorkerAsync((parameters) => {
                                         return new Promise((resolve, reject) => {
                                             try {
-                                                
+
                                                 // variables
                                                 var blob = parameters.blob;
                                                 var outputName = parameters.outputName;
@@ -758,11 +891,6 @@ mdp.blazorCore.Fade = function (fadeElement) {
     // methods
     function show(duration) {
 
-        // duration
-        if (!duration && fadeElement.getAttribute('data-show-duration')) {
-            duration = parseInt(fadeElement.getAttribute('data-show-duration'), 10);
-        }
-
         // show
         fadeElement.classList.add('show');
         if (!duration) return Promise.resolve();
@@ -781,6 +909,8 @@ mdp.blazorCore.Fade = function (fadeElement) {
     };
 
     function hide() {
+
+        // hide
         fadeElement.classList.remove('show');
     };
 
@@ -825,306 +955,101 @@ document.addEventListener("MDPPageLoaded", function (event) {
     });
 });
 
-// mdp.blazorCore.ScrollMonitor
-mdp.blazorCore.ScrollMonitor = function (scrollMonitorElement) {
+// mdp.blazorCore.Popper
+mdp.blazorCore.Popper = function (popperElement) {
 
     // require
-    if (!scrollMonitorElement) return;
-    if (scrollMonitorElement.scrollMonitor) return scrollMonitorElement.scrollMonitor;
-    if (scrollMonitorElement === document.body) scrollMonitorElement = window;
-    if (scrollMonitorElement === document.documentElement) scrollMonitorElement = window;
-
-    // fields
-    var _scrollTop = 0;
-    var _scrollState = null;
-    var _scrollThreshold = 100;
-    
-
-    // methods
-    function dispatchScrollUpped() {
-
-        // style
-        if (scrollMonitorElement === window) {
-            document.body.classList.remove("mdp-scroll-downed");
-        }
-        else {
-            scrollMonitorElement.classList.remove("mdp-scroll-downed");
-        }
-
-        // event
-        if (scrollMonitorElement === window) {
-            document.body.dispatchEvent(new Event('scrollUpped'));
-        }
-        else {
-            scrollMonitorElement.dispatchEvent(new Event('scrollUpped'));
-        }
-    }
-
-    function dispatchScrollDowned() {
-
-        // style
-        if (scrollMonitorElement === window) {
-            document.body.classList.add("mdp-scroll-downed");
-        }
-        else {
-            scrollMonitorElement.classList.add("mdp-scroll-downed");
-        }
-
-        // event
-        if (scrollMonitorElement === window) {
-            document.body.dispatchEvent(new Event('scrollDowned'));
-        }
-        else {
-            scrollMonitorElement.dispatchEvent(new Event('scrollDowned'));
-        }
-    }
-
-
-    // handlers
-    scrollMonitorElement.addEventListener("scroll", () => {
-
-        // scrollTop
-        var scrollTop = scrollMonitorElement.scrollY || scrollMonitorElement.scrollTop;
-        if (!scrollTop) scrollTop = 0;
-        if (Math.abs(_scrollTop - scrollTop) <= _scrollThreshold) return;
-
-        // dispatch
-        if (_scrollTop > scrollTop) {
-
-            // scrollTop
-            _scrollTop = scrollTop;
-
-            // scrollState
-            if (_scrollState == "scrollUpped") return;
-            _scrollState = "scrollUpped";
-
-            // dispatchScrollUpped
-            dispatchScrollUpped();
-        } else {
-
-            // scrollTop
-            _scrollTop = scrollTop;
-
-            // scrollState
-            if (_scrollState == "scrollDowned") return;
-            _scrollState = "scrollDowned";
-
-            // dispatchScrollDowned
-            dispatchScrollDowned();
-        }
-    });
-
-
-    // return
-    scrollMonitorElement.scrollMonitor = {
-
-        // methods
-        dispatchScrollUpped: dispatchScrollUpped,
-        dispatchScrollDowned: dispatchScrollDowned
-    };
-    return scrollMonitorElement.scrollMonitor;
-};
-
-document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.scroll-monitor:not([data-auto-start="false"]').forEach(function (scrollMonitorElement) {
-        new mdp.blazorCore.ScrollMonitor(scrollMonitorElement);
-    });
-});
-
-
-/* ---------- picker ---------- */
-
-// mdp.blazorCore.FilePicker
-mdp.blazorCore.FilePicker = function (filePickerElement) {
-
-    // require
-    if (!filePickerElement) return;
-    if (filePickerElement.filePicker) return filePickerElement.filePicker;
+    if (!popperElement) return;
+    if (popperElement.popper) return popperElement.popper;
 
 
     // fields
-    var _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-    var _src = filePickerElement.getAttribute('data-src') || "";    
-    var _accept = filePickerElement.getAttribute('data-accept') || "";
-    
-    // previewFileElement
-    var previewFileElement = document.createElement("div");
-    previewFileElement.className = "preview-file";
-    filePickerElement.appendChild(previewFileElement);
+    var placement = popperElement.getAttribute('data-placement') || "bottom-start";
 
-    // previewImageElement
-    var previewImageElement = document.createElement("img");
-    previewImageElement.className = "preview-image";
-    filePickerElement.appendChild(previewImageElement);
-
-    // fileInputElement
-    var fileInputElement = document.createElement("input");
-    fileInputElement.type = "file";
-    fileInputElement.className = "file-input";
-    fileInputElement.accept = _accept;
-    filePickerElement.appendChild(fileInputElement);
-
-    
-    // methods
-    function clear() {
-
-        // clear
-        filePickerElement.classList.remove("file-selected");
-        previewImageElement.src = "";
-        previewImageElement.style.opacity = "0";
-        previewFileElement.textContent = "";
-        previewFileElement.style.opacity = "0";
-        fileInputElement.value = "";
-    }
-
-    function reset() {
-
-        // clear
-        filePickerElement.classList.remove("file-selected");
-        previewImageElement.src = "";
-        previewImageElement.style.opacity = "0";
-        previewFileElement.textContent = "";
-        previewFileElement.style.opacity = "0";
-        fileInputElement.value = "";
-
-        // fileName
-        var fileName = null;
-        if (_src) {
-            fileName = new URL(_src).pathname.split('/').pop();
-        }
-        if (!fileName) return;
-        if (fileName.includes('.') == false) return;
-        if (fileName.startsWith('.') == true) return;
-
-        // fileExtension
-        var fileExtension = fileName.split('.').pop().toLowerCase();
-        if (!fileExtension) return;
-
-        // src.type
-        if (_imageExtensionList.includes(fileExtension) == true) {
-
-            // filePickerElement
-            filePickerElement.classList.add("file-selected");
-
-            // previewImageElement
-            previewImageElement.src = _src;
-            previewImageElement.style.opacity = "1";
-        } else {
-
-            // filePickerElement
-            filePickerElement.classList.add("file-selected");
-
-            // previewFileElement
-            previewFileElement.textContent = file.name;
-            previewFileElement.style.opacity = "1";
-        }
-    }
-
-    function hasFile() {
-
-        // require
-        if (fileInputElement.files.length <= 0) return false;
-
-        // return
-        return true;
-    }
-
-    function getFile() {
-
-        // require
-        if (fileInputElement.files.length <= 0) return null;
-
-        // return
-        return fileInputElement.files[0];
-    }
-
-    function hasImage() {
-
-        // require
-        if (fileInputElement.files.length <= 0) return false;
-
-        // fileExtension
-        var fileExtension = fileInputElement.files[0].name.split('.').pop().toLowerCase();
-        if (_imageExtensionList.includes(fileExtension) == false) return false;
-
-        // return
-        return true;
-    }
-
-    function getImage() {
-
-        // require
-        if (hasImage() == false) return null;
-
-        // return
-        return fileInputElement.files[0];
-    }
+    // popper
+    var popper = Popper.createPopper(document.body, popperElement, {
+        placement: placement,
+        modifiers: [
+            {
+                name: 'flip',
+                options: {
+                    fallbackPlacements: ['bottom', 'top', 'left', 'right']
+                }
+            },
+            {
+                name: 'preventOverflow',
+                options: {
+                    boundary: popperElement.parentElement
+                }
+            },
+            {
+                name: 'offset',
+                options: {
+                    offset: [0, 4],
+                },
+            },
+        ],
+    });
 
 
     // handlers
-    fileInputElement.addEventListener('change', function (event) {
-
-        // require
-        var file = event.target.files[0];
-        if (!file) return;
-
-        // clear
-        filePickerElement.classList.remove("file-selected");
-        previewImageElement.src = "";
-        previewImageElement.style.opacity = "0";
-        previewFileElement.textContent = "";
-        previewFileElement.style.opacity = "0";
-
-        // file.type
-        if (file.type.startsWith("image/") == true) {
-
-            // filePickerElement
-            filePickerElement.classList.add("file-selected");
-
-            // previewImageElement
-            var fileReader = new FileReader();
-            fileReader.onload = function (e) {
-                previewImageElement.src = e.target.result;
-                previewImageElement.style.opacity = "1";
-            };
-            fileReader.readAsDataURL(file);
-        } else {
-
-            // filePickerElement
-            filePickerElement.classList.add("file-selected");
-
-            // previewFileElement
-            previewFileElement.textContent = file.name;
-            previewFileElement.style.opacity = "1";
+    document.addEventListener('click', function (event) {
+        if (popperElement.classList.contains('popper-show') == true) {
+            if (!popperElement.contains(event.target)) {
+                popperElement.popper.hide();
+            }
         }
     });
 
 
-    // constructors
-    (function () {
+    // methods
+    function show(hostElement) {
 
-        // reset
-        reset();
-    })();
+        // popper.update
+        popper.state.elements.reference = hostElement; 
+        popper.update();
+
+        // show
+        popperElement.classList.add('popper-show');
+    };
+
+    function hide() {
+
+        // hide
+        popperElement.classList.remove('popper-show');
+    };
+
+    function toggle(hostElement) {
+
+        // display
+        if (popperElement.classList.contains('popper-show') == false || popper.state.elements.reference != hostElement) {
+            popperElement.popper.show(hostElement);
+        }
+        else {
+            popperElement.popper.hide();
+        }
+    };
+
+    function getHostElement() {
+        return popper.state.elements.reference;
+    }
 
 
     // return
-    filePickerElement.filePicker = {
+    popperElement.popper = {
 
         // methods
-        clear: clear,
-        reset: reset,
-        hasFile: hasFile,
-        getFile: getFile,
-        hasImage: hasImage,
-        getImage: getImage
+        show: show,
+        hide: hide,
+        toggle: toggle,
+        getHostElement: getHostElement
     };
-    return filePickerElement.filePicker;
+    return popperElement.popper;
 };
 
 document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.file-picker:not([data-auto-start="false"]').forEach(function (filePickerElement) {
-        new mdp.blazorCore.FilePicker(filePickerElement);
+    document.querySelectorAll('.popper:not([data-auto-start="false"]').forEach(function (popperElement) {
+        new mdp.blazorCore.Popper(popperElement);
     });
 });
 
@@ -1205,7 +1130,7 @@ mdp.blazorCore.SwiperSlider = function (swiperSliderElement) {
 };
 
 document.addEventListener('MDPPageLoaded', function () {
-    document.querySelectorAll('.mdp-wrapper .swiper-slider:not([data-auto-start="false"]').forEach(swiperSliderElement => {
+    document.querySelectorAll('.swiper-slider:not([data-auto-start="false"]').forEach(swiperSliderElement => {
         new mdp.blazorCore.SwiperSlider(swiperSliderElement);
     });
 });
@@ -1217,19 +1142,33 @@ mdp.blazorCore.SwiperWheel = function (swiperWheelElement) {
     if (!swiperWheelElement) return;
     if (swiperWheelElement.swiperWheel) return swiperWheelElement.swiperWheel;
 
+
     // fields
     var slidesPerView = parseInt(swiperWheelElement.getAttribute('data-slides-perview')) || 5;
+
+    // swiperWheelElement
+    swiperWheelElement.style.height = (parseFloat(window.getComputedStyle(swiperWheelElement).lineHeight) * slidesPerView) + "px";
+
+    // maskContainer
+    var maskContainer = document.createElement('div');
+    maskContainer.className = 'swiper-mask-container';
+    swiperWheelElement.appendChild(maskContainer);
 
     // topMaskElement
     var topMaskElement = document.createElement('div');
     topMaskElement.className = 'swiper-mask-top';
-    swiperWheelElement.appendChild(topMaskElement);
+    maskContainer.appendChild(topMaskElement);
+
+    // middleMaskElement
+    var middleMaskElement = document.createElement('div');
+    middleMaskElement.className = 'swiper-mask-middle';
+    maskContainer.appendChild(middleMaskElement);
 
     // bottomMaskElement
     var bottomMaskElement = document.createElement('div');
     bottomMaskElement.className = 'swiper-mask-bottom';
-    swiperWheelElement.appendChild(bottomMaskElement);
-
+    maskContainer.appendChild(bottomMaskElement);
+    
     // swiper
     var swiper = new Swiper(swiperWheelElement, {
         direction: "vertical",
@@ -1237,26 +1176,508 @@ mdp.blazorCore.SwiperWheel = function (swiperWheelElement) {
         mousewheel: true,
         spaceBetween: 0,
         centeredSlides: true,
-        slideToClickedSlide: true
+        slideToClickedSlide: false,
+        on: {
+            slideChange: function () {
+
+                // slideChange
+                var slideChangeEvent = new CustomEvent('slideChange', {
+                    detail: {
+                    }
+                });
+                swiperWheelElement.dispatchEvent(slideChangeEvent);
+            },
+            click: function (event) {
+
+                // slideTo
+                swiperWheelElement.swiperWheel.slideTo(o => o == event.clickedSlide);
+            }
+        }
     });
 
-    // maskHeight
-    var slideHeight = swiper.slides[swiper.activeIndex].offsetHeight;
-    var spaceHeight = swiper.params.spaceBetween;
-    var maskSlideCount = Math.floor(slidesPerView / 2);
-    var maskHeight = (slideHeight + spaceHeight) * maskSlideCount;
-    topMaskElement.style.height = maskHeight + "px";
-    bottomMaskElement.style.height = maskHeight + "px";
+
+    // methods
+    function update() {
+
+        // update
+        swiper.update();
+    }
+
+    function slideTo(predicate) {
+
+        // slideTo
+        var activeIndex = 0;
+        for (let i = 0; i < swiper.slides.length; i++) {
+            if (window.getComputedStyle(swiper.slides[i]).display !== "none") {
+                if (predicate(swiper.slides[i]) == true) {
+                    swiper.slideTo(activeIndex);
+                    return;
+                }
+                activeIndex++;
+            }
+        }
+    }
+
+    function slideToLast() {
+
+        // slideTo
+        swiper.slideTo(swiper.slides.length);
+    }
+    
+    function slideToFirst() {
+
+        // slideTo
+        swiper.slideTo(0);
+    }
+
+    function getActiveIndex() {
+
+        // require
+        if (swiper.slides.length <= 0) return -1;
+
+        // return
+        return swiper.activeIndex;
+    }
+
+    function getActiveSlide() {
+
+        // require
+        if (swiper.slides.length <= 0) return null;
+
+        // activeSlide
+        var activeSlide = Array.from(swiper.slides).filter(o => window.getComputedStyle(o).display !== "none")[swiper.activeIndex] || null;
+        if (!activeSlide) activeSlide = null;
+
+        // return
+        return activeSlide;
+    }
+    
 
     // return
-    swiperSliderElement.swiperWheel = {
-
+    swiperWheelElement.swiperWheel = {
+        update: update,
+        slideTo: slideTo,
+        slideToLast: slideToLast,
+        slideToFirst: slideToFirst,
+        getActiveIndex: getActiveIndex,
+        getActiveSlide: getActiveSlide
     };
-    return swiperSliderElement.swiperWheel;
+    return swiperWheelElement.swiperWheel;
 };
 
 document.addEventListener('MDPPageLoaded', function () {
-    document.querySelectorAll('.mdp-wrapper .swiper-wheel:not([data-auto-start="false"]').forEach(swiperWheelElement => {
+    document.querySelectorAll('.swiper-wheel:not([data-auto-start="false"]').forEach(swiperWheelElement => {
         new mdp.blazorCore.SwiperWheel(swiperWheelElement);
+    });
+});
+
+
+/* ---------- picker ---------- */
+
+// mdp.blazorCore.FilePicker
+mdp.blazorCore.FilePicker = function (filePickerElement) {
+
+    // require
+    if (!filePickerElement) return;
+    if (filePickerElement.filePicker) return filePickerElement.filePicker;
+
+
+    // fields
+    var _imageExtensionList = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    var _src = filePickerElement.getAttribute('data-src') || "";
+    var _accept = filePickerElement.getAttribute('data-accept') || "";
+
+    // previewFileElement
+    var previewFileElement = document.createElement("div");
+    previewFileElement.className = "preview-file";
+    filePickerElement.appendChild(previewFileElement);
+
+    // previewImageElement
+    var previewImageElement = document.createElement("img");
+    previewImageElement.className = "preview-image";
+    filePickerElement.appendChild(previewImageElement);
+
+    // fileInputElement
+    var fileInputElement = document.createElement("input");
+    fileInputElement.type = "file";
+    fileInputElement.className = "file-input";
+    fileInputElement.accept = _accept;
+    filePickerElement.appendChild(fileInputElement);
+
+
+    // methods
+    function clear() {
+
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
+        fileInputElement.value = "";
+    }
+
+    function reset() {
+
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
+        fileInputElement.value = "";
+
+        // fileName
+        var fileName = null;
+        if (_src) {
+            fileName = new URL(_src, window.location.origin).pathname.split('/').pop();
+        }
+        if (!fileName || fileName.trim() === '') return;
+
+        // fileExtension
+        var fileExtension = null;
+        if (fileName.includes('.') == true) fileExtension = fileName.split('.').pop().toLowerCase();
+
+        // src.type
+        if (!fileExtension || _imageExtensionList.includes(fileExtension) == true) {
+
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
+
+            // previewImageElement
+            previewImageElement.src = _src;
+            previewImageElement.style.opacity = "1";
+        } else {
+
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
+
+            // previewFileElement
+            previewFileElement.textContent = fileName;
+            previewFileElement.style.opacity = "1";
+        }
+    }
+
+    function hasFile() {
+
+        // require
+        if (fileInputElement.files.length <= 0) return false;
+
+        // return
+        return true;
+    }
+
+    function getFile() {
+
+        // require
+        if (fileInputElement.files.length <= 0) return null;
+
+        // return
+        return fileInputElement.files[0];
+    }
+
+    function hasImage() {
+
+        // require
+        if (fileInputElement.files.length <= 0) return false;
+
+        // fileExtension
+        var fileExtension = fileInputElement.files[0].name.split('.').pop().toLowerCase();
+        if (_imageExtensionList.includes(fileExtension) == false) return false;
+
+        // return
+        return true;
+    }
+
+    function getImage() {
+
+        // require
+        if (hasImage() == false) return null;
+
+        // return
+        return fileInputElement.files[0];
+    }
+
+
+    // handlers
+    previewImageElement.addEventListener('error', function () {
+
+        // errorImage
+        var errorSrc = filePickerElement.getAttribute('data-src-error');
+        if (errorSrc) previewImageElement.src = errorSrc;
+    });
+
+    fileInputElement.addEventListener('change', function (event) {
+
+        // require
+        var file = event.target.files[0];
+        if (!file) return;
+
+        // clear
+        filePickerElement.classList.remove("file-selected");
+        previewImageElement.src = "";
+        previewImageElement.style.opacity = "0";
+        previewFileElement.textContent = "";
+        previewFileElement.style.opacity = "0";
+
+        // file.type
+        if (file.type.startsWith("image/") == true) {
+
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
+
+            // previewImageElement
+            var fileReader = new FileReader();
+            fileReader.onload = function (e) {
+                previewImageElement.src = e.target.result;
+                previewImageElement.style.opacity = "1";
+            };
+            fileReader.readAsDataURL(file);
+        } else {
+
+            // filePickerElement
+            filePickerElement.classList.add("file-selected");
+
+            // previewFileElement
+            previewFileElement.textContent = file.name;
+            previewFileElement.style.opacity = "1";
+        }
+    });
+
+
+    // constructors
+    (function () {
+
+        // reset
+        reset();
+    })();
+
+
+    // return
+    filePickerElement.filePicker = {
+
+        // methods
+        clear: clear,
+        reset: reset,
+        hasFile: hasFile,
+        getFile: getFile,
+        hasImage: hasImage,
+        getImage: getImage
+    };
+    return filePickerElement.filePicker;
+};
+
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.mdp-wrapper .file-picker:not([data-auto-start="false"]').forEach(function (filePickerElement) {
+        new mdp.blazorCore.FilePicker(filePickerElement);
+    });
+});
+
+// mdp.blazorCore.TimePicker
+mdp.blazorCore.TimePicker = function (timePickerElement) {
+
+    // require
+    if (!timePickerElement) return;
+    if (timePickerElement.timePicker) return timePickerElement.timePicker;
+
+    // fields
+    var _minTime = moment("00:00", "HH:mm");
+    var _maxTime = moment("24:00", "HH:mm");
+    var _perviewCount = parseInt(timePickerElement.getAttribute('data-perview-count')) || 5;
+    var _stepDuration = Number(timePickerElement.getAttribute('data-step-duration')) || 30;
+
+    // hourWheelElement
+    var hourWheelElement = document.createElement("div");
+    hourWheelElement.className = "time-picker-hours swiper-wheel swiper";
+    hourWheelElement.setAttribute('data-slides-perview', _perviewCount);
+    timePickerElement.appendChild(hourWheelElement);
+    
+    var hourWrapperElement = document.createElement("div");
+    hourWrapperElement.className = "swiper-wrapper";
+    hourWheelElement.appendChild(hourWrapperElement);
+
+    var indexHour = 0;
+    while (indexHour <= 24) {
+        var slideElement = document.createElement("div");
+        slideElement.className = "swiper-slide";
+        slideElement.textContent = indexHour.toString().padStart(2, '0');
+        hourWrapperElement.appendChild(slideElement);
+        indexHour = indexHour + 1;
+    }
+    new mdp.blazorCore.SwiperWheel(hourWheelElement);
+
+    // colonElement
+    var colonElement = document.createElement("div");
+    colonElement.className = 'time-picker-colon';
+    colonElement.innerHTML = ":";
+    timePickerElement.appendChild(colonElement);
+
+    // minuteWheelElement
+    var minuteWheelElement = document.createElement("div");
+    minuteWheelElement.className = "time-picker-minutes swiper-wheel swiper";
+    minuteWheelElement.setAttribute('data-slides-perview', _perviewCount);
+    timePickerElement.appendChild(minuteWheelElement);
+
+    var minuteWrapperElement = document.createElement("div");
+    minuteWrapperElement.className = "swiper-wrapper";
+    minuteWheelElement.appendChild(minuteWrapperElement);
+
+    var indexMinute = 0;
+    while (indexMinute < 60) {
+        var slideElement = document.createElement("div");
+        slideElement.className = "swiper-slide";
+        slideElement.textContent = indexMinute.toString().padStart(2, '0');
+        minuteWrapperElement.appendChild(slideElement);
+        indexMinute = indexMinute + _stepDuration;
+    }
+    new mdp.blazorCore.SwiperWheel(minuteWheelElement);
+
+    // maskContainer
+    var maskContainer = document.createElement('div');
+    maskContainer.className = 'time-picker-mask-container';
+    timePickerElement.appendChild(maskContainer);
+
+    // middleMaskElement
+    var middleMaskElement = document.createElement('div');
+    middleMaskElement.className = 'time-picker-mask-middle';
+    maskContainer.appendChild(middleMaskElement);
+
+
+    // methods
+    function getTime() {
+
+        // variables
+        var hourString = hourWheelElement.swiperWheel.getActiveSlide()?.textContent;
+        var minuteString = minuteWheelElement.swiperWheel.getActiveSlide()?.textContent;
+
+        // return
+        if (!hourString) return null;
+        if (!minuteString) return null;
+        return moment(hourString + ":" + minuteString, 'HH:mm');
+    }
+
+    function setTime(time) {
+
+        // require
+        if (moment.isMoment(time) == false) throw new Error('time 必須為 moment 物件');
+        if (time.isSameOrBefore(moment("00:00", "HH:mm"))) time = moment("00:00", "HH:mm");
+        if (time.isSameOrAfter(moment("24:00", "HH:mm"))) time = moment("24:00", "HH:mm");
+
+        // timeString
+        var hourString = null;
+        var minuteString = null;
+        if (time.isSame(moment("24:00", "HH:mm"))) {
+            hourString = "24";
+            minuteString = "00";
+        }
+        else {
+            hourString = time.hour().toString().padStart(2, '0');
+            minuteString = time.minute().toString().padStart(2, '0');
+        }
+
+        // slideTo
+        hourWheelElement.swiperWheel.update();
+        hourWheelElement.swiperWheel.slideTo(o => o.textContent == hourString);
+        minuteWheelElement.swiperWheel.update();
+        minuteWheelElement.swiperWheel.slideTo(o => o.textContent == minuteString);
+    }
+
+    function setTimeRange(minTime, maxTime) {
+        
+        // require
+        if (moment.isMoment(minTime) == false) throw new Error('minTime 必須為 moment 物件');
+        if (moment.isMoment(maxTime) == false) throw new Error('maxTime 必須為 moment 物件');
+        if (minTime.isSameOrBefore(moment("00:00", "HH:mm"))) minTime = moment("00:00", "HH:mm");
+        if (maxTime.isSameOrAfter(moment("24:00", "HH:mm"))) maxTime = moment("24:00", "HH:mm");
+        if (maxTime.isBefore(minTime)) maxTime = minTime.clone();
+
+        // variables
+        _minTime = minTime;
+        _maxTime = maxTime;
+        var activeIndex = hourWheelElement.swiperWheel.getActiveIndex();
+
+        // refresh
+        hourWheelElement.querySelectorAll(".swiper-slide").forEach(slideElement => {
+            var slideTime = moment(slideElement.textContent.trim(), 'HH').startOf('hour');
+            if (slideTime.isSameOrAfter(_minTime.clone().startOf('hour')) && slideTime.isSameOrBefore(_maxTime)) {
+                slideElement.classList.remove('d-none');
+            } else {
+                slideElement.classList.add('d-none');                
+            }
+        });
+        hourWheelElement.swiper.update();
+
+        // slideChange
+        if (hourWheelElement.swiperWheel.getActiveIndex() == activeIndex) {
+            var slideChangeEvent = new CustomEvent('slideChange', {
+                detail: {
+
+                }
+            });
+            hourWheelElement.dispatchEvent(slideChangeEvent);
+        }
+    }
+
+    function getStepDuration() {
+
+        // return
+        return _stepDuration;
+    }
+
+
+    // handlers
+    hourWheelElement.addEventListener('slideChange', function () {
+
+        // variables
+        var hourString = hourWheelElement.swiperWheel.getActiveSlide()?.textContent || "00";
+        var activeIndex = minuteWheelElement.swiperWheel.getActiveIndex();
+
+        // refresh
+        minuteWheelElement.querySelectorAll(".swiper-slide").forEach(slideElement => {
+            var slideTime = moment(hourString + ":" + slideElement.textContent, 'HH:mm');
+            if (slideTime.isSameOrAfter(_minTime) && slideTime.isSameOrBefore(_maxTime)) {
+                slideElement.classList.remove('d-none');
+            } else {
+                slideElement.classList.add('d-none');
+            }
+        });
+        minuteWheelElement.swiper.update();
+
+        // timeChange
+        if (minuteWheelElement.swiperWheel.getActiveIndex() == activeIndex) {
+            var timeChangeEvent = new CustomEvent('timeChange', {
+                detail: {
+
+                }
+            });
+            timePickerElement.dispatchEvent(timeChangeEvent);
+        }
+    });
+
+    minuteWheelElement.addEventListener('slideChange', function () {
+
+        // timeChange
+        var timeChangeEvent = new CustomEvent('timeChange', {
+            detail: {
+
+            }
+        });
+        timePickerElement.dispatchEvent(timeChangeEvent);
+    });
+
+
+    // return
+    timePickerElement.timePicker = {
+        getTime: getTime,
+        getStepDuration: getStepDuration,
+        setTime: setTime,
+        setTimeRange: setTimeRange
+    };
+    return timePickerElement.timePicker;
+};
+
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.mdp-wrapper .time-picker:not([data-auto-start="false"]').forEach(function (timePickerElement) {
+        new mdp.blazorCore.TimePicker(timePickerElement);
     });
 });
