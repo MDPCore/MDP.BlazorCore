@@ -1,24 +1,11 @@
 ﻿@attribute [Authorize]
 @page "/PageControllerExample"
 @inherits PageComponent
-@code {
-    
-    // Class
-    public class PageController : InteropController
-    {
-        // Methods
-        public async Task<string> Echo(string message)
-        {
-            // Return
-            return await Task.FromResult(message);
-        }
-    }
-}
 
 <PageScript>
     <script>
 
-        // blazorPageLoaded
+        // pageLoaded
         document.addEventListener("MDPPageLoaded", function (event) {
 
             // runButton
@@ -28,10 +15,13 @@
                 mdp.blazorCore.interopManager.invokeAsync("Echo", {
                     "message": "Hello World"
                 }).then(result => {
-                    alert(result + " By PageController");
-                }).catch(error => {
-                    alert(error.message);
-                });
+
+                    // message
+                    var message = result.message;
+
+                    // alert
+                    alert(message + " By PageController");
+                }).catch(mdp.blazorCore.errorManager.dispatchError);
             });
         }, { once: true });
     </script>

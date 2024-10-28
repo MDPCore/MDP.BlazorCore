@@ -13,6 +13,8 @@ namespace MDP.BlazorCore
 
         public string LoginPath { get; set; } = "/Account/Login";
 
+        public string LogoutPath { get; set; } = "/Account/Logout";
+
         public string AccessDeniedPath { get; set; } = "/Account/AccessDenied";
 
 
@@ -42,15 +44,6 @@ namespace MDP.BlazorCore
 
             // Return
             return assemblyList.ToArray();
-        }
-
-        public Type CreateDefaultLayout()
-        {
-            // Required
-            if (this.DefaultLayout == null) return null;
-
-            // Return
-            return this.DefaultLayout;
         }
     }
 }

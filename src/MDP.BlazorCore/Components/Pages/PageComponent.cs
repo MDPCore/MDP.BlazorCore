@@ -35,10 +35,10 @@ namespace MDP.BlazorCore
         public IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        public InteropManager InteropManager { get; set; }
+        public RoutesOptions RoutesOptions { get; set; }
 
         [Inject]
-        public IServiceProvider ServiceProvider { get; set; }
+        public InteropManager InteropManager { get; set; }
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }
@@ -94,7 +94,27 @@ namespace MDP.BlazorCore
                         nameof(OnInitializedAsync)
                     ));
                     if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
-                    if (interopResponse.Succeeded == false) throw new ApplicationException(interopResponse.ErrorMessage);
+
+                    // StatusCode
+                    switch(interopResponse.StatusCode)
+                    {
+                        // OK
+                        case InteropStatusCode.OK:
+                            break;
+
+                        // Unauthorized
+                        case InteropStatusCode.Unauthorized:
+                            this.NavigationManager.NavigateToLogin(this.RoutesOptions);
+                            break;
+
+                        // Forbidden
+                        case InteropStatusCode.Forbidden: 
+                            this.NavigationManager.NavigateToAccessDenied(this.RoutesOptions);
+                            break;
+
+                        // Other
+                        default: throw new ApplicationException(interopResponse.ErrorMessage);
+                    }
 
                     // PageModel
                     this.Model = interopResponse.Result as TModel;

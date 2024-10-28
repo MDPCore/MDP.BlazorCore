@@ -15,9 +15,9 @@
 
 <Router AppAssembly="@RoutesOptions.CreateAppAssembly()" AdditionalAssemblies="@RoutesOptions.CreateAdditionalAssemblies()">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@RoutesOptions.CreateDefaultLayout()" Resource="@NavigationManager">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@RoutesOptions.DefaultLayout" Resource="@NavigationManager">
             <NotAuthorized>
-                <RedirectToLogin LoginPath="@RoutesOptions.LoginPath" AccessDeniedPath="@RoutesOptions.AccessDeniedPath" />
+                <RedirectToLogin />
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>

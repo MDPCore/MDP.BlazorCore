@@ -1,5 +1,5 @@
-using MDP.BlazorCore.Lab;
-using MDP.BlazorCore.Lab.Layout;
+using MDP.BlazorCore.Components;
+using MDP.BlazorCore.Components.Layout;
 
 namespace MDP.BlazorCore.Web.Lab
 {

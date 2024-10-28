@@ -21,9 +21,6 @@
     public InteropManager InteropManager { get; set; }
 
     [Inject]
-    public IServiceProvider ServiceProvider { get; set; }
-
-    [Inject]
     public NavigationManager NavigationManager { get; set; }
 
     [Inject]
@@ -95,7 +92,8 @@
             // Return
             return new InteropResponse()
             {
-                Succeeded = false,
+                StatusCode = InteropStatusCode.InternalServerError,
+                Result = null,
                 ErrorMessage = exception.Message
             };
         }        

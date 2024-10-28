@@ -432,6 +432,37 @@ document.addEventListener("MDPTaskInvoked", function (event) {
     document.body.classList.remove("mdp-task-invoking");
 });
 
+// mdp.blazorCore.errorManager
+mdp.blazorCore.errorManager = (function () {
+
+    // methods
+    function dispatchError(error) {
+
+        // require
+        if (!error) return;
+        if (typeof error !== 'object') error = new Error(error);
+
+        // errorThrownEvent
+        var errorThrownEvent = new CustomEvent("MDPErrorThrown", {
+            detail: {
+                error: error
+            }
+        });
+        document.dispatchEvent(errorThrownEvent);
+
+        // console
+        console.error(error);
+    }
+
+
+    // return
+    return {
+
+        // methods
+        dispatchError: dispatchError
+    };
+})();
+
 // mdp.blazorCore.httpClient
 mdp.blazorCore.httpClient = (function () {
 
@@ -535,37 +566,6 @@ mdp.blazorCore.httpClient = (function () {
         // methods
         sendAsync: sendAsync,
         getStatusText: getStatusText
-    };
-})();
-
-// mdp.blazorCore.errorManager
-mdp.blazorCore.errorManager = (function () {
-
-    // methods
-    function dispatchError(error) {
-
-        // require
-        if (!error) return;
-        if (typeof error !== 'object') error = new Error(error);
-
-        // errorThrownEvent
-        var errorThrownEvent = new CustomEvent("MDPErrorThrown", {
-            detail: {
-                error: error
-            }
-        });
-        document.dispatchEvent(errorThrownEvent);
-
-        // console
-        console.error(error);
-    }
-
-
-    // return
-    return {
-
-        // methods
-        dispatchError: dispatchError
     };
 })();
 
@@ -880,8 +880,8 @@ mdp.blazorCore.transformManager = (function () {
 
 /* ---------- components ---------- */
 
-// mdp.blazorCore.Fade
-mdp.blazorCore.Fade = function (fadeElement) {
+// mdp.blazorCore.fade
+mdp.blazorCore.fade = function (fadeElement) {
 
     // require
     if (!fadeElement) return;
@@ -951,12 +951,12 @@ mdp.blazorCore.Fade = function (fadeElement) {
 
 document.addEventListener("MDPPageLoaded", function (event) {
     document.querySelectorAll('.fade:not([data-auto-start="false"]').forEach(function (fadeElement) {
-        new mdp.blazorCore.Fade(fadeElement);
+        new mdp.blazorCore.fade(fadeElement);
     });
 });
 
-// mdp.blazorCore.Popper
-mdp.blazorCore.Popper = function (popperElement) {
+// mdp.blazorCore.popper
+mdp.blazorCore.popper = function (popperElement) {
 
     // require
     if (!popperElement) return;
@@ -1049,15 +1049,31 @@ mdp.blazorCore.Popper = function (popperElement) {
 
 document.addEventListener("MDPPageLoaded", function (event) {
     document.querySelectorAll('.popper:not([data-auto-start="false"]').forEach(function (popperElement) {
-        new mdp.blazorCore.Popper(popperElement);
+        new mdp.blazorCore.popper(popperElement);
+    });
+});
+
+// mdp.blazorCore.offcanvas
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.offcanvas').forEach(function (offcanvasElement) {
+
+        // anchor.click
+        offcanvasElement.querySelectorAll('a').forEach(function (anchorElement) {
+            anchorElement.addEventListener('click', function (event) {
+                
+                // offcanvas.hide
+                var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if (offcanvas) offcanvas.hide();
+            });
+        });
     });
 });
 
 
 /* ---------- swiper ---------- */
 
-// mdp.blazorCore.SwiperSlider
-mdp.blazorCore.SwiperSlider = function (swiperSliderElement) {
+// mdp.blazorCore.swiperSlider
+mdp.blazorCore.swiperSlider = function (swiperSliderElement) {
 
     // require
     if (!swiperSliderElement) return;
@@ -1131,12 +1147,12 @@ mdp.blazorCore.SwiperSlider = function (swiperSliderElement) {
 
 document.addEventListener('MDPPageLoaded', function () {
     document.querySelectorAll('.swiper-slider:not([data-auto-start="false"]').forEach(swiperSliderElement => {
-        new mdp.blazorCore.SwiperSlider(swiperSliderElement);
+        new mdp.blazorCore.swiperSlider(swiperSliderElement);
     });
 });
 
-// mdp.blazorCore.SwiperWheel
-mdp.blazorCore.SwiperWheel = function (swiperWheelElement) {
+// mdp.blazorCore.swiperWheel
+mdp.blazorCore.swiperWheel = function (swiperWheelElement) {
 
     // require
     if (!swiperWheelElement) return;
@@ -1267,15 +1283,15 @@ mdp.blazorCore.SwiperWheel = function (swiperWheelElement) {
 
 document.addEventListener('MDPPageLoaded', function () {
     document.querySelectorAll('.swiper-wheel:not([data-auto-start="false"]').forEach(swiperWheelElement => {
-        new mdp.blazorCore.SwiperWheel(swiperWheelElement);
+        new mdp.blazorCore.swiperWheel(swiperWheelElement);
     });
 });
 
 
 /* ---------- picker ---------- */
 
-// mdp.blazorCore.FilePicker
-mdp.blazorCore.FilePicker = function (filePickerElement) {
+// mdp.blazorCore.filePicker
+mdp.blazorCore.filePicker = function (filePickerElement) {
 
     // require
     if (!filePickerElement) return;
@@ -1469,12 +1485,12 @@ mdp.blazorCore.FilePicker = function (filePickerElement) {
 
 document.addEventListener("MDPPageLoaded", function (event) {
     document.querySelectorAll('.mdp-wrapper .file-picker:not([data-auto-start="false"]').forEach(function (filePickerElement) {
-        new mdp.blazorCore.FilePicker(filePickerElement);
+        new mdp.blazorCore.filePicker(filePickerElement);
     });
 });
 
-// mdp.blazorCore.TimePicker
-mdp.blazorCore.TimePicker = function (timePickerElement) {
+// mdp.blazorCore.timePicker
+mdp.blazorCore.timePicker = function (timePickerElement) {
 
     // require
     if (!timePickerElement) return;
@@ -1504,7 +1520,7 @@ mdp.blazorCore.TimePicker = function (timePickerElement) {
         hourWrapperElement.appendChild(slideElement);
         indexHour = indexHour + 1;
     }
-    new mdp.blazorCore.SwiperWheel(hourWheelElement);
+    new mdp.blazorCore.swiperWheel(hourWheelElement);
 
     // colonElement
     var colonElement = document.createElement("div");
@@ -1530,7 +1546,7 @@ mdp.blazorCore.TimePicker = function (timePickerElement) {
         minuteWrapperElement.appendChild(slideElement);
         indexMinute = indexMinute + _stepDuration;
     }
-    new mdp.blazorCore.SwiperWheel(minuteWheelElement);
+    new mdp.blazorCore.swiperWheel(minuteWheelElement);
 
     // maskContainer
     var maskContainer = document.createElement('div');
@@ -1678,6 +1694,6 @@ mdp.blazorCore.TimePicker = function (timePickerElement) {
 
 document.addEventListener("MDPPageLoaded", function (event) {
     document.querySelectorAll('.mdp-wrapper .time-picker:not([data-auto-start="false"]').forEach(function (timePickerElement) {
-        new mdp.blazorCore.TimePicker(timePickerElement);
+        new mdp.blazorCore.timePicker(timePickerElement);
     });
 });

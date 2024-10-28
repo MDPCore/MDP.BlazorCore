@@ -109,6 +109,9 @@ namespace MDP.BlazorCore.Maui
 
             // Raise
             this.OnPrincipalChanged(claimsPrincipal);
+
+            // Return
+            return;
         }               
 
         public Task RemoveAsync()

@@ -1,5 +1,5 @@
-﻿using MDP.BlazorCore.Authorization.Lab;
-using MDP.BlazorCore.Authorization.Lab.Layout;
+﻿using MDP.BlazorCore.Authorization.Components;
+using MDP.BlazorCore.Authorization.Components.Layout;
 
 namespace MDP.BlazorCore.Authorization.Maui.Lab
 {

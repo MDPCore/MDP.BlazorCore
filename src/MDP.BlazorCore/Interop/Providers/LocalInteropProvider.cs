@@ -38,32 +38,64 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // InvokeAsync
-            object invokeResult = null;
+            // Execute
+            try
             {
                 // InteropController
                 var interopController = _serviceProvider.GetService(interopResource.ServiceType) as InteropController;
-                if (interopController == null) throw new InvalidOperationException($"{nameof(interopController)}=null");
-                if (interopController != null)
+                if (interopController == null)
                 {
-                    // Properties
-                    interopController.User = principal;
+                    // NotFound
+                    return new InteropResponse()
+                    {
+                        StatusCode = InteropStatusCode.NotFound,
+                        Result = null,
+                        ErrorMessage = $"Not found for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                    };
                 }
+                if (interopController != null) interopController.User = principal;
 
                 // InteropParameters
                 var interopParameters = interopResource.CreateParameters(interopRequest);
-                if (interopParameters == null) throw new InvalidOperationException($"{nameof(interopParameters)}=null");
+                if (interopParameters == null)
+                {
+                    // BadRequest
+                    return new InteropResponse()
+                    {
+                        StatusCode = InteropStatusCode.BadRequest,
+                        Result = null,
+                        ErrorMessage = $"Bad request for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                    };
+                }
 
-                // InvokeMethod
-                invokeResult = await MDP.Reflection.Activator.InvokeMethodAsync(interopController, interopRequest.ActionName, interopParameters);
+                // InteropResponse
+                var invokeResult = await MDP.Reflection.Activator.InvokeMethodAsync(interopController, interopRequest.ActionName, interopParameters);
+                var interopResponse = new InteropResponse()
+                {
+                    StatusCode = InteropStatusCode.OK,
+                    Result = invokeResult,
+                    ErrorMessage = null
+                };
+
+                // Return
+                return interopResponse;
             }
-
-            // Return
-            return new InteropResponse()
+            catch (Exception exception)
             {
-                Succeeded = true,
-                Result = invokeResult
-            };
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
+
+                // InteropResponse
+                var interopResponse = new InteropResponse()
+                {
+                    StatusCode = InteropStatusCode.InternalServerError,
+                    Result = null,
+                    ErrorMessage = exception.Message
+                };
+
+                // Return
+                return interopResponse;
+            }
         }
     }
 }

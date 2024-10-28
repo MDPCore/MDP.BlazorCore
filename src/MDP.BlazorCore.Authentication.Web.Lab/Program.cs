@@ -1,5 +1,5 @@
-using MDP.BlazorCore.Authentication.Lab;
-using MDP.BlazorCore.Authentication.Lab.Layout;
+using MDP.BlazorCore.Authentication.Components;
+using MDP.BlazorCore.Authentication.Components.Layout;
 
 namespace MDP.BlazorCore.Authentication.Web.Lab
 {

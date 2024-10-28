@@ -1,23 +1,10 @@
 ﻿@page "/PageControllerExample"
 @inherits PageComponent
-@code {
-
-    // Class
-    public class PageController : InteropController
-    {
-        // Methods
-        public Task Echo(string message)
-        {
-            // Return
-            return Task.CompletedTask;
-        }
-    }
-}
 
 <PageScript>
     <script>
 
-        // blazorPageLoaded
+        // pageLoaded
         document.addEventListener("MDPPageLoaded", function (event) {
 
             // runButton
@@ -27,8 +14,13 @@
                 mdp.blazorCore.interopManager.invokeAsync("Echo", {
                     "message": "Hello World"
                 }).then(result => {
-                    alert("ok123");
-                }).catch(mdp.blazorCore.errorManager.raise);
+
+                    // message
+                    var message = result.message;
+
+                    // alert
+                    alert(message + " By PageController");
+                }).catch(mdp.blazorCore.errorManager.dispatchError);
             });
         }, { once: true });
     </script>

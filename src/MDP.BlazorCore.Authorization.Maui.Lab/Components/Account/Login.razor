@@ -29,7 +29,7 @@
 
             // ReturnUrl
             var returnUrl = string.Empty;
-            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = this.NavigationManager.ParseQuery()["returnUrl"];
+            if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = this.NavigationManager.GetQueryValue("returnUrl");
             if (string.IsNullOrEmpty(returnUrl) == true) returnUrl = "/";
 
             // Redirect

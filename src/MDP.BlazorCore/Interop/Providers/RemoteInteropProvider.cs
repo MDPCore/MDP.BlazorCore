@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Reflection.Metadata;
@@ -47,50 +48,94 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // HttpClient
-            var httpClient = _httpClientFactory.CreateClient("DefaultService");
-            if (httpClient == null) throw new InvalidOperationException($"{nameof(httpClient)}=null");
-
-            // GetAsync
-            var interopResponse = await httpClient.PostAsync<InteropResponse>("/.blazor/interop/invokeAsync", content: new
+            // Execute
+            try
             {
-                controllerUri = $"{httpClient.BaseAddress.Scheme}://{httpClient.BaseAddress.Host}{interopRequest.ControllerUri.PathAndQuery}",
-                actionName = interopRequest.ActionName,
-                actionParameters = interopRequest.ActionParameters
-            });
-            if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
+                // HttpClient
+                var httpClient = _httpClientFactory.CreateClient("DefaultService");
+                if (httpClient == null) throw new InvalidOperationException($"{nameof(httpClient)}=null");
 
-            // MethodInfo
-            var methodInfo = interopResource.ServiceType.GetMethod(interopRequest.ActionName);
-            if (methodInfo == null) throw new InvalidOperationException($"{nameof(methodInfo)}=null");
-
-            // ResultType
-            var resultType = methodInfo.ReturnType;
-            {
-                // Task
-                if (resultType != null && resultType == typeof(Task))
+                // PostAsync
+                var interopResponse = await httpClient.PostAsync<InteropResponse, InteropResponse>("/.blazor/interop/invokeAsync", content: new
                 {
-                    resultType = null;
+                    controllerUri = $"{httpClient.BaseAddress.Scheme}://{httpClient.BaseAddress.Host}{interopRequest.ControllerUri.PathAndQuery}",
+                    actionName = interopRequest.ActionName,
+                    actionParameters = interopRequest.ActionParameters
+                });
+                if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
+
+                // MethodInfo
+                var methodInfo = interopResource.ServiceType.GetMethod(interopRequest.ActionName);
+                if (methodInfo == null)
+                {
+                    // NotFound
+                    return new InteropResponse()
+                    {
+                        StatusCode = InteropStatusCode.NotFound,
+                        Result = null,
+                        ErrorMessage = $"Not found for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                    };
                 }
 
-                // Task<>
-                if (resultType != null && resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
+                // ResultType
+                var resultType = methodInfo.ReturnType;
                 {
-                    resultType = resultType.GetGenericArguments().FirstOrDefault();
+                    // Task
+                    if (resultType != null && resultType == typeof(Task))
+                    {
+                        resultType = null;
+                    }
+
+                    // Task<>
+                    if (resultType != null && resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
+                    {
+                        resultType = resultType.GetGenericArguments().FirstOrDefault();
+                    }
                 }
+                if (resultType == null) return interopResponse;
+
+                // Result
+                var resultString = string.Empty;
+                if (string.IsNullOrEmpty(resultString) == true && interopResponse.Result is JsonElement) resultString = this.CreateString((JsonElement)interopResponse.Result);
+                if (string.IsNullOrEmpty(resultString) == true && interopResponse.Result != null) resultString = interopResponse.Result.ToString();
+                interopResponse.Result = this.CreateResult(resultType, resultString);
+
+                // Return
+                return interopResponse;
             }
-            if (resultType == null) return interopResponse;
+            catch (HttpException<InteropResponse> exception)
+            {
+                // InteropResponse
+                var interopResponse = exception.ErrorModel as InteropResponse;
+                if (interopResponse == null) 
+                {
+                    interopResponse = new InteropResponse()
+                    {
+                        StatusCode = InteropStatusCode.InternalServerError,
+                        Result = null,
+                        ErrorMessage = exception.Message
+                    };
+                }
 
-            // ResultString
-            var resultString = string.Empty;
-            if (string.IsNullOrEmpty(resultString) == true && interopResponse.Result is JsonElement) resultString = this.CreateString((JsonElement)interopResponse.Result);
-            if (string.IsNullOrEmpty(resultString) == true && interopResponse.Result != null) resultString = interopResponse.Result.ToString();
+                // Return
+                return interopResponse;
+            }
+            catch (Exception exception)
+            {
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
 
-            // Result
-            interopResponse.Result = this.CreateResult(resultType, resultString);
+                // InteropResponse
+                var interopResponse = new InteropResponse()
+                {
+                    StatusCode = InteropStatusCode.InternalServerError,
+                    Result = null,
+                    ErrorMessage = exception.Message
+                };
 
-            // Return
-            return interopResponse;
+                // Return
+                return interopResponse;
+            }
         }
 
         private object CreateResult(Type resultType, string resultString = null)

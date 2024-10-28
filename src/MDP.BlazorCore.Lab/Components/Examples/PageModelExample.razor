@@ -1,32 +1,10 @@
 ﻿@page "/PageModelExample"
 @inherits PageComponent<PageModelExample.PageModel>
-@code {
-
-    // Class
-    public class PageController : InteropController
-    {
-        // Methods
-        public async Task<PageModel> OnInitializedAsync()
-        {
-            // Return
-            return await Task.FromResult(new PageModel
-            {
-                Message = "Hello World"
-            });
-        }
-    }
-
-    public class PageModel
-    {
-        // Properties
-        public string Message { get; set; }
-    }
-}
 
 <PageScript>
     <script>
 
-        // blazorPageLoaded
+        // pageLoaded
         document.addEventListener("MDPPageLoaded", function (event) {
 
             // runButton

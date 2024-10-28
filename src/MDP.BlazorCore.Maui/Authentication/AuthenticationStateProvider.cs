@@ -73,7 +73,7 @@ namespace MDP.BlazorCore.Maui
             #endregion
 
             // Notify
-            this.NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+            //this.NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
     }
 }

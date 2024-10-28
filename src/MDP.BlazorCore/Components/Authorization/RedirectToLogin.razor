@@ -2,11 +2,8 @@
 @code {
 
     // Properties
-    [Parameter]
-    public string LoginPath { get; set; } = null;
-
-    [Parameter]
-    public string AccessDeniedPath { get; set; } = null;
+    [Inject]
+    public RoutesOptions RoutesOptions { get; set; }
 
     [Inject]
     public NavigationManager NavigationManager { get; set; }
@@ -25,23 +22,15 @@
 
         // Redirect
         var principal  = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
-        if (principal != null && principal.Identity?.IsAuthenticated == true)
+        if (principal == null || principal?.Identity?.IsAuthenticated != true)
         {
-            // AccessDeniedPath
-            var accessDeniedPath = this.AccessDeniedPath;
-            if (string.IsNullOrEmpty(accessDeniedPath) == true) accessDeniedPath = "/";
-
-            // AccessDenied
-            this.NavigationManager.NavigateTo($"{accessDeniedPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+            // Login
+            this.NavigationManager.NavigateToLogin(this.RoutesOptions);
         }
         else
         {
-            // LoginPath
-            var loginPath = this.LoginPath;
-            if (string.IsNullOrEmpty(loginPath) == true) loginPath = "/";
-
-            // Login
-            this.NavigationManager.NavigateTo($"{loginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
+            // AccessDenied
+            this.NavigationManager.NavigateToAccessDenied(this.RoutesOptions);           
         }
     }
 }

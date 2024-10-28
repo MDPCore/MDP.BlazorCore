@@ -3,10 +3,22 @@
     public class InteropResponse
     {
         // Properties
-        public bool Succeeded { get; set; }
+        public InteropStatusCode StatusCode { get; set; } = InteropStatusCode.InternalServerError;
 
-        public object Result { get; set; }
+        public object Result { get; set; } = null;
 
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = null;
+
+        public bool Succeeded
+        {
+            get
+            {
+                // StatusCode
+                if (this.StatusCode == InteropStatusCode.OK) return true;
+
+                // Return
+                return false;
+            }
+        }
     }
 }

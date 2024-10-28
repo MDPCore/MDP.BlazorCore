@@ -76,6 +76,9 @@ namespace MDP.BlazorCore.Maui
 
             // Raise
             this.OnTokenChanged(authenticateToken);
+
+            // Return
+            return;
         }
 
         public Task RemoveAsync()

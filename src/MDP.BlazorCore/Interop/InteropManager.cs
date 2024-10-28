@@ -55,21 +55,72 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // InteropResource
-            var interopResource = this.FindInteropResource(interopRequest);
-            if (interopResource == null) throw new InvalidOperationException($"{nameof(interopResource)}=null");
-
-            // Authorization
-            if (interopResource.IsAuthorizationRequired == true)
+            // Execute
+            try
             {
-                // AuthorizationResult
-                var authorizationResult = await _authorizationManager.AuthorizeAsync(principal, interopRequest);
-                if (authorizationResult == null) throw new InvalidOperationException($"{nameof(authorizationResult)}=null");
-                if (authorizationResult.Succeeded == false) throw new UnauthorizedAccessException($"Authorization failed for resource '{interopRequest.RoutePath}'");
-            }
+                // InteropResource
+                var interopResource = this.FindInteropResource(interopRequest);
+                if (interopResource == null)
+                {
+                    // NotFound
+                    return new InteropResponse()
+                    {
+                        StatusCode = InteropStatusCode.NotFound,
+                        Result = null,
+                        ErrorMessage = $"Not found for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                    };
+                }
 
-            // InvokeAsync
-            return await _interopProvider.InvokeAsync(principal, interopRequest, interopResource);
+                // Authorization
+                if (interopResource.IsAuthorizationRequired == true)
+                {
+                    // IsAuthenticated
+                    if (principal.Identity?.IsAuthenticated != true)
+                    {
+                        // Unauthorized
+                        return new InteropResponse()
+                        {
+                            StatusCode = InteropStatusCode.Unauthorized,
+                            Result = null,
+                            ErrorMessage = $"Authentication failed for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                        };
+                    }
+
+                    // AuthorizeAsync
+                    var authorizationResult = await _authorizationManager.AuthorizeAsync(principal, interopRequest);
+                    if (authorizationResult == null) throw new InvalidOperationException($"{nameof(authorizationResult)}=null");
+                    if (authorizationResult.Succeeded == false)
+                    {
+                        // Forbidden
+                        return new InteropResponse()
+                        {
+                            StatusCode = InteropStatusCode.Forbidden,
+                            Result = null,
+                            ErrorMessage = $"Authorization failed for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                        };
+                    }
+                }
+
+                // InteropResponse
+                var interopResponse = await _interopProvider.InvokeAsync(principal, interopRequest, interopResource);
+                if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
+
+                // Return
+                return interopResponse;
+            }
+            catch (Exception exception)
+            {
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
+
+                // InteropResponse
+                return new InteropResponse()
+                {
+                    StatusCode = InteropStatusCode.InternalServerError,
+                    Result = null,
+                    ErrorMessage = exception.Message
+                };
+            }
         }
 
         private InteropResource FindInteropResource(InteropRequest interopRequest)

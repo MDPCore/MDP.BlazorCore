@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
@@ -34,22 +35,22 @@ namespace MDP.BlazorCore.Web
         // Methods
         [AllowAnonymous]
         [Route("/.blazor/interop/invokeAsync")]
-        public async Task<InteropResponse> InvokeAsync([FromBody] InvokeActionModel actionModel)
+        public async Task<IActionResult> InvokeAsync([FromBody] InvokeActionModel actionModel)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(actionModel);
 
             #endregion
-
-            // Require
-            if (string.IsNullOrEmpty(actionModel.ControllerUri) == true) throw new InvalidOperationException($"{nameof(actionModel.ControllerUri)}=null");
-            if (string.IsNullOrEmpty(actionModel.ActionName) == true) throw new InvalidOperationException($"{nameof(actionModel.ActionName)}=null");
-            if (actionModel.ActionParameters == null) throw new InvalidOperationException($"{nameof(actionModel.ActionParameters)}=null");
-
+                        
             // Execute
             try
             {
+                // Require
+                if (string.IsNullOrEmpty(actionModel.ControllerUri) == true) throw new InvalidOperationException($"{nameof(actionModel.ControllerUri)}=null");
+                if (string.IsNullOrEmpty(actionModel.ActionName) == true) throw new InvalidOperationException($"{nameof(actionModel.ActionName)}=null");
+                if (actionModel.ActionParameters == null) throw new InvalidOperationException($"{nameof(actionModel.ActionParameters)}=null");
+
                 // Principal
                 var principal = this.User;
                 if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
@@ -68,27 +69,44 @@ namespace MDP.BlazorCore.Web
                     new Uri(controllerUri),
                     actionModel.ActionName,
                     actionModel.ActionParameters
-
                 ));
                 if (interopResponse == null) throw new InvalidOperationException($"{nameof(interopResponse)}=null");
 
-                // Return
-                return interopResponse;
+                // StatusCode
+                switch (interopResponse.StatusCode)
+                {
+                    // Return
+                    case InteropStatusCode.OK: return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.OK };
+                    case InteropStatusCode.BadRequest: return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.BadRequest };
+                    case InteropStatusCode.Unauthorized: return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.Unauthorized };
+                    case InteropStatusCode.Forbidden: return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.Forbidden };
+                    case InteropStatusCode.NotFound: return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.NotFound };
+
+                    // Default
+                    default:
+                        return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.InternalServerError };
+                }
             }
             catch (Exception exception)
             {
                 // Require
                 while (exception.InnerException != null) exception = exception.InnerException;
 
-                // Return
-                return new InteropResponse()
+                // InteropResponse
+                var interopResponse = new InteropResponse()
                 {
-                    Succeeded = false,
+                    StatusCode = InteropStatusCode.InternalServerError,
+                    Result = null,
                     ErrorMessage = exception.Message
                 };
+
+                // Return
+                return new ObjectResult(interopResponse) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
 
+
+        // Class
         public class InvokeActionModel 
         {        
             // Properties

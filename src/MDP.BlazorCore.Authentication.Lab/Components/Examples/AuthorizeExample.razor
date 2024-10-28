@@ -2,51 +2,77 @@
 
 @attribute [Authorize]
 @page "/AuthorizeExample"
-@code {
-
-    // Properties
-    [Parameter]
-    public ClaimsPrincipal Principal { get; set; }
-
-    [Inject]
-    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+@inherits PageComponent
 
 
-    // Methods
-    protected override async Task OnInitializedAsync()
-    {
-        // Principal
-        var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
-        if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
-        this.Principal = principal;
-    }
-}
+<PageScript>
+    <script>
 
+        // pageLoaded
+        document.addEventListener("MDPPageLoaded", function (event) {
 
-<!-- title -->
-<h3>AuthorizeExample</h3>
-<hr />
+            // runButton
+            document.getElementById("runButton").addEventListener("click", function (event) {
 
-<!-- identity -->
-AuthenticationType=@Principal?.Identity?.AuthenticationType<br />
-UserId=@Principal.GetClaimValue(ClaimTypes.NameIdentifier)<br />
-UserName=@Principal.GetClaimValue(ClaimTypes.Name)<br />
-Mail=@Principal.GetClaimValue(ClaimTypes.Email)<br />
-Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))<br />
-<br />
+                // invokeMethod
+                mdp.blazorCore.interopManager.invokeAsync("Echo", {
+                    "message": "Hello World"
+                }).then(result => {
 
-<!-- refresh -->
-<form action="/Account/Refresh" method="get">
-    <input type="hidden" name="returnUrl" value="/AuthorizeExample" />
-    <input type="submit" value="Refresh" /><br />
+                    // message
+                    var message = result.message;
+
+                    // alert
+                    alert(message + " By PageController");
+                }).catch(mdp.blazorCore.errorManager.dispatchError);
+            });
+        }, { once: true });
+
+        // errorThrown
+        document.addEventListener("MDPErrorThrown", function (event) {
+
+            // error
+            var error = event.detail.error;
+
+            // alert
+            alert(error.message);
+        });
+    </script>
+</PageScript>
+
+<PageBody Context="@Context">
+
+    <!-- title -->
+    <h3>AuthorizeExample</h3>
+    <hr />
+
+    <!-- identity -->
+    AuthenticationType=@(this.User?.Identity?.AuthenticationType)<br />
+    UserId=@(this.User?.GetClaimValue(ClaimTypes.NameIdentifier))<br />
+    UserName=@(this.User?.GetClaimValue(ClaimTypes.Name))<br />
+    Mail=@(this.User?.GetClaimValue(ClaimTypes.Email))<br />
+    Role=@(this.User != null ? String.Join(",", this.User.GetAllClaimValue(ClaimTypes.Role)) : "")<br />
     <br />
-</form>
-<hr />
+    <hr />
 
-<!-- logout -->
-<form action="/Account/Logout" method="get">
-    <input type="hidden" name="returnUrl" value="/" />
-    <input type="submit" value="Logout" /><br />
+    <!-- run -->
+    <input type="button" id="runButton" value="Run" /><br />
     <br />
-</form>
-<hr />
+    <hr />
+
+    <!-- refresh -->
+    <form action="/Account/Refresh" method="get">
+        <input type="hidden" name="returnUrl" value="/AuthorizeExample" />
+        <input type="submit" value="Refresh" /><br />
+        <br />
+    </form>
+    <hr />
+
+    <!-- logout -->
+    <form action="/Account/Logout" method="get">
+        <input type="hidden" name="returnUrl" value="/" />
+        <input type="submit" value="Logout" /><br />
+        <br />
+    </form>
+    <hr />
+</PageBody>
