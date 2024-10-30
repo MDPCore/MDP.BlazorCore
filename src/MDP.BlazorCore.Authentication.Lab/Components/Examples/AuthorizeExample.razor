@@ -29,14 +29,16 @@
         }, { once: true });
 
         // errorThrown
-        document.addEventListener("MDPErrorThrown", function (event) {
+        document.MDPErrorThrownListener = document.MDPErrorThrownListener || function (event) {
 
             // error
             var error = event.detail.error;
 
             // alert
             alert(error.message);
-        });
+        };
+        document.removeEventListener("MDPErrorThrown", document.MDPErrorThrownListener);
+        document.addEventListener("MDPErrorThrown", document.MDPErrorThrownListener);
     </script>
 </PageScript>
 
