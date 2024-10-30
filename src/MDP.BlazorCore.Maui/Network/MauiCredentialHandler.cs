@@ -7,12 +7,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace MDP.BlazorCore.Maui
 {
-    [Service<HttpDelegatingHandler>(singleton: false, autoRegister: true)]
-    public class MauiCredentialHandler : HttpDelegatingHandler 
+    [Service<MDP.Network.Http.HttpClientHandler>(singleton: false, autoRegister: true)]
+    public class MauiCredentialHandler : MDP.Network.Http.HttpClientHandler 
     {
         // Fields
         private readonly AuthenticationManager _authenticationManager = null;
@@ -53,7 +52,6 @@ namespace MDP.BlazorCore.Maui
                 if (authenticateToken == null) return await base.SendAsync(request, cancellationToken);
 
                 // SendAsync
-                if (authenticateToken != null)
                 {
                     // Headers
                     request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);

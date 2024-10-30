@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.Reflection" Version="8.0.7.47" />
-    <PackageReference Include="MDP.Registration" Version="8.0.7.47" />
-    <PackageReference Include="MDP.Network.Http" Version="8.0.7.47" />
-    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.47" />
+    <PackageReference Include="MDP.Reflection" Version="8.0.7.50" />
+    <PackageReference Include="MDP.Registration" Version="8.0.7.50" />
+    <PackageReference Include="MDP.Network.Http" Version="8.0.7.50" />
+    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.50" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
   </ItemGroup>

@@ -54,25 +54,17 @@ namespace MDP.BlazorCore.Authentication.Maui
                 await _authenticateTokenManager.RemoveAsync();
                 await _authenticationStateManager.RemoveAsync();
 
-                // AuthenticateToken
+                // LoginAsync
                 var authenticateToken = await authenticateHandler.LoginAsync();
-                if (authenticateToken == null)
-                {
-                    // Clear
-                    await _authenticateTokenManager.RemoveAsync();
-                    await _authenticationStateManager.RemoveAsync();
+                if (authenticateToken == null) return;
 
-                    // Return
-                    return;
-                }
-
-                // ClaimsIdentity
+                // GetUserInformationAsync
                 var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
                 if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
 
                 // Save
                 await _authenticateTokenManager.SetAsync(authenticateToken);
-                await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
+                await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity), authenticateToken.RefreshTokenExpireTime);
             }
         }
 
@@ -85,7 +77,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 await _authenticateTokenManager.RemoveAsync();
                 await _authenticationStateManager.RemoveAsync();
 
-                // Logout
+                // LogoutAsync
                 await authenticateHandler.LogoutAsync();
             }
         }
@@ -100,9 +92,17 @@ namespace MDP.BlazorCore.Authentication.Maui
                 {
                     // Require
                     var authenticateToken = await _authenticateTokenManager.GetAsync();
-                    if (authenticateToken == null) return;
+                    if (authenticateToken == null)
+                    {
+                        // Clear
+                        await _authenticateTokenManager.RemoveAsync();
+                        await _authenticationStateManager.RemoveAsync();
 
-                    // AuthenticateToken.Refresh
+                        // Return
+                        return;
+                    }
+
+                    // RefreshAsync
                     authenticateToken = await authenticateHandler.RefreshAsync(authenticateToken.RefreshToken);
                     if (authenticateToken == null)
                     {
@@ -114,13 +114,13 @@ namespace MDP.BlazorCore.Authentication.Maui
                         return;
                     }
 
-                    // ClaimsIdentity.Refresh
+                    // GetUserInformationAsync
                     var claimsIdentity = await authenticateHandler.GetUserInformationAsync(authenticateToken.AccessToken);
                     if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
 
                     // Save
                     await _authenticateTokenManager.SetAsync(authenticateToken);
-                    await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity));
+                    await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity), authenticateToken.RefreshTokenExpireTime);
                 }
                 catch (Exception)
                 {

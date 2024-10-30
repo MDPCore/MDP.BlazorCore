@@ -237,12 +237,22 @@ namespace MDP.BlazorCore.Authentication.Maui
                 var accessToken = payload.RootElement.GetProperty("access_token").GetString();
                 if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
 
+                // AccessTokenExpireTime
+                var accessTokenExpireTimeString = payload.RootElement.GetProperty("access_token_expiration").GetString();
+                if (string.IsNullOrEmpty(accessTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(accessTokenExpireTimeString)}=null");
+                var accessTokenExpireTime = DateTime.Parse(accessTokenExpireTimeString);
+
                 // RefreshToken
                 var refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
                 if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
 
+                // RefreshTokenExpireTime
+                var refreshTokenExpireTimeString = payload.RootElement.GetProperty("refresh_token_expiration").GetString();
+                if (string.IsNullOrEmpty(refreshTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(refreshTokenExpireTimeString)}=null");
+                var refreshTokenExpireTime = DateTime.Parse(refreshTokenExpireTimeString);
+
                 // Return
-                return new AuthenticateToken(tokenType, accessToken, refreshToken);
+                return new AuthenticateToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
             }
         }
 
@@ -318,12 +328,22 @@ namespace MDP.BlazorCore.Authentication.Maui
                 var accessToken = payload.RootElement.GetProperty("access_token").GetString();
                 if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
 
+                // AccessTokenExpireTime
+                var accessTokenExpireTimeString = payload.RootElement.GetProperty("access_token_expiration").GetString();
+                if (string.IsNullOrEmpty(accessTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(accessTokenExpireTimeString)}=null");
+                var accessTokenExpireTime = DateTime.Parse(accessTokenExpireTimeString);
+
                 // RefreshToken
                 refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
                 if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
 
+                // RefreshTokenExpireTime
+                var refreshTokenExpireTimeString = payload.RootElement.GetProperty("refresh_token_expiration").GetString();
+                if (string.IsNullOrEmpty(refreshTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(refreshTokenExpireTimeString)}=null");
+                var refreshTokenExpireTime = DateTime.Parse(refreshTokenExpireTimeString);
+
                 // Return
-                return new AuthenticateToken(tokenType, accessToken, refreshToken);
+                return new AuthenticateToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
             }
         }
 

@@ -16,6 +16,8 @@ namespace MDP.BlazorCore.Maui
         // Fields
         private bool _isCached = false;
 
+        private DateTime _expireTime { get; set; } = DateTime.MinValue;
+
         private ClaimsPrincipal _claimsPrincipal = null;
 
 
@@ -23,38 +25,40 @@ namespace MDP.BlazorCore.Maui
         public async Task<ClaimsPrincipal> GetAsync()
         {
             // Require
-            if (_isCached == true) return _claimsPrincipal;
+            if (_isCached == true)
+            {
+                // Cache
+                if (_expireTime <= DateTime.Now)
+                {
+                    _isCached = true;
+                    _expireTime = DateTime.MaxValue;
+                    _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+                }
 
-            // GetAsync   
-            var claimListString = await SecureStorage.GetAsync(this.GetType().FullName);
-            if (string.IsNullOrEmpty(claimListString) == true)
+                // Return
+                return _claimsPrincipal;
+            }
+
+            // AuthenticatePrincipalString   
+            var authenticatePrincipalString = await SecureStorage.GetAsync(this.GetType().FullName);
+            if (string.IsNullOrEmpty(authenticatePrincipalString) == true)
             {
                 // Cache
                 _isCached = true;
+                _expireTime = DateTime.MaxValue;
                 _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
                 // Return
                 return _claimsPrincipal;
             }
 
-            // ClaimList
-            var claimList = JsonSerializer.Deserialize<List<Claim>>(claimListString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
-            if (claimList == null)
+            // AuthenticatePrincipal
+            var authenticatePrincipal = JsonSerializer.Deserialize<AuthenticatePrincipal>(authenticatePrincipalString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
+            if (authenticatePrincipal == null)
             {
                 // Cache
                 _isCached = true;
-                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
-                // Return
-                return _claimsPrincipal;
-            }
-
-            // AuthenticationType
-            var authenticationType = claimList.FirstOrDefault(o => o.Type == AuthenticationClaimTypes.AuthenticationType)?.Value;
-            if (string.IsNullOrEmpty(authenticationType) == true)
-            {
-                // Cache
-                _isCached = true;
+                _expireTime = DateTime.MaxValue;
                 _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
                 // Return
@@ -62,21 +66,41 @@ namespace MDP.BlazorCore.Maui
             }
 
             // ClaimsPrincipal
+            var claimsPrincipal = authenticatePrincipal.CreateClaimsPrincipal();
+            if (claimsPrincipal == null)
             {
-                // ClaimList.Filter
-                claimList.RemoveAll(o => o.Type == AuthenticationClaimTypes.AuthenticationType);
+                // Cache
+                _isCached = true;
+                _expireTime = DateTime.MaxValue;
+                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+                // Return
+                return _claimsPrincipal;
             }
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claimList, authenticationType));
+
+            // ExpireTime
+            var expireTime = authenticatePrincipal.ExpireTime;
+            if (expireTime <= DateTime.Now)
+            {
+                // Cache
+                _isCached = true;
+                _expireTime = DateTime.MaxValue;
+                _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+                // Return
+                return _claimsPrincipal;
+            }
 
             // Cache
             _isCached = true;
+            _expireTime = expireTime;
             _claimsPrincipal = claimsPrincipal;
 
             // Return
             return _claimsPrincipal;
         }
 
-        public async Task SetAsync(ClaimsPrincipal claimsPrincipal)
+        public async Task SetAsync(ClaimsPrincipal claimsPrincipal, DateTime expireTime)
         {
             #region Contracts
 
@@ -84,31 +108,26 @@ namespace MDP.BlazorCore.Maui
 
             #endregion
 
-            // ClaimsIdentity
-            var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
-            if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
+            // AuthenticatePrincipal
+            var authenticatePrincipal = new AuthenticatePrincipal(claimsPrincipal, expireTime);
 
-            // ClaimList
-            var claimList = claimsIdentity.Claims.ToList();
-            claimList.RemoveAll(o => o.Type == AuthenticationClaimTypes.AuthenticationType);
-            claimList.Add(new Claim(AuthenticationClaimTypes.AuthenticationType, claimsIdentity.AuthenticationType));
-
-            // ClaimListString
-            var claimListString = JsonSerializer.Serialize(claimList, new JsonSerializerOptions
+            // AuthenticatePrincipalString
+            var authenticatePrincipalString = JsonSerializer.Serialize(authenticatePrincipal, new JsonSerializerOptions
             {
                 Converters = { new ClaimConverter() }
             });
-            if (string.IsNullOrEmpty(claimListString) == true) throw new InvalidOperationException($"{nameof(claimListString)}=null");
+            if (string.IsNullOrEmpty(authenticatePrincipalString) == true) throw new InvalidOperationException($"{nameof(authenticatePrincipalString)}=null");
 
             // SetAsync
-            await SecureStorage.SetAsync(this.GetType().FullName, claimListString);
+            await SecureStorage.SetAsync(this.GetType().FullName, authenticatePrincipalString);
 
             // Cache
             _isCached = true;
+            _expireTime = expireTime;
             _claimsPrincipal = claimsPrincipal;
 
             // Raise
-            this.OnPrincipalChanged(claimsPrincipal);
+            this.OnPrincipalChanged(_claimsPrincipal);
 
             // Return
             return;
@@ -116,18 +135,16 @@ namespace MDP.BlazorCore.Maui
 
         public Task RemoveAsync()
         {
-            // ClaimsPrincipal
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
             // RemoveAsync
             SecureStorage.Remove(this.GetType().FullName);
 
             // Cache
             _isCached = true;
-            _claimsPrincipal = claimsPrincipal;
+            _expireTime = DateTime.MaxValue;
+            _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
 
             // Raise
-            this.OnPrincipalChanged(claimsPrincipal);
+            this.OnPrincipalChanged(_claimsPrincipal);
 
             // Return
             return Task.CompletedTask;

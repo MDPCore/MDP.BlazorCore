@@ -14,6 +14,8 @@ namespace MDP.BlazorCore.Maui
         // Fields
         private bool _isCached = false;
 
+        private DateTime _expireTime { get; set; } = DateTime.MinValue;
+
         private AuthenticateToken _authenticateToken = null;
 
 
@@ -21,14 +23,27 @@ namespace MDP.BlazorCore.Maui
         public async Task<AuthenticateToken> GetAsync()
         {
             // Require
-            if (_isCached == true) return _authenticateToken;
+            if (_isCached == true)
+            {
+                // Cache
+                if (_expireTime <= DateTime.Now)
+                {
+                    _isCached = true;
+                    _expireTime = DateTime.MaxValue;
+                    _authenticateToken = null;
+                }
 
-            // GetAsync   
+                // Return
+                return _authenticateToken;
+            }
+
+            // AuthenticateTokenString   
             var authenticateTokenString = await SecureStorage.GetAsync(this.GetType().FullName);
             if (string.IsNullOrEmpty(authenticateTokenString) == true)
             {
                 // Cache
                 _isCached = true;
+                _expireTime = DateTime.MaxValue;
                 _authenticateToken = null;
 
                 // Return
@@ -41,6 +56,20 @@ namespace MDP.BlazorCore.Maui
             {
                 // Cache
                 _isCached = true;
+                _expireTime = DateTime.MaxValue;
+                _authenticateToken = null;
+
+                // Return
+                return _authenticateToken;
+            }
+
+            // ExpireTime
+            var expireTime = authenticateToken.RefreshTokenExpireTime;
+            if (expireTime <= DateTime.Now)
+            {
+                // Cache
+                _isCached = true;
+                _expireTime = DateTime.MaxValue;
                 _authenticateToken = null;
 
                 // Return
@@ -49,6 +78,7 @@ namespace MDP.BlazorCore.Maui
 
             // Cache
             _isCached = true;
+            _expireTime = expireTime;
             _authenticateToken = authenticateToken;
 
             // Return
@@ -72,6 +102,7 @@ namespace MDP.BlazorCore.Maui
 
             // Cache
             _isCached = true;
+            _expireTime = authenticateToken.RefreshTokenExpireTime;
             _authenticateToken = authenticateToken;
 
             // Raise
@@ -83,18 +114,16 @@ namespace MDP.BlazorCore.Maui
 
         public Task RemoveAsync()
         {
-            // AuthenticateToken
-            AuthenticateToken authenticateToken = null;
-
             // RemoveAsync
             SecureStorage.Remove(this.GetType().FullName);
 
             // Cache
             _isCached = true;
-            _authenticateToken = authenticateToken;
+            _expireTime = DateTime.MaxValue;
+            _authenticateToken = null;
 
             // Raise
-            this.OnTokenChanged(authenticateToken);
+            this.OnTokenChanged(_authenticateToken);
 
             // Return
             return Task.CompletedTask;
