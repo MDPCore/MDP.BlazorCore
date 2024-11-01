@@ -16,6 +16,12 @@
 <Router AppAssembly="@RoutesOptions.CreateAppAssembly()" AdditionalAssemblies="@RoutesOptions.CreateAdditionalAssemblies()">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@RoutesOptions.DefaultLayout" Resource="@NavigationManager">
+            <Authorizing>
+                <div class="mdp-loader">
+                    <div class="spinner-border"></div>
+                    <div class="text">Authorizing</div>
+                </div>
+            </Authorizing>
             <NotAuthorized>
                 <RedirectToLogin />
             </NotAuthorized>
