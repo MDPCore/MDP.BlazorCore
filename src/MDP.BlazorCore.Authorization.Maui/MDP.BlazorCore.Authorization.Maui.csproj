@@ -19,9 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.92" />
-    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.92" />
-    <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.92" />
+    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.93" />
+    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.93" />
+    <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.93" />
   </ItemGroup>
 
   <ItemGroup>

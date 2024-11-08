@@ -40,7 +40,7 @@ namespace MDP.BlazorCore.Maui
             var configurationBuilder = applicationBuilder.Configuration;
             {
                 // ConfigurationRegister
-                ConfigurationRegister.RegisterModule(configurationBuilder, new MDP.Configuration.EmbeddedConfigurationProvider(entryAssembly, hostEnvironment.EnvironmentName));
+                ConfigurationRegister.RegisterModule(configurationBuilder, new MDP.BlazorCore.Maui.MauiConfigurationProvider(hostEnvironment.EnvironmentName));
             }
 
             // ContainerBuilder

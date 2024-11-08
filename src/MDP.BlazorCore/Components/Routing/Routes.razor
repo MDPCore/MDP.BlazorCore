@@ -5,12 +5,24 @@
 @namespace MDP.BlazorCore
 @code {
 
+    // Fields
+    private string _currentPath = null;
+
+
     // Properties
     [Inject]
     public RoutesOptions RoutesOptions { get; set; }
 
     [Inject]
     public NavigationManager NavigationManager { get; set; }
+
+
+    // Methods
+    protected override void OnInitialized()
+    {
+        // Default
+        _currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+    }
 }
 
 <Router AppAssembly="@RoutesOptions.CreateAppAssembly()" AdditionalAssemblies="@RoutesOptions.CreateAdditionalAssemblies()">
@@ -27,4 +39,22 @@
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
+    <NotFound>
+        <LayoutView Layout="@RoutesOptions.DefaultLayout">
+
+            <p>找不到頁面，頁面路徑為：</p>
+            <ul><li>@_currentPath</li></ul>
+
+            <p>應用組件：</p>
+            <ul><li>@RoutesOptions.CreateAppAssembly().GetName().Name</li></ul>
+
+            <p>附加組件：</p>
+            <ul>
+                @foreach (var assembly in RoutesOptions.CreateAdditionalAssemblies())
+                {
+                    <li>@assembly.GetName().Name</li>
+                }
+            </ul>
+        </LayoutView>
+    </NotFound>
 </Router>
