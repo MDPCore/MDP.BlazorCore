@@ -16,11 +16,11 @@
     <ApplicationTitle>MDP.BlazorCore.Maui.Lab</ApplicationTitle>
 
     <!-- App Identifier -->
-    <ApplicationId>mdp.blazorcore.maui.lab</ApplicationId>
+    <ApplicationId>mdpcore.blazorcore.lab</ApplicationId>
 
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationVersion>12</ApplicationVersion>
 
     <!-- Platform -->
     <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
@@ -29,6 +29,12 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
+    <ProvisioningType>manual</ProvisioningType>
+    <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>
+    <CodesignProvision>VS: WildCard Development</CodesignProvision>
   </PropertyGroup>
 
   <ItemGroup>

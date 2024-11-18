@@ -28,6 +28,9 @@ namespace MDP.BlazorCore.Maui
 
             #endregion
 
+            // ExceptionHandler
+            MauiExceptionHandler.Initialize();
+
             // EntryAssembly
             var entryAssembly = typeof(TProgram).Assembly;
             if (entryAssembly == null) throw new InvalidOperationException($"{nameof(entryAssembly)}=null");
