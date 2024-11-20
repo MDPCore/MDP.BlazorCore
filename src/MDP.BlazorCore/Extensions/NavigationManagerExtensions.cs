@@ -118,7 +118,7 @@ namespace MDP.BlazorCore
             if (redirectUri.EndsWith("/") == true) redirectUri = redirectUri.TrimEnd('/');
 
             // NavigateTo
-            navigationManager.NavigateTo($"{redirectUri}?returnUrl={Uri.EscapeDataString(returnUrl)}", false);
+            navigationManager.NavigateTo($"{redirectUri}?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
         }
     }
 }
