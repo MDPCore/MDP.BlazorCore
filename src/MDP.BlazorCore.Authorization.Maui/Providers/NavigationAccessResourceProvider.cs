@@ -4,7 +4,7 @@ using System;
 
 namespace MDP.BlazorCore.Authorization.Maui
 {
-    public class BlazorAccessResourceProvider : IAccessResourceProvider
+    public class NavigationAccessResourceProvider : IAccessResourceProvider
     {
         // Methods
         public AccessResource Create(object resource = null)

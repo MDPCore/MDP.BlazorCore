@@ -48,8 +48,8 @@ namespace MDP.BlazorCore.Authorization.Maui
 
             // AccessResourceProvider
             serviceCollection.AddTransient<IAccessResourceProvider, UriAccessResourceProvider>();
-            serviceCollection.AddTransient<IAccessResourceProvider, BlazorAccessResourceProvider>();
             serviceCollection.AddTransient<IAccessResourceProvider, InteropAccessResourceProvider>();
+            serviceCollection.AddTransient<IAccessResourceProvider, NavigationAccessResourceProvider>();
 
             // AccessPermissionProvider
             serviceCollection.AddSingleton<IAccessPermissionProvider>(serviceProvider =>
