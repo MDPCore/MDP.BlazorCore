@@ -18,8 +18,8 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         public static readonly string UserInformationEndpoint = "{0}.sso/userinfo";
 
-        public static readonly string LoginCallbackEndpoint = "{0}.auth/login/callback";
+        public static readonly string LoginCallbackEndpoint = "{0}://auth/login/callback";
 
-        public static readonly string LogoutCallbackEndpoint = "{0}.auth/logout/callback";
+        public static readonly string LogoutCallbackEndpoint = "{0}://auth/logout/callback";
     }
 }

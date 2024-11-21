@@ -3,7 +3,7 @@
     public class OAuthSSOOptions
     {
         // Fields
-        private string _clientUrl = null;
+        private string _clientScheme = null;
 
         private string _serverUrl = null;
 
@@ -24,17 +24,17 @@
         // Properties
         public string ClientId { get; set; }
 
-        public string ClientUrl
+        public string ClientScheme
         {
             get
             {
                 // Get
-                return _clientUrl;
+                return _clientScheme;
             }
             set
             {
                 // Set
-                _clientUrl = value;
+                _clientScheme = value;
                 this.LoginCallbackEndpoint = string.Format(OAuthSSODefaults.LoginCallbackEndpoint, value);
                 this.LogoutCallbackEndpoint = string.Format(OAuthSSODefaults.LogoutCallbackEndpoint, value);
             }

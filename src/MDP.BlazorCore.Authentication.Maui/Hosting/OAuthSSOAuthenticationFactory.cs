@@ -24,7 +24,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // Require
             if (string.IsNullOrEmpty(setting.ClientId) == true) throw new InvalidOperationException($"{nameof(setting.ClientId)}=null");
-            if (string.IsNullOrEmpty(setting.ClientUrl) == true) throw new InvalidOperationException($"{nameof(setting.ClientUrl)}=null");
+            if (string.IsNullOrEmpty(setting.ClientScheme) == true) throw new InvalidOperationException($"{nameof(setting.ClientScheme)}=null");
             if (string.IsNullOrEmpty(setting.ServerUrl) == true) throw new InvalidOperationException($"{nameof(setting.ServerUrl)}=null");
 
             // OAuthSSOAuthenticationProvider
@@ -36,7 +36,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 // AuthOptions
                 var authOptions = new OAuthSSOOptions();
                 authOptions.ClientId = setting.ClientId;
-                authOptions.ClientUrl = setting.ClientUrl;
+                authOptions.ClientScheme = setting.ClientScheme;
                 authOptions.ServerUrl = setting.ServerUrl;
                 authOptions.UseCookies = setting.UseCookies;
                 authOptions.IgnoreServerCertificate = setting.IgnoreServerCertificate;
@@ -53,7 +53,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             // Properties
             public string ClientId { get; set; } = string.Empty;
 
-            public string ClientUrl { get; set; } = string.Empty;
+            public string ClientScheme { get; set; } = string.Empty;
 
             public string ServerUrl { get; set; } = string.Empty;
 

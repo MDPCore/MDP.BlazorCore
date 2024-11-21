@@ -17,6 +17,6 @@ namespace MDP.BlazorCore.Authentication.Maui.Lab
     )]
     public class WebAuthenticationCallbackActivity : Microsoft.Maui.Authentication.WebAuthenticatorCallbackActivity
     {
-        const string CALLBACK_SCHEME = "myapp";
+        const string CALLBACK_SCHEME = "mdpcore.blazorcore.lab";
     }
 }

@@ -12,12 +12,6 @@ namespace MDP.BlazorCore.Authentication.Components.Examples
         public class PageController : InteropController
         {
             // Methods
-            public Task OnInitializedAsync()
-            {
-                // Return
-                return Task.CompletedTask;
-            }
-
             public async Task<EchoResultModel> Echo(string message)
             {
                 // Return
