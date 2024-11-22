@@ -24,7 +24,25 @@ document.addEventListener("MDPPageLoaded", function (event) {
         });
         textareaElement.dispatchEvent(new Event('input'));
     });
-});   
+});
+
+// anchor.hotfix
+document.addEventListener('click', function (event) {
+
+    // isApp
+    var isApp = false;
+    if (window.location.href.toLowerCase().startsWith("app://localhost/") == true) isApp = true;
+    if (window.location.href.toLowerCase().startsWith("https://0.0.0.0/") == true) isApp = true;
+    if (isApp == false) return;
+
+    // target='_blank'
+    var anchor = event.target.closest('a[target="_blank"]');
+    if (!anchor) return;
+
+    // redirect
+    event.preventDefault();
+    window.location.href = anchor.href;
+});
 
 
 /* ---------- platform ---------- */

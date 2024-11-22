@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-
   <PropertyGroup>
+
+    <!-- Build -->
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
@@ -8,19 +9,12 @@
     <Nullable>disable</Nullable>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
     <RootNamespace>MDP.BlazorCore.Authorization.Maui.Lab</RootNamespace>
-  </PropertyGroup>
 
-  <PropertyGroup>
-
-    <!-- Display Name -->
+    <!-- Application -->
     <ApplicationTitle>MDP.BlazorCore.Authorization.Maui.Lab</ApplicationTitle>
-
-    <!-- App Identifier -->
     <ApplicationId>mdpcore.blazorcore.lab</ApplicationId>
-
-    <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>12</ApplicationVersion>
+    <ApplicationVersion>16</ApplicationVersion>
 
     <!-- Platform -->
     <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
@@ -51,10 +45,10 @@
 
   <ItemGroup>
 
-    <!-- App Icon -->
+    <!-- Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
-    <!-- Splash Screen -->
+    <!-- Splash -->
     <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
     <!-- Images -->

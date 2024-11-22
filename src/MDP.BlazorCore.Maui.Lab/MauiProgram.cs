@@ -8,8 +8,9 @@ namespace MDP.BlazorCore.Maui.Lab
         // Methods
         public static Microsoft.Maui.Hosting.MauiApp CreateMauiApp()
         {
-            // Host
-            return MDP.BlazorCore.Maui.Host.CreateMauiApp<MauiProgram>(typeof(MainLayout));
-        }
-    }
-}
+            // Host    
+            return MDP.BlazorCore.Maui.Host.CreateMauiApp<MauiProgram>(typeof(MainLayout));        
+        }          
+    }    
+}                                                                                 
+                                                                                             
