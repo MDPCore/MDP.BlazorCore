@@ -25,7 +25,7 @@ namespace MDP.BlazorCore.Maui
     public partial class AppPage : ContentPage
     {
         // Fields
-        private string _safeAreaColor = "#FFD700";
+        private string _safeAreaColor = "#000000";
 
 
         // Constructors
