@@ -1,23 +1,18 @@
 ﻿using Microsoft.AspNetCore.Components.WebView;
-using Microsoft.AspNetCore.Components.WebView.Maui;
 using Microsoft.Maui;
-using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.PlatformConfiguration;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
-using Microsoft.Maui.Devices;
-using Microsoft.Maui.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
+
 #if ANDROID
 using Android.OS;
 using Android.Views;
 using Android.Content.Res;
+using Android.Content;
+using Android.Net;
+
 #elif IOS
 using UIKit;
+using Foundation;
 #endif
 
 namespace MDP.BlazorCore.Maui
@@ -25,7 +20,7 @@ namespace MDP.BlazorCore.Maui
     public partial class AppPage : ContentPage
     {
         // Fields
-        private string _safeAreaColor = "#000000";
+        private string _safeAreaColor = "#FFFFFF";
 
 
         // Constructors
@@ -135,7 +130,7 @@ namespace MDP.BlazorCore.Maui
             this.SetSafeArea(_safeAreaColor);
         }
 
-        private async void BlazorWebView_UrlLoading(object sender, UrlLoadingEventArgs e)
+        private void BlazorWebView_UrlLoading(object sender, UrlLoadingEventArgs e)
         {
             #region Contracts
 
@@ -148,14 +143,19 @@ namespace MDP.BlazorCore.Maui
             if (e.Url.Host.Equals("0.0.0.0", StringComparison.OrdinalIgnoreCase) == true) { e.UrlLoadingStrategy = UrlLoadingStrategy.OpenInWebView; return; }
             if (e.Url.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase) == true) { e.UrlLoadingStrategy = UrlLoadingStrategy.OpenInWebView; return; }
 
-            // External
+            // Launcher
             {
-                // Cancel
-                e.UrlLoadingStrategy = UrlLoadingStrategy.CancelLoad;
-
-                // Launcher
-                await Launcher.OpenAsync(e.Url);
+#if ANDROID
+                var intent = new Intent(Intent.ActionView);
+                {
+                    intent.SetData(Android.Net.Uri.Parse(e.Url.ToString()));
+                }
+                (this.Handler?.MauiContext?.Context as Android.App.Activity)?.StartActivity(intent);
+#elif IOS
+                UIApplication.SharedApplication.OpenUrl(e.Url, new UIApplicationOpenUrlOptions(), (success) => { });
+#endif
             }
+            e.UrlLoadingStrategy = UrlLoadingStrategy.CancelLoad;
         }
     }
 }

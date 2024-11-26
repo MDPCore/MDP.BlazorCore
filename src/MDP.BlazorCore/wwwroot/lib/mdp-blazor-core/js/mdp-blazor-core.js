@@ -27,22 +27,27 @@ document.addEventListener("MDPPageLoaded", function (event) {
 });
 
 // anchor.hotfix
-document.addEventListener('click', function (event) {
+(function () {
 
-    // isApp
-    var isApp = false;
-    if (window.location.href.toLowerCase().startsWith("app://localhost/") == true) isApp = true;
-    if (window.location.href.toLowerCase().startsWith("https://0.0.0.0/") == true) isApp = true;
-    if (isApp == false) return;
+    // isMaui
+    var isMaui = false;
+    if (window.location.href.toLowerCase().startsWith("app://localhost/") == true) isMaui = true;
+    if (window.location.href.toLowerCase().startsWith("https://0.0.0.0/") == true) isMaui = true;
+    if (isMaui == false) return;
 
     // target='_blank'
-    var anchor = event.target.closest('a[target="_blank"]');
-    if (!anchor) return;
+    document.addEventListener('click', function (event) {
 
-    // redirect
-    event.preventDefault();
-    window.location.href = anchor.href;
-});
+        // anchor
+        var anchor = event.target.closest('a[target="_blank"]');
+        if (!anchor) return;
+
+        // redirect
+        event.preventDefault();
+        window.location.href = anchor.href;
+    });
+})();
+
 
 
 /* ---------- platform ---------- */
