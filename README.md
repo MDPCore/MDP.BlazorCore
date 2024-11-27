@@ -1,6 +1,6 @@
 # MDP.BlazorCore
 
-MDP.BlazorCore是開源的Blazor開發平台，協助開發人員快速建立執行於Web及App的應用系統。提供OAuth身分驗證模組、Token身分驗證模組、Azure身分驗證模組，用以簡化開發流程並滿足多變的商業需求。
+MDP.BlazorCore是開源的Blazor開發平台，協助開發人員只需撰寫一份程式碼，就能同時完成Web站台、iOS APP、Android APP、API後台的開發工作。並提供OAuth身分驗證模組、Token身分驗證模組、Azure身分驗證模組，用以簡化開發流程並滿足多變的商業需求。
 
 
 ## 版本更新
