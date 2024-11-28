@@ -12,8 +12,18 @@ namespace MDP.BlazorCore.Authorization.Maui
             var uri = resource as Uri;
             if (uri == null) return null;
 
+            // Scheme
+            var scheme = "app";
+
+            // Host
+            var host = "localhost";
+
+            // AbsolutePath
+            var absolutePath = uri.AbsolutePath;
+            if (string.IsNullOrEmpty(absolutePath) == true) absolutePath = "/";
+
             // AccessResource
-            var accessResource = new AccessResource($"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}");
+            var accessResource = new AccessResource($"{scheme}://{host}{absolutePath}");
             if (accessResource == null) return null;
 
             // Return
