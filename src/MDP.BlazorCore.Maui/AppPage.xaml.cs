@@ -73,7 +73,8 @@ namespace MDP.BlazorCore.Maui
                     window.DecorView.SystemUiVisibility = (StatusBarVisibility)
                     (
                         SystemUiFlags.LayoutStable | 
-                        SystemUiFlags.LayoutHideNavigation
+                        SystemUiFlags.LayoutHideNavigation |
+                        SystemUiFlags.LightStatusBar
                     );
                 }
 
