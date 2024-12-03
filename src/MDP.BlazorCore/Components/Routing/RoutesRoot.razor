@@ -1,0 +1,15 @@
+﻿@page "/"
+@code {
+
+    // Properties
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+
+    // Methods
+    protected override void OnInitialized()
+    {
+        // NavigateTo
+        this.NavigationManager.NavigateTo("/Home/Index", true);
+    }
+}
