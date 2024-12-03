@@ -62,20 +62,22 @@ body {
 /* loader */
 .mdp-loader {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    padding-top: 40%;
+    padding-top: calc(40dvh - 2.5rem);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: start;
+    gap: 1rem;
     color: var(--mdp-body-bg);
     background-color: var(--mdp-body-color);
     z-index: 10000;
 }
 
 .mdp-loader .spinner-border {
-    margin-bottom: 1rem;
     --bs-spinner-width: 2.5rem;
     --bs-spinner-height: 2.5rem;
     --bs-spinner-border-width: 0.25rem;
@@ -198,10 +200,10 @@ body {
 
 /* fade */
 .mdp-wrapper .fade {
-
+    
 }
 
-.mdp-wrapper .fade.fade-end {
+.mdp-wrapper .fade:not(.show) {    
     pointer-events: none;
 }
 
@@ -239,6 +241,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;  
+    gap: 1rem;
     color: inherit;
     background-color: inherit;
     opacity: 0.9;

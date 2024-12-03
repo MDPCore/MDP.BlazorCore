@@ -8,105 +8,28 @@ Error.prototype.toJSON = function () {
     };
 };
 
-// textarea.autoHeight
-document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('textarea').forEach(function (textareaElement) {
-
-        // require
-        if (!textareaElement) return;
-        if (textareaElement.autoHeight) return;
-        textareaElement.autoHeight = true;
-
-        // handlers
-        textareaElement.addEventListener('input', function () {
-            textareaElement.style.height = 'auto';
-            textareaElement.style.height = this.scrollHeight + 'px';
-        });
-        textareaElement.dispatchEvent(new Event('input'));
-    });
-});
-
-// anchor.hotfix
-(function () {
-
-    // isMaui
-    var isMaui = false;
-    if (window.location.href.toLowerCase().startsWith("app://localhost/") == true) isMaui = true;
-    if (window.location.href.toLowerCase().startsWith("https://0.0.0.0/") == true) isMaui = true;
-    if (isMaui == false) return;
-
-    // target='_blank'
-    document.addEventListener('click', function (event) {
-
-        // anchor
-        var anchor = event.target.closest('a[target="_blank"]');
-        if (!anchor) return;
-
-        // redirect
-        event.preventDefault();
-        window.location.href = anchor.href;
-    });
-})();
-
-
 
 /* ---------- platform ---------- */
 
-// mdp
+// mdp.blazorCore
 window.mdp = window.mdp || {};
 
-// mdp.blazorCore
 mdp.blazorCore = mdp.blazorCore || {};
 
-
-// mdp.blazorCore.validationManager  
-mdp.blazorCore.validationManager = (function () {
+ 
+// mdp.blazorCore.applicationManager
+mdp.blazorCore.applicationManager = (function () {
 
     // methods
-    function isNumber(value) {
+    function isInMaui() {
 
-        // require
-        if (value == null) return false;
-        if (typeof value !== 'number') return false;
-
-        // return
-        return !isNaN(value);
-    }
-
-    function isNullOrEmpty(value) {
-
-        // require
-        if (value == null) return true;
-        if (typeof value !== 'string') return true;
+        // isInMaui
+        var isInMaui = false;
+        if (window.location.href.toLowerCase().startsWith("app://localhost/") == true) isInMaui = true;
+        if (window.location.href.toLowerCase().startsWith("https://0.0.0.0/") == true) isInMaui = true;
 
         // return
-        return value.trim() === '';
-    }
-
-    function validateMail(value) {
-
-        // require
-        if (value == null) return false;
-        if (typeof value !== 'string') return false;
-
-        // variables
-        const mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        // return
-        return mailRegex.test(value);
-    }
-
-    function validatePhone(value) {
-
-        // require
-        if (value == null) return false;
-        if (typeof value !== 'string') return false;
-
-        // variables
-        const phoneRegex = /^(09)[0-9]{8}$/;
-
-        // return
-        return phoneRegex.test(value);
+        return isInMaui;
     }
 
 
@@ -114,12 +37,20 @@ mdp.blazorCore.validationManager = (function () {
     return {
 
         // methods
-        isNumber: isNumber,
-        isNullOrEmpty: isNullOrEmpty,
-        validateMail: validateMail,
-        validatePhone: validatePhone
+        isInMaui: isInMaui
     };
 })();
+
+document.addEventListener("DOMContentLoaded", function (event) {
+
+    // style
+    if (mdp.blazorCore.applicationManager.isInMaui() == true) {
+        document.body.classList.add("mdp-maui-mode");
+    }
+    else {
+        document.body.classList.add("mdp-web-mode");
+    }    
+});
 
 // mdp.blazorCore.pageManager
 mdp.blazorCore.pageManager = (function () {
@@ -486,6 +417,24 @@ mdp.blazorCore.errorManager = (function () {
     };
 })();
 
+// anchor.hotfix
+document.addEventListener('click', function (event) {
+
+    // require
+    if (mdp.blazorCore.applicationManager.isInMaui() == false) return;
+
+    // target='_blank'
+    var anchor = event.target.closest('a[target="_blank"]');
+    if (!anchor) return;
+
+    // redirect
+    event.preventDefault();
+    window.location.href = anchor.href;
+});
+
+
+/* ---------- utilities ---------- */
+
 // mdp.blazorCore.httpClient
 mdp.blazorCore.httpClient = (function () {
 
@@ -591,9 +540,6 @@ mdp.blazorCore.httpClient = (function () {
         getStatusText: getStatusText
     };
 })();
-
-
-/* ---------- utilities ---------- */
 
 // mdp.blazorCore.scrollManager
 mdp.blazorCore.scrollManager = (function () {
@@ -900,6 +846,68 @@ mdp.blazorCore.transformManager = (function () {
     };
 })();
 
+// mdp.blazorCore.validationManager  
+mdp.blazorCore.validationManager = (function () {
+
+    // methods
+    function isNumber(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'number') return false;
+
+        // return
+        return !isNaN(value);
+    }
+
+    function isNullOrEmpty(value) {
+
+        // require
+        if (value == null) return true;
+        if (typeof value !== 'string') return true;
+
+        // return
+        return value.trim() === '';
+    }
+
+    function validateMail(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'string') return false;
+
+        // variables
+        const mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // return
+        return mailRegex.test(value);
+    }
+
+    function validatePhone(value) {
+
+        // require
+        if (value == null) return false;
+        if (typeof value !== 'string') return false;
+
+        // variables
+        const phoneRegex = /^(09)[0-9]{8}$/;
+
+        // return
+        return phoneRegex.test(value);
+    }
+
+
+    // return
+    return {
+
+        // methods
+        isNumber: isNumber,
+        isNullOrEmpty: isNullOrEmpty,
+        validateMail: validateMail,
+        validatePhone: validatePhone
+    };
+})();
+
 
 /* ---------- components ---------- */
 
@@ -1089,6 +1097,24 @@ document.addEventListener("MDPPageLoaded", function (event) {
                 if (offcanvas) offcanvas.hide();
             });
         });
+    });
+});
+
+// textarea.autoHeight
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('textarea').forEach(function (textareaElement) {
+
+        // require
+        if (!textareaElement) return;
+        if (textareaElement.autoHeight) return;
+        textareaElement.autoHeight = true;
+
+        // handlers
+        textareaElement.addEventListener('input', function () {
+            textareaElement.style.height = 'auto';
+            textareaElement.style.height = this.scrollHeight + 'px';
+        });
+        textareaElement.dispatchEvent(new Event('input'));
     });
 });
 
