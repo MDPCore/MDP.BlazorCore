@@ -29,7 +29,7 @@ body {
 
 /* ---------- platform ---------- */
 
-/* wrapper */
+/* mdp-wrapper */
 .mdp-wrapper {    
     flex-grow: 1;
     position: relative;
@@ -59,8 +59,8 @@ body {
     box-shadow: none !important;
 }
 
-/* loader */
-.mdp-loader {
+/* mdp-loader */
+.mdp-wrapper .mdp-loader {
     position: fixed;
     top: 0;
     left: 0;
@@ -77,14 +77,14 @@ body {
     z-index: 10000;
 }
 
-.mdp-loader .spinner-border {
+.mdp-wrapper .mdp-loader .spinner-border {
     --bs-spinner-width: 2.5rem;
     --bs-spinner-height: 2.5rem;
     --bs-spinner-border-width: 0.25rem;
     --bs-spinner-animation-speed: 0.5s;
 }
 
-.mdp-loader .text {    
+.mdp-wrapper .mdp-loader .title {    
     font-size: 1rem;
     font-weight: normal;
 }
