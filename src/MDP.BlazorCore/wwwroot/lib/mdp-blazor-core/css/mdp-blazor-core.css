@@ -4,8 +4,8 @@
 :root {
 
     /* color */
-    --mdp-body-color: #FFFFFF;
-    --mdp-body-bg: #000000;
+    --mdp-body-color: #00FF00;
+    --mdp-body-bg: #FF0000;
 }
 
 /* reset */
@@ -24,6 +24,8 @@ body {
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 
@@ -32,7 +34,9 @@ body {
 /* mdp-wrapper */
 .mdp-wrapper {    
     flex-grow: 1;
-    position: relative;
+    position: relative;    
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 .mdp-wrapper a,
@@ -72,8 +76,8 @@ body {
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    color: var(--mdp-body-bg);
-    background-color: var(--mdp-body-color);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
     z-index: 10000;
 }
 
