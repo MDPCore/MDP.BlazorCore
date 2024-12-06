@@ -4,8 +4,8 @@
 :root {
 
     /* color */
-    --mdp-body-color: #FFFFFF;
-    --mdp-body-bg: #000000;
+    --mdp-body-color: #000000;
+    --mdp-body-bg: #FFFFFF;
 }
 
 /* reset */
@@ -24,15 +24,19 @@ body {
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 
 /* ---------- platform ---------- */
 
-/* wrapper */
+/* mdp-wrapper */
 .mdp-wrapper {    
     flex-grow: 1;
-    position: relative;
+    position: relative;    
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 .mdp-wrapper a,
@@ -59,8 +63,8 @@ body {
     box-shadow: none !important;
 }
 
-/* loader */
-.mdp-loader {
+/* mdp-Process */
+.mdp-wrapper .mdp-Process {
     position: fixed;
     top: 0;
     left: 0;
@@ -72,19 +76,19 @@ body {
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    color: var(--mdp-body-bg);
-    background-color: var(--mdp-body-color);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
     z-index: 10000;
 }
 
-.mdp-loader .spinner-border {
+.mdp-wrapper .mdp-Process .spinner-border {
     --bs-spinner-width: 2.5rem;
     --bs-spinner-height: 2.5rem;
     --bs-spinner-border-width: 0.25rem;
     --bs-spinner-animation-speed: 0.5s;
 }
 
-.mdp-loader .text {    
+.mdp-wrapper .mdp-Process .title {    
     font-size: 1rem;
     font-weight: normal;
 }
