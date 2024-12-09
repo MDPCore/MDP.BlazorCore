@@ -24,7 +24,6 @@ namespace MDP.BlazorCore.Maui
         // Methods
         public async Task<ClaimsPrincipal> GetAsync()
         {
-            await Task.Delay(5000);
             // Require
             if (_isCached == true)
             {

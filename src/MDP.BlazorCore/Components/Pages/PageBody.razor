@@ -76,7 +76,17 @@
 }
 
 <!-- require -->
-@if (this.Context == null) return;
+@if (this.Context == null) {
+
+    // processer
+    <div class="mdp-processer">
+        <div class="spinner-border"></div>
+        <div class="title">Loading</div>
+    </div>
+
+    // return
+    return;
+}
 
 <!-- content -->
 @ChildContent

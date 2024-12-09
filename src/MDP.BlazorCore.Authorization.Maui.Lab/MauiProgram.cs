@@ -13,3 +13,4 @@ namespace MDP.BlazorCore.Authorization.Maui.Lab
         }
     }
 }
+ 
