@@ -1,0 +1,86 @@
+﻿@using MDP.BlazorCore
+@using MDP.BlazorCore.Maui
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [AllowAnonymous]
+@layout EmptyLayout
+@page "/Account/Logout"
+@code {
+
+    // Properties
+    [Parameter]
+    public bool Initialized { get; set; } = false;
+
+    [Parameter]
+    public string ReturnUrl { get; set; } = null;
+
+    [Parameter]
+    public string ErrorMessage { get; set; } = null;
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null;
+
+    [Inject]
+    public AuthenticationManager AuthenticationManager { get; set; } = null;
+
+
+    // Methods
+    protected override async Task OnInitializedAsync()
+    {        
+        // Execute        
+        try
+        {
+            // ReturnUrl
+            if (string.IsNullOrEmpty(this.ReturnUrl) == true) this.ReturnUrl = this.NavigationManager.GetQueryValue("returnUrl");
+            if (string.IsNullOrEmpty(this.ReturnUrl) == true) this.ReturnUrl = "/";
+
+            // Logout
+            await this.AuthenticationManager.LogoutAsync();
+
+            // Redirect
+            this.NavigationManager.NavigateTo(this.ReturnUrl, true);
+        }
+        catch (Exception exception)
+        {
+            // Require
+            while (exception.InnerException != null) exception = exception.InnerException;
+
+            // Message
+            this.ErrorMessage = exception.Message;
+        }
+        finally
+        {
+            // Initialized
+            this.Initialized = true;
+        }
+    }
+}
+
+@if (this.Initialized == true && string.IsNullOrEmpty(this.ErrorMessage) == false)
+{
+    <div class="mdp-processer">
+        <div class="error">系統發生錯誤，請稍後再試或聯絡系統管理員</div>
+        <div class="detail">@($"錯誤頁面：{new Uri(this.NavigationManager.Uri).PathAndQuery}")</div>
+        <div class="detail">@($"錯誤訊息：{this.ErrorMessage}")</div>
+        <div class="action-group">
+
+            <!-- home -->
+            <form action="/" method="get">
+                <input class="btn btn-secondary" type="submit" value="回到首頁" />
+            </form>
+
+            <!-- logout -->
+            <form action="/Account/Logout" method="get">
+                <input type="hidden" name="returnUrl" value="@(this.ReturnUrl)" />
+                <input class="btn btn-primary" type="submit" value="重新執行" />
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mdp-processer">
+        <div class="spinner-border"></div>
+        <div class="title">Loading</div>
+    </div>
+}

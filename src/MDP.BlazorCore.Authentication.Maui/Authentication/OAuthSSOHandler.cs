@@ -373,6 +373,7 @@ namespace MDP.BlazorCore.Authentication.Maui
             UserInfoData userInfoData = null;
             try
             {
+                // Create
                 userInfoData = JsonSerializer.Deserialize<UserInfoData>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions
                 {
                     Converters = { new ClaimsConverter() }
@@ -380,6 +381,10 @@ namespace MDP.BlazorCore.Authentication.Maui
             }
             catch (Exception exception)
             {
+                // Require
+                while (exception.InnerException != null) exception = exception.InnerException;
+
+                // Throw
                 throw new HttpRequestException(exception.Message);
             }
             if (userInfoData == null) throw new InvalidOperationException($"{nameof(userInfoData)}=null");

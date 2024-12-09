@@ -4,8 +4,9 @@
 :root {
 
     /* color */
-    --mdp-body-color: #000000;
-    --mdp-body-bg: #FFFFFF;
+    --mdp-color-font: #000000;
+    --mdp-color-bg: #FFFFFF;
+    --mdp-color-warning: #FF0000;
 }
 
 /* reset */
@@ -24,8 +25,8 @@ body {
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
-    color: var(--mdp-body-color);
-    background-color: var(--mdp-body-bg);
+    color: var(--mdp-color-font);
+    background-color: var(--mdp-color-bg);
 }
 
 
@@ -41,8 +42,8 @@ body {
     height: 100%; 
     margin: 0;
     padding: 0;
-    color: var(--mdp-body-color);
-    background-color: var(--mdp-body-bg);
+    color: var(--mdp-color-font);
+    background-color: var(--mdp-color-bg);
 }
 
 .mdp-wrapper a,
@@ -79,13 +80,15 @@ body {
     height: 100%;
     margin: 0;
     padding-top: calc(40dvh - 2.5rem);
+    padding-left: 2rem;
+    padding-right: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    color: var(--mdp-body-color);
-    background-color: var(--mdp-body-bg);
+    color: var(--mdp-color-font);
+    background-color: var(--mdp-color-bg);
     z-index: 9999;
 }
 
@@ -96,9 +99,31 @@ body {
     --bs-spinner-animation-speed: 0.5s;
 }
 
-.mdp-processer .title {    
+.mdp-processer .title { 
+    color: var(--mdp-color-font);
     font-size: 1rem;
     font-weight: normal;
+}
+
+.mdp-processer .error {
+    color: var(--mdp-color-warning);
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+.mdp-processer .detail {
+    align-self: start;
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+.mdp-processer .action-group {
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 

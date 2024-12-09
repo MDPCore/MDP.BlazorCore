@@ -8,7 +8,7 @@ using MDP.AspNetCore.Authentication;
 
 namespace MDP.BlazorCore.Authentication.Web.Lab
 {
-    public class AccountController : Controller
+    public partial class AccountController : Controller
     {
         // Methods
         [AllowAnonymous]
@@ -33,6 +33,17 @@ namespace MDP.BlazorCore.Authentication.Web.Lab
         }
 
         [AllowAnonymous]
+        public ActionResult AccessDenied()
+        {
+            // Return
+            return this.View();
+        }
+    }
+
+    public partial class AccountController : Controller
+    {
+        // Methods
+        [AllowAnonymous]
         public async Task<ActionResult> LoginByPassword(string username, string password = null, string returnUrl = null)
         {
             #region Contracts
@@ -52,14 +63,6 @@ namespace MDP.BlazorCore.Authentication.Web.Lab
 
             // Return
             return await this.SignInAsync(claimsIdentity, returnUrl);
-        }
-
-
-        [AllowAnonymous]
-        public ActionResult AccessDenied()
-        {
-            // Return
-            return this.View();
         }
     }
 }
