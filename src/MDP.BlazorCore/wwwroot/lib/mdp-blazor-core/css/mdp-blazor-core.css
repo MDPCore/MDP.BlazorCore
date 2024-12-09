@@ -4,8 +4,8 @@
 :root {
 
     /* color */
-    --mdp-body-color: #00FF00;
-    --mdp-body-bg: #FF0000;
+    --mdp-body-color: #000000;
+    --mdp-body-bg: #FFFFFF;
 }
 
 /* reset */
@@ -63,8 +63,8 @@ body {
     box-shadow: none !important;
 }
 
-/* mdp-loader */
-.mdp-wrapper .mdp-loader {
+/* mdp-Process */
+.mdp-wrapper .mdp-Process {
     position: fixed;
     top: 0;
     left: 0;
@@ -81,14 +81,14 @@ body {
     z-index: 10000;
 }
 
-.mdp-wrapper .mdp-loader .spinner-border {
+.mdp-wrapper .mdp-Process .spinner-border {
     --bs-spinner-width: 2.5rem;
     --bs-spinner-height: 2.5rem;
     --bs-spinner-border-width: 0.25rem;
     --bs-spinner-animation-speed: 0.5s;
 }
 
-.mdp-wrapper .mdp-loader .title {    
+.mdp-wrapper .mdp-Process .title {    
     font-size: 1rem;
     font-weight: normal;
 }
