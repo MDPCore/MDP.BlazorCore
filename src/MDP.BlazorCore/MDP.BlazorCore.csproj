@@ -11,8 +11,8 @@
     <PackageReference Include="MDP.Registration" Version="8.0.7.53" />
     <PackageReference Include="MDP.Network.Http" Version="8.0.7.53" />
     <PackageReference Include="MDP.Security.Claims" Version="8.0.7.53" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
   </ItemGroup>
 
   <ItemGroup>

@@ -107,23 +107,23 @@ body {
 
 .mdp-processer .error {
     color: var(--mdp-color-warning);
-    font-size: 0.75rem;
-    font-weight: normal;
-}
-
-.mdp-processer .detail {
-    align-self: start;
-    font-size: 0.75rem;
+    font-size: 1rem;
     font-weight: normal;
 }
 
 .mdp-processer .action-group {
     padding-top: 1rem;
+    padding-bottom: 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+}
+
+.mdp-processer .detail {
+    font-size: 0.75rem;
+    font-weight: normal;
 }
 
 

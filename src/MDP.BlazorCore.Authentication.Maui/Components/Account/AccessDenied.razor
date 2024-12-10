@@ -29,7 +29,6 @@
 
 <div class="mdp-processer">
     <div class="error">系統拒絕存取，請稍後再試或聯絡系統管理員</div>
-    <div class="detail">@($"錯誤頁面：{this.ReturnUrl}")</div>
     <div class="action-group">
 
         <!-- home -->
@@ -42,4 +41,5 @@
             <input class="btn btn-primary" type="submit" value="重新執行" />
         </form>
     </div>
+    <div class="detail">@($"錯誤頁面：{this.ReturnUrl}")</div>
 </div>
