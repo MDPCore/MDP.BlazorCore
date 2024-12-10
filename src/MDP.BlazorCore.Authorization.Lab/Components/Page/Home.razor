@@ -24,9 +24,11 @@
     }
 }
 
+<!-- contents -->
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<br />
 <br />
 
 <!-- identity -->
@@ -36,3 +38,9 @@ PrincipalName=@Principal.GetClaimValue(ClaimTypes.Name)<br />
 Mail=@Principal.GetClaimValue(ClaimTypes.Email)<br />
 Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
+
+<!-- logout -->
+<form action="/Account/Logout" method="get">
+    <input type="hidden" name="returnUrl" value="/" />
+    <input type="submit" value="Logout" />
+</form>

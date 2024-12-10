@@ -5,8 +5,47 @@
     // Properties
     [Parameter]
     public string Path { get; set; }
+
+    // Properties
+    [Parameter]
+    public ClaimsPrincipal Principal { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+
+    // Methods
+    protected override async Task OnInitializedAsync()
+    {
+        // Principal
+        var principal = (await this.AuthenticationStateProvider.GetAuthenticationStateAsync())?.User;
+        if (principal == null) throw new InvalidOperationException($"{nameof(principal)}=null");
+        this.Principal = principal;
+    }
 }
 
+<!-- contents -->
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<br />
+<br />
+
+<!-- identity -->
+AuthenticationType=@Principal?.Identity?.AuthenticationType
+<br />
+PrincipalId=@Principal.GetClaimValue(ClaimTypes.NameIdentifier)
+<br />
+PrincipalName=@Principal.GetClaimValue(ClaimTypes.Name)
+<br />
+Mail=@Principal.GetClaimValue(ClaimTypes.Email)
+<br />
+Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))
+<br />
+<br />
+
+<!-- logout -->
+<form action="/Account/Logout" method="get">
+    <input type="hidden" name="returnUrl" value="/" />
+    <input type="submit" value="Logout" />
+</form>
