@@ -79,9 +79,7 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
-    padding-top: calc(40dvh - 2.5rem);
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding: calc(40dvh - 2.5rem) 2rem 2rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,6 +87,7 @@ body {
     gap: 1rem;
     color: var(--mdp-color-font);
     background-color: var(--mdp-color-bg);
+    overflow: auto;
     z-index: 9999;
 }
 
@@ -109,6 +108,17 @@ body {
     color: var(--mdp-color-warning);
     font-size: 1rem;
     font-weight: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+.mdp-processer .detail {
+    font-size: 0.75rem;
+    font-weight: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
 }
 
 .mdp-processer .action-group {
@@ -121,9 +131,17 @@ body {
     gap: 0.5rem;
 }
 
-.mdp-processer .detail {
-    font-size: 0.75rem;
-    font-weight: normal;
+.mdp-processer .show-delay {
+    opacity: 0;
+    visibility: hidden;
+    animation: mdp-processer-show-delay 1s ease-in-out 10s forwards;
+}
+
+@keyframes mdp-processer-show-delay {
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
 }
 
 

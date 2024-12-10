@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace MDP.BlazorCore.Maui
 {
-    public class AuthenticateTokenManager
+    public class AuthenticationTokenManager
     {
         // Fields
         private bool _isCached = false;
 
         private DateTime _expireTime { get; set; } = DateTime.MinValue;
 
-        private AuthenticateToken _authenticateToken = null;
+        private AuthenticationToken _authenticationToken = null;
 
 
         // Methods
-        public async Task<AuthenticateToken> GetAsync()
+        public async Task<AuthenticationToken> GetAsync()
         {
             // Require
             if (_isCached == true)
@@ -30,83 +30,83 @@ namespace MDP.BlazorCore.Maui
                 {
                     _isCached = true;
                     _expireTime = DateTime.MaxValue;
-                    _authenticateToken = null;
+                    _authenticationToken = null;
                 }
 
                 // Return
-                return _authenticateToken;
+                return _authenticationToken;
             }
 
-            // AuthenticateTokenString   
-            var authenticateTokenString = await SecureStorage.GetAsync(this.GetType().FullName);
-            if (string.IsNullOrEmpty(authenticateTokenString) == true)
+            // AuthenticationTokenString   
+            var authenticationTokenString = await SecureStorage.GetAsync(this.GetType().FullName);
+            if (string.IsNullOrEmpty(authenticationTokenString) == true)
             {
                 // Cache
                 _isCached = true;
                 _expireTime = DateTime.MaxValue;
-                _authenticateToken = null;
+                _authenticationToken = null;
 
                 // Return
-                return _authenticateToken;
+                return _authenticationToken;
             }
 
-            // AuthenticateToken
-            var authenticateToken = JsonSerializer.Deserialize<AuthenticateToken>(authenticateTokenString);
-            if (authenticateToken == null)
+            // AuthenticationToken
+            var authenticationToken = JsonSerializer.Deserialize<AuthenticationToken>(authenticationTokenString);
+            if (authenticationToken == null)
             {
                 // Cache
                 _isCached = true;
                 _expireTime = DateTime.MaxValue;
-                _authenticateToken = null;
+                _authenticationToken = null;
 
                 // Return
-                return _authenticateToken;
+                return _authenticationToken;
             }
 
             // ExpireTime
-            var expireTime = authenticateToken.RefreshTokenExpireTime;
+            var expireTime = authenticationToken.RefreshTokenExpireTime;
             if (expireTime <= DateTime.Now)
             {
                 // Cache
                 _isCached = true;
                 _expireTime = DateTime.MaxValue;
-                _authenticateToken = null;
+                _authenticationToken = null;
 
                 // Return
-                return _authenticateToken;
+                return _authenticationToken;
             }
 
             // Cache
             _isCached = true;
             _expireTime = expireTime;
-            _authenticateToken = authenticateToken;
+            _authenticationToken = authenticationToken;
 
             // Return
-            return _authenticateToken;
+            return _authenticationToken;
         }
 
-        public async Task SetAsync(AuthenticateToken authenticateToken)
+        public async Task SetAsync(AuthenticationToken authenticationToken)
         {
             #region Contracts
 
-            ArgumentNullException.ThrowIfNull(authenticateToken);
+            ArgumentNullException.ThrowIfNull(authenticationToken);
 
             #endregion
 
-            // AuthenticateTokenString
-            var authenticateTokenString = JsonSerializer.Serialize(authenticateToken);
-            if (string.IsNullOrEmpty(authenticateTokenString) == true) throw new InvalidOperationException($"{nameof(authenticateTokenString)}=null");
+            // AuthenticationTokenString
+            var authenticationTokenString = JsonSerializer.Serialize(authenticationToken);
+            if (string.IsNullOrEmpty(authenticationTokenString) == true) throw new InvalidOperationException($"{nameof(authenticationTokenString)}=null");
 
             // SetAsync
-            await SecureStorage.SetAsync(this.GetType().FullName, authenticateTokenString);
+            await SecureStorage.SetAsync(this.GetType().FullName, authenticationTokenString);
 
             // Cache
             _isCached = true;
-            _expireTime = authenticateToken.RefreshTokenExpireTime;
-            _authenticateToken = authenticateToken;
+            _expireTime = authenticationToken.RefreshTokenExpireTime;
+            _authenticationToken = authenticationToken;
 
             // Raise
-            this.OnTokenChanged(authenticateToken);
+            this.OnTokenChanged(authenticationToken);
 
             // Return
             return;
@@ -120,10 +120,10 @@ namespace MDP.BlazorCore.Maui
             // Cache
             _isCached = true;
             _expireTime = DateTime.MaxValue;
-            _authenticateToken = null;
+            _authenticationToken = null;
 
             // Raise
-            this.OnTokenChanged(_authenticateToken);
+            this.OnTokenChanged(_authenticationToken);
 
             // Return
             return Task.CompletedTask;
@@ -131,14 +131,14 @@ namespace MDP.BlazorCore.Maui
 
 
         // Events
-        public event Action<AuthenticateToken> TokenChanged;
-        protected void OnTokenChanged(AuthenticateToken authenticateToken = null)
+        public event Action<AuthenticationToken> TokenChanged;
+        protected void OnTokenChanged(AuthenticationToken authenticationToken = null)
         {
             // Raise
             var handler = this.TokenChanged;
             if (handler != null)
             {
-                handler(authenticateToken);
+                handler(authenticationToken);
             }
         }
     }

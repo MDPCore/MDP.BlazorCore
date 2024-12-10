@@ -82,11 +82,14 @@ namespace MDP.BlazorCore.Maui
                     };
                 });
 
+                // ActivationManager
+                applicationBuilder.Services.AddSingleton<ActivationManager>();
+
                 // AuthenticationManager
                 applicationBuilder.Services.AddSingleton<AuthenticationManager>();
 
-                // AuthenticateTokenManager
-                applicationBuilder.Services.AddSingleton<AuthenticateTokenManager>();
+                // AuthenticationTokenManager
+                applicationBuilder.Services.AddSingleton<AuthenticationTokenManager>();
 
                 // AuthenticationStateManager
                 applicationBuilder.Services.AddSingleton<AuthenticationStateManager>();

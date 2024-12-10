@@ -17,8 +17,8 @@ namespace MDP.BlazorCore.Authentication.Maui
         {
             #region Contracts
 
-            if (serviceCollection == null) throw new ArgumentException($"{nameof(serviceCollection)}=null");
-            if (setting == null) throw new ArgumentException($"{nameof(setting)}=null");
+            ArgumentNullException.ThrowIfNull(serviceCollection);
+            ArgumentNullException.ThrowIfNull(setting);
 
             #endregion
 
@@ -27,8 +27,10 @@ namespace MDP.BlazorCore.Authentication.Maui
             if (string.IsNullOrEmpty(setting.ClientScheme) == true) throw new InvalidOperationException($"{nameof(setting.ClientScheme)}=null");
             if (string.IsNullOrEmpty(setting.ServerUrl) == true) throw new InvalidOperationException($"{nameof(setting.ServerUrl)}=null");
 
-            // OAuthSSOAuthenticationProvider
-            serviceCollection.AddTransient<IAuthenticationProvider, OAuthSSOAuthenticationProvider>();
+            // OAuthSSOProvider
+            serviceCollection.AddSingleton<OAuthSSOProvider>();
+            serviceCollection.AddSingleton<IActivationProvider>(serviceProvider => serviceProvider.GetRequiredService<OAuthSSOProvider>());
+            serviceCollection.AddSingleton<IAuthenticationProvider>(serviceProvider => serviceProvider.GetRequiredService<OAuthSSOProvider>());
 
             // OAuthSSOOptions
             serviceCollection.AddTransient<OAuthSSOOptions>(serviceProvider =>

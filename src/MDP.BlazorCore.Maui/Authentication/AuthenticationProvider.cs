@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,10 +14,14 @@ namespace MDP.BlazorCore.Maui
 
 
         // Methods
-        Task LoginAsync();
+        Task<AuthenticationToken> LoginAsync();
+
+        Task<AuthenticationToken> RefreshAsync(string refreshToken);
+
+        Task<ClaimsIdentity> GetUserInformationAsync(string accessToken);
 
         Task LogoutAsync();
 
-        Task RefreshAsync();
+        Task CancelAsync();
     }
 }

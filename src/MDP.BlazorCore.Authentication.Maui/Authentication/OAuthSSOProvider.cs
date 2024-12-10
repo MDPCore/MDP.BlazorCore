@@ -1,6 +1,6 @@
 using MDP.BlazorCore.Maui;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Maui.Authentication;
+using MDP.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,31 +16,29 @@ using System.Threading.Tasks;
 
 namespace MDP.BlazorCore.Authentication.Maui
 {
-    public class OAuthSSOHandler : IDisposable
+    public class OAuthSSOProvider : IAuthenticationProvider, IActivationProvider
     {
         // Fields
         public readonly object _syncRoot = new object();
 
         public readonly OAuthSSOOptions _authOptions = null;
 
-        public readonly IHostEnvironment _hostEnvironment = null;
+        private ManualTask<string> _callbackTask = null;
 
-        public HttpClient _httpClient = null;
+        private HttpClient _httpClient = null;
 
 
         // Constructors
-        public OAuthSSOHandler(OAuthSSOOptions authOptions, IHostEnvironment hostEnvironment)
+        public OAuthSSOProvider(OAuthSSOOptions authOptions)
         {
             #region Contracts
 
-            if (authOptions == null) throw new ArgumentException($"{nameof(authOptions)}=null");
-            if (hostEnvironment == null) throw new ArgumentException($"{nameof(hostEnvironment)}=null");
+            ArgumentNullException.ThrowIfNull(authOptions);
 
             #endregion
 
             // Default
             _authOptions = authOptions;
-            _hostEnvironment = hostEnvironment;
         }
 
         public void Dispose()
@@ -58,6 +56,8 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Properties
+        public string AuthenticationScheme { get; private set; } = OAuthSSODefaults.AuthenticationScheme;
+
         private HttpClient Backchannel
         {
             get
@@ -94,7 +94,7 @@ namespace MDP.BlazorCore.Authentication.Maui
 
 
         // Methods
-        public async Task<AuthenticateToken> LoginAsync()
+        public async Task<AuthenticationToken> LoginAsync()
         {
             // CodeVerifier
             var codeVerifier = CreateCodeVerifier();
@@ -116,179 +116,58 @@ namespace MDP.BlazorCore.Authentication.Maui
             var loginUrl = $"{_authOptions.AuthorizationEndpoint}?client_id={_authOptions.ClientId}&response_type=code&scope=openid profile email&redirect_uri={WebUtility.UrlEncode(redirectUri)}&code_challenge={codeChallenge}&code_challenge_method=S256&state={state}";
             if (string.IsNullOrEmpty(loginUrl) == true) throw new InvalidOperationException($"{nameof(loginUrl)}=null");
 
-            // Login
-            var authenticateResult = await WebAuthenticator.Default.AuthenticateAsync(
-                new Uri(loginUrl),
-                new Uri(redirectUri)
-            );
-            if (authenticateResult == null) throw new InvalidOperationException($"{nameof(authenticateResult)}=null");
+            // LoginAsync
+            var loginResult = string.Empty;
+            var loginCallbackTask = new ManualTask<string>();
+            using (loginCallbackTask)
+            {
+                // Sync
+                lock (_syncRoot)
+                {
+                    // Attach
+                    _callbackTask?.Dispose();
+                    _callbackTask = loginCallbackTask;
+                }
+
+                // OpenAsync
+                await Browser.Default.OpenAsync(new Uri(loginUrl), BrowserLaunchMode.External);
+
+                // WaitAsync
+                loginResult = await loginCallbackTask.WaitAsync();
+            }
+            if (string.IsNullOrEmpty(loginResult) == true) throw new InvalidOperationException($"{nameof(loginResult)}=null");
+            if (loginResult.StartsWith(_authOptions.LoginCallbackEndpoint, StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(loginResult)}={loginResult}");
+
+            // QueryDictionary
+            var queryDictionary = (new Uri(loginResult)).GetQueryDictionary();
+            if (queryDictionary == null) throw new InvalidOperationException($"{nameof(queryDictionary)}=null");
 
             // CallbackState
             string callbackState = null;
-            if (authenticateResult.Properties.ContainsKey("state") == true)
+            if (queryDictionary.ContainsKey("state") == true)
             {
-                callbackState = authenticateResult.Properties["state"];
+                callbackState = queryDictionary["state"];
             }
             if (string.IsNullOrEmpty(callbackState) == true) throw new InvalidOperationException($"{nameof(callbackState)}=null");
             if (callbackState != state) throw new InvalidOperationException($"{nameof(callbackState)}!={nameof(state)}");
 
             // AuthenticateCode
             string authenticateCode = null;
-            if (authenticateResult.Properties.ContainsKey("code") == true)
+            if (queryDictionary.ContainsKey("code") == true)
             {
-                authenticateCode = authenticateResult.Properties["code"];
+                authenticateCode = queryDictionary["code"];
             }
             if (string.IsNullOrEmpty(authenticateCode) == true) throw new InvalidOperationException($"{nameof(authenticateCode)}=null");
 
-            // AuthenticateToken
-            var authenticateToken = await this.ExchangeCodeAsync(authenticateCode, codeVerifier);
-            if (authenticateToken == null) throw new InvalidOperationException($"{nameof(authenticateToken)}=null");
+            // AuthenticationToken
+            var authenticationToken = await this.ExchangeCodeAsync(authenticateCode, codeVerifier);
+            if (authenticationToken == null) throw new InvalidOperationException($"{nameof(authenticationToken)}=null");
 
             // Return
-            return authenticateToken;
+            return authenticationToken;
         }
 
-        private string CreateCodeVerifier()
-        {
-            // CodeVerifierBytes
-            var codeVerifierBytes = new byte[32];
-            using (var randomNumberGenerator = RandomNumberGenerator.Create())
-            {
-                randomNumberGenerator.GetBytes(codeVerifierBytes);
-            }
-
-            // CodeVerifier
-            var codeVerifier = Convert.ToBase64String(codeVerifierBytes)
-                                      .TrimEnd('=')
-                                      .Replace('+', '-')
-                                      .Replace('/', '_');
-            if (string.IsNullOrEmpty(codeVerifier) == true) throw new InvalidOperationException($"{nameof(codeVerifier)}=null");
-
-            // Return
-            return codeVerifier;
-        }
-
-        private string CreateCodeChallenge(string codeVerifier)
-        {
-            #region Contracts
-
-            if (string.IsNullOrEmpty(codeVerifier) == true) throw new ArgumentException($"{nameof(codeVerifier)}=null");
-
-            #endregion
-
-            // CodeChallengeBytes
-            byte[] codeChallengeBytes = null;
-            using (var sha256 = SHA256.Create())
-            {
-                codeChallengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier));
-            }
-            if (codeChallengeBytes == null) throw new InvalidOperationException($"{nameof(codeChallengeBytes)}=null");
-
-            // CodeChallenge
-            var codeChallenge = Convert.ToBase64String(codeChallengeBytes)
-                                       .TrimEnd('=')
-                                       .Replace('+', '-')
-                                       .Replace('/', '_');
-            if (string.IsNullOrEmpty(codeChallenge) == true) throw new InvalidOperationException($"{nameof(codeChallenge)}=null");
-
-            // Return
-            return codeChallenge;
-        }
-
-        private async Task<AuthenticateToken> ExchangeCodeAsync(string authenticateCode, string codeVerifier)
-        {
-            #region Contracts
-
-            if (string.IsNullOrEmpty(authenticateCode) == true) throw new ArgumentException($"{nameof(authenticateCode)}=null");
-            if (string.IsNullOrEmpty(codeVerifier) == true) throw new ArgumentException($"{nameof(codeVerifier)}=null");
-
-            #endregion
-
-            // Request
-            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                {"grant_type", "authorization_code"},
-                {"client_id", _authOptions.ClientId},
-                {"redirect_uri", _authOptions.LoginCallbackEndpoint},
-                {"code", authenticateCode},
-                {"code_verifier", codeVerifier}
-            });
-
-            // Response
-            var response = await this.Backchannel.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
-                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
-            }
-
-            // Payload
-            using (var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
-            {
-                // TokenType
-                var tokenType = payload.RootElement.GetProperty("token_type").GetString();
-                if (string.IsNullOrEmpty(tokenType) == true) throw new InvalidOperationException($"{nameof(tokenType)}=null");
-                if (tokenType.Equals("Bearer", StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(tokenType)}={tokenType}");
-
-                // AccessToken
-                var accessToken = payload.RootElement.GetProperty("access_token").GetString();
-                if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
-
-                // AccessTokenExpireTime
-                var accessTokenExpireTimeString = payload.RootElement.GetProperty("access_token_expiration").GetString();
-                if (string.IsNullOrEmpty(accessTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(accessTokenExpireTimeString)}=null");
-                var accessTokenExpireTime = DateTime.Parse(accessTokenExpireTimeString);
-
-                // RefreshToken
-                var refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
-                if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
-
-                // RefreshTokenExpireTime
-                var refreshTokenExpireTimeString = payload.RootElement.GetProperty("refresh_token_expiration").GetString();
-                if (string.IsNullOrEmpty(refreshTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(refreshTokenExpireTimeString)}=null");
-                var refreshTokenExpireTime = DateTime.Parse(refreshTokenExpireTimeString);
-
-                // Return
-                return new AuthenticateToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
-            }
-        }
-
-
-        public async Task LogoutAsync()
-        {
-            // State
-            var state = Guid.NewGuid().ToString();
-            if (string.IsNullOrEmpty(state) == true) throw new InvalidOperationException($"{nameof(state)}=null");
-
-            // RedirectUri
-            var redirectUri = $"{_authOptions.LogoutCallbackEndpoint}";
-            if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
-
-            // LogoutUrl
-            var logoutUrl = $"{_authOptions.LogoutEndpoint}?client_id={_authOptions.ClientId}&redirect_uri={WebUtility.UrlEncode(redirectUri)}&state={state}";
-            if (string.IsNullOrEmpty(logoutUrl) == true) throw new InvalidOperationException($"{nameof(logoutUrl)}=null");
-
-            // Logout
-            var authenticateResult = await WebAuthenticator.Default.AuthenticateAsync(
-                new Uri(logoutUrl),
-                new Uri(redirectUri)
-            );
-            if (authenticateResult == null) throw new InvalidOperationException($"{nameof(authenticateResult)}=null");
-
-            // CallbackState
-            string callbackState = null;
-            if (authenticateResult.Properties.ContainsKey("state") == true)
-            {
-                callbackState = authenticateResult.Properties["state"];
-            }
-            if (string.IsNullOrEmpty(callbackState) == true) throw new InvalidOperationException($"{nameof(callbackState)}=null");
-            if (callbackState != state) throw new InvalidOperationException($"{nameof(callbackState)}!={nameof(state)}");
-        }
-
-        public async Task<AuthenticateToken> RefreshAsync(string refreshToken)
+        public async Task<AuthenticationToken> RefreshAsync(string refreshToken)
         {
             #region Contracts
 
@@ -343,7 +222,7 @@ namespace MDP.BlazorCore.Authentication.Maui
                 var refreshTokenExpireTime = DateTime.Parse(refreshTokenExpireTimeString);
 
                 // Return
-                return new AuthenticateToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
+                return new AuthenticationToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
             }
         }
 
@@ -351,7 +230,7 @@ namespace MDP.BlazorCore.Authentication.Maui
         {
             #region Contracts
 
-            if (string.IsNullOrEmpty(accessToken) == true) throw new ArgumentException($"{nameof(accessToken)}=null");
+            ArgumentNullException.ThrowIfNullOrEmpty(accessToken);
 
             #endregion
 
@@ -395,6 +274,194 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             // Return
             return claimsIdentity;
+        }
+
+        public async Task LogoutAsync()
+        {
+            // State
+            var state = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(state) == true) throw new InvalidOperationException($"{nameof(state)}=null");
+
+            // RedirectUri
+            var redirectUri = $"{_authOptions.LogoutCallbackEndpoint}";
+            if (string.IsNullOrEmpty(redirectUri) == true) throw new InvalidOperationException($"{nameof(redirectUri)}=null");
+
+            // LogoutUrl
+            var logoutUrl = $"{_authOptions.LogoutEndpoint}?client_id={_authOptions.ClientId}&redirect_uri={WebUtility.UrlEncode(redirectUri)}&state={state}";
+            if (string.IsNullOrEmpty(logoutUrl) == true) throw new InvalidOperationException($"{nameof(logoutUrl)}=null");
+
+            // LogoutAsync
+            var logoutResult = string.Empty;
+            var logoutCallbackTask = new ManualTask<string>();
+            using (logoutCallbackTask)
+            {
+                // Sync
+                lock (_syncRoot)
+                {
+                    // Attach
+                    _callbackTask?.Dispose();
+                    _callbackTask = logoutCallbackTask;
+                }
+
+                // OpenAsync
+                await Browser.Default.OpenAsync(new Uri(logoutUrl), BrowserLaunchMode.External);
+
+                // WaitAsync
+                logoutResult = await logoutCallbackTask.WaitAsync();
+            }
+            if (string.IsNullOrEmpty(logoutResult) == true) throw new InvalidOperationException($"{nameof(logoutResult)}=null");
+            if (logoutResult.StartsWith(_authOptions.LogoutCallbackEndpoint, StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(logoutResult)}={logoutResult}");
+
+            // QueryDictionary
+            var queryDictionary = (new Uri(logoutResult)).GetQueryDictionary();
+            if (queryDictionary == null) throw new InvalidOperationException($"{nameof(queryDictionary)}=null");
+
+            // CallbackState
+            string callbackState = null;
+            if (queryDictionary.ContainsKey("state") == true)
+            {
+                callbackState = queryDictionary["state"];
+            }
+            if (string.IsNullOrEmpty(callbackState) == true) throw new InvalidOperationException($"{nameof(callbackState)}=null");
+            if (callbackState != state) throw new InvalidOperationException($"{nameof(callbackState)}!={nameof(state)}");
+        }
+
+        public async Task CancelAsync()
+        {
+            // Sync
+            lock (_syncRoot)
+            {
+                // Dispose
+                _callbackTask?.Dispose();
+            }
+
+            // Return
+            await Task.CompletedTask;
+        }
+
+        public bool HandleUrl(string url)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNullOrEmpty(url);
+
+            #endregion
+
+            // Require
+            if (url.StartsWith(_authOptions.LoginCallbackEndpoint, StringComparison.OrdinalIgnoreCase) == true) { _callbackTask?.TrySetResult(url); return true; }
+            if (url.StartsWith(_authOptions.LogoutCallbackEndpoint, StringComparison.OrdinalIgnoreCase) == true) { _callbackTask?.TrySetResult(url); return true; }
+
+            // Return
+            return false;
+        }
+
+
+        private string CreateCodeVerifier()
+        {
+            // CodeVerifierBytes
+            var codeVerifierBytes = new byte[32];
+            using (var randomNumberGenerator = RandomNumberGenerator.Create())
+            {
+                randomNumberGenerator.GetBytes(codeVerifierBytes);
+            }
+
+            // CodeVerifier
+            var codeVerifier = Convert.ToBase64String(codeVerifierBytes)
+                                      .TrimEnd('=')
+                                      .Replace('+', '-')
+                                      .Replace('/', '_');
+            if (string.IsNullOrEmpty(codeVerifier) == true) throw new InvalidOperationException($"{nameof(codeVerifier)}=null");
+
+            // Return
+            return codeVerifier;
+        }
+
+        private string CreateCodeChallenge(string codeVerifier)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNullOrEmpty(codeVerifier);
+
+            #endregion
+
+            // CodeChallengeBytes
+            byte[] codeChallengeBytes = null;
+            using (var sha256 = SHA256.Create())
+            {
+                codeChallengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier));
+            }
+            if (codeChallengeBytes == null) throw new InvalidOperationException($"{nameof(codeChallengeBytes)}=null");
+
+            // CodeChallenge
+            var codeChallenge = Convert.ToBase64String(codeChallengeBytes)
+                                       .TrimEnd('=')
+                                       .Replace('+', '-')
+                                       .Replace('/', '_');
+            if (string.IsNullOrEmpty(codeChallenge) == true) throw new InvalidOperationException($"{nameof(codeChallenge)}=null");
+
+            // Return
+            return codeChallenge;
+        }
+
+        private async Task<AuthenticationToken> ExchangeCodeAsync(string authenticateCode, string codeVerifier)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNullOrEmpty(authenticateCode);
+            ArgumentNullException.ThrowIfNullOrEmpty(codeVerifier);
+
+            #endregion
+
+            // Request
+            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+            {
+                {"grant_type", "authorization_code"},
+                {"client_id", _authOptions.ClientId},
+                {"redirect_uri", _authOptions.LoginCallbackEndpoint},
+                {"code", authenticateCode},
+                {"code_verifier", codeVerifier}
+            });
+
+            // Response
+            var response = await this.Backchannel.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
+                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+            }
+
+            // Payload
+            using (var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
+            {
+                // TokenType
+                var tokenType = payload.RootElement.GetProperty("token_type").GetString();
+                if (string.IsNullOrEmpty(tokenType) == true) throw new InvalidOperationException($"{nameof(tokenType)}=null");
+                if (tokenType.Equals("Bearer", StringComparison.OrdinalIgnoreCase) == false) throw new InvalidOperationException($"{nameof(tokenType)}={tokenType}");
+
+                // AccessToken
+                var accessToken = payload.RootElement.GetProperty("access_token").GetString();
+                if (string.IsNullOrEmpty(accessToken) == true) throw new InvalidOperationException($"{nameof(accessToken)}=null");
+
+                // AccessTokenExpireTime
+                var accessTokenExpireTimeString = payload.RootElement.GetProperty("access_token_expiration").GetString();
+                if (string.IsNullOrEmpty(accessTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(accessTokenExpireTimeString)}=null");
+                var accessTokenExpireTime = DateTime.Parse(accessTokenExpireTimeString);
+
+                // RefreshToken
+                var refreshToken = payload.RootElement.GetProperty("refresh_token").GetString();
+                if (string.IsNullOrEmpty(refreshToken) == true) throw new InvalidOperationException($"{nameof(refreshToken)}=null");
+
+                // RefreshTokenExpireTime
+                var refreshTokenExpireTimeString = payload.RootElement.GetProperty("refresh_token_expiration").GetString();
+                if (string.IsNullOrEmpty(refreshTokenExpireTimeString) == true) throw new InvalidOperationException($"{nameof(refreshTokenExpireTimeString)}=null");
+                var refreshTokenExpireTime = DateTime.Parse(refreshTokenExpireTimeString);
+
+                // Return
+                return new AuthenticationToken(tokenType, accessToken, accessTokenExpireTime, refreshToken, refreshTokenExpireTime);
+            }
         }
 
 
@@ -448,8 +515,8 @@ namespace MDP.BlazorCore.Authentication.Maui
             {
                 #region Contracts
 
-                if (typeToConvert == null) throw new ArgumentException($"{nameof(typeToConvert)}=null");
-                if (options == null) throw new ArgumentException($"{nameof(options)}=null");
+                ArgumentNullException.ThrowIfNull(typeToConvert);
+                ArgumentNullException.ThrowIfNull(options);
 
                 #endregion
 
@@ -467,8 +534,8 @@ namespace MDP.BlazorCore.Authentication.Maui
             {
                 #region Contracts
 
-                if (writer == null) throw new ArgumentException($"{nameof(writer)}=null");
-                if (options == null) throw new ArgumentException($"{nameof(options)}=null");
+                ArgumentNullException.ThrowIfNull(writer);
+                ArgumentNullException.ThrowIfNull(options);
 
                 #endregion
 

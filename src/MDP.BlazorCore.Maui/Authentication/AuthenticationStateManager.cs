@@ -39,9 +39,9 @@ namespace MDP.BlazorCore.Maui
                 return _claimsPrincipal;
             }
 
-            // AuthenticatePrincipalString   
-            var authenticatePrincipalString = await SecureStorage.GetAsync(this.GetType().FullName);
-            if (string.IsNullOrEmpty(authenticatePrincipalString) == true)
+            // AuthenticationPrincipalString   
+            var authenticationPrincipalString = await SecureStorage.GetAsync(this.GetType().FullName);
+            if (string.IsNullOrEmpty(authenticationPrincipalString) == true)
             {
                 // Cache
                 _isCached = true;
@@ -52,9 +52,9 @@ namespace MDP.BlazorCore.Maui
                 return _claimsPrincipal;
             }
 
-            // AuthenticatePrincipal
-            var authenticatePrincipal = JsonSerializer.Deserialize<AuthenticatePrincipal>(authenticatePrincipalString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
-            if (authenticatePrincipal == null)
+            // AuthenticationPrincipal
+            var authenticationPrincipal = JsonSerializer.Deserialize<AuthenticationPrincipal>(authenticationPrincipalString, new JsonSerializerOptions { Converters = { new ClaimConverter() } });
+            if (authenticationPrincipal == null)
             {
                 // Cache
                 _isCached = true;
@@ -66,7 +66,7 @@ namespace MDP.BlazorCore.Maui
             }
 
             // ClaimsPrincipal
-            var claimsPrincipal = authenticatePrincipal.CreateClaimsPrincipal();
+            var claimsPrincipal = authenticationPrincipal.CreateClaimsPrincipal();
             if (claimsPrincipal == null)
             {
                 // Cache
@@ -79,7 +79,7 @@ namespace MDP.BlazorCore.Maui
             }
 
             // ExpireTime
-            var expireTime = authenticatePrincipal.ExpireTime;
+            var expireTime = authenticationPrincipal.ExpireTime;
             if (expireTime <= DateTime.Now)
             {
                 // Cache
@@ -108,18 +108,18 @@ namespace MDP.BlazorCore.Maui
 
             #endregion
 
-            // AuthenticatePrincipal
-            var authenticatePrincipal = new AuthenticatePrincipal(claimsPrincipal, expireTime);
+            // AuthenticationPrincipal
+            var authenticationPrincipal = new AuthenticationPrincipal(claimsPrincipal, expireTime);
 
-            // AuthenticatePrincipalString
-            var authenticatePrincipalString = JsonSerializer.Serialize(authenticatePrincipal, new JsonSerializerOptions
+            // AuthenticationPrincipalString
+            var authenticationPrincipalString = JsonSerializer.Serialize(authenticationPrincipal, new JsonSerializerOptions
             {
                 Converters = { new ClaimConverter() }
             });
-            if (string.IsNullOrEmpty(authenticatePrincipalString) == true) throw new InvalidOperationException($"{nameof(authenticatePrincipalString)}=null");
+            if (string.IsNullOrEmpty(authenticationPrincipalString) == true) throw new InvalidOperationException($"{nameof(authenticationPrincipalString)}=null");
 
             // SetAsync
-            await SecureStorage.SetAsync(this.GetType().FullName, authenticatePrincipalString);
+            await SecureStorage.SetAsync(this.GetType().FullName, authenticationPrincipalString);
 
             // Cache
             _isCached = true;
@@ -165,6 +165,64 @@ namespace MDP.BlazorCore.Maui
 
 
         // Class
+        private class AuthenticationPrincipal
+        {
+            // Constructors
+            public AuthenticationPrincipal() { }
+
+            public AuthenticationPrincipal(ClaimsPrincipal claimsPrincipal, DateTime expireTime)
+            {
+                #region Contracts
+
+                ArgumentNullException.ThrowIfNull(claimsPrincipal);
+
+                #endregion
+
+                // ClaimsIdentity
+                var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
+                if (claimsIdentity == null) throw new InvalidOperationException($"{nameof(claimsIdentity)}=null");
+
+                // ClaimList
+                var claimList = claimsIdentity.Claims.ToList();
+                claimList.RemoveAll(o => o.Type == AuthenticationClaimTypes.AuthenticationType);
+                if (claimsIdentity.IsAuthenticated == true)
+                {
+                    // AuthenticationType
+                    claimList.Add(new Claim(AuthenticationClaimTypes.AuthenticationType, claimsIdentity.AuthenticationType));
+                }
+
+                // Default
+                this.ClaimList = claimList;
+                this.ExpireTime = expireTime;
+            }
+
+
+            // Properties
+            public List<Claim> ClaimList { get; set; }
+
+            public DateTime ExpireTime { get; set; }
+
+
+            // Methods
+            public ClaimsPrincipal CreateClaimsPrincipal()
+            {
+                // AuthenticationType
+                var authenticationType = this.ClaimList.FirstOrDefault(o => o.Type == AuthenticationClaimTypes.AuthenticationType)?.Value;
+                if (string.IsNullOrEmpty(authenticationType) == true)
+                {
+                    // Return
+                    return new ClaimsPrincipal(new ClaimsIdentity());
+                }
+
+                // ClaimList
+                var claimList = this.ClaimList.Where(o => o.Type != AuthenticationClaimTypes.AuthenticationType).ToList();
+                if (claimList == null) throw new InvalidOperationException($"{nameof(claimList)}=null");
+
+                // Return
+                return new ClaimsPrincipal(new ClaimsIdentity(claimList, authenticationType));
+            }
+        }
+        
         private class ClaimConverter : JsonConverter<Claim>
         {
             // Methods

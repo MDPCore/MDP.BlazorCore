@@ -2,6 +2,8 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using System;
+using Microsoft.Maui.ApplicationModel;
+
 
 #if ANDROID
 using Android.OS;
@@ -145,17 +147,9 @@ namespace MDP.BlazorCore.Maui
             if (e.Url.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase) == true) { e.UrlLoadingStrategy = UrlLoadingStrategy.OpenInWebView; return; }
 
             // Launcher
-            {
-#if ANDROID
-                var intent = new Intent(Intent.ActionView);
-                {
-                    intent.SetData(Android.Net.Uri.Parse(e.Url.ToString()));
-                }
-                (this.Handler?.MauiContext?.Context as Android.App.Activity)?.StartActivity(intent);
-#elif IOS
-                UIApplication.SharedApplication.OpenUrl(e.Url, new UIApplicationOpenUrlOptions(), (success) => { });
-#endif
-            }
+            Browser.Default.OpenAsync(e.Url, BrowserLaunchMode.External);
+
+            // Cancel
             e.UrlLoadingStrategy = UrlLoadingStrategy.CancelLoad;
         }
     }

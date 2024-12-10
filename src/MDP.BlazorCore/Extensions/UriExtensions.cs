@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -34,6 +35,56 @@ namespace MDP.BlazorCore
 
             // Other
             return false;
+        }
+
+        public static string GetQueryValue(this Uri uri, string queryName)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNull(uri);
+            ArgumentNullException.ThrowIfNullOrEmpty(queryName);
+
+            #endregion
+
+            // QueryDictionary
+            var queryDictionary = uri.GetQueryDictionary();
+            if (queryDictionary == null) throw new InvalidOperationException($"{nameof(queryDictionary)}=null");
+
+            // QueryValue
+            if (queryDictionary.ContainsKey(queryName) == true)
+            {
+                return queryDictionary[queryName];
+            }
+
+            // Return
+            return null;
+        }
+
+        public static Dictionary<string, string> GetQueryDictionary(this Uri uri)
+        {
+            #region Contracts
+
+            ArgumentNullException.ThrowIfNull(uri);
+
+            #endregion
+
+            // QueryString
+            var queryString = uri.Query;
+            if (string.IsNullOrEmpty(queryString) == true) return new Dictionary<string, string>();
+
+            // QueryDictionary
+            var queryDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var queryPartList = queryString.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var queryPart in queryPartList)
+            {
+                var keyValue = queryPart.Split('=', 2);
+                var key = keyValue[0];
+                var value = keyValue.Length > 1 ? Uri.UnescapeDataString(keyValue[1]) : string.Empty;
+                queryDictionary[key] = value;
+            }
+
+            // Return
+            return queryDictionary;
         }
     }
 }

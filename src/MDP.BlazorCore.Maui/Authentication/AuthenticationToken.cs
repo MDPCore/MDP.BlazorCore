@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace MDP.BlazorCore.Maui
 {
-    public class AuthenticateToken
+    public class AuthenticationToken
     {
         // Constructors
-        public AuthenticateToken
+        public AuthenticationToken
         (
             string tokenType, 
             string accessToken, 

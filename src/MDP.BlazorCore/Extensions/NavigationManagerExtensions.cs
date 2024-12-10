@@ -7,7 +7,7 @@ namespace MDP.BlazorCore
     public static class NavigationManagerExtensions
     {
         // Methods
-        public static Dictionary<string, string> GetQuery(this NavigationManager navigationManager)
+        public static Dictionary<string, string> GetQueryDictionary(this NavigationManager navigationManager)
         {
             #region Contracts
 
@@ -15,23 +15,8 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // QueryString
-            var queryString = new Uri(navigationManager.Uri).Query;
-            if (string.IsNullOrEmpty(queryString) == true) return new Dictionary<string, string>();
-
-            // QueryDictionary
-            var queryDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var queryPartList = queryString.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var queryPart in queryPartList)
-            {
-                var keyValue = queryPart.Split('=', 2);
-                var key = keyValue[0];
-                var value = keyValue.Length > 1 ? Uri.UnescapeDataString(keyValue[1]) : string.Empty;
-                queryDictionary[key] = value;
-            }
-
             // Return
-            return queryDictionary;
+            return (new Uri(navigationManager.Uri)).GetQueryDictionary();
         }
 
         public static string GetQueryValue(this NavigationManager navigationManager, string queryName)
@@ -43,18 +28,8 @@ namespace MDP.BlazorCore
 
             #endregion
 
-            // QueryDictionary
-            var queryDictionary = navigationManager.GetQuery();
-            if (queryDictionary == null) throw new InvalidOperationException($"{nameof(queryDictionary)}=null");
-
-            // QueryValue
-            if (queryDictionary.ContainsKey(queryName) == true)
-            {
-                return queryDictionary[queryName];
-            }
-
             // Return
-            return null;
+            return (new Uri(navigationManager.Uri)).GetQueryValue(queryName);
         }
 
 

@@ -16,22 +16,22 @@ namespace MDP.BlazorCore.Maui
         // Fields
         private readonly AuthenticationManager _authenticationManager = null;
 
-        private readonly AuthenticateTokenManager _authenticateTokenManager = null;
+        private readonly AuthenticationTokenManager _authenticationTokenManager = null;
 
 
         // Constructors
-        public MauiCredentialHandler(AuthenticationManager authenticationManager, AuthenticateTokenManager authenticateTokenManager)
+        public MauiCredentialHandler(AuthenticationManager authenticationManager, AuthenticationTokenManager authenticationTokenManager)
         {
             #region Contracts
 
             ArgumentNullException.ThrowIfNull(authenticationManager);
-            ArgumentNullException.ThrowIfNull(authenticateTokenManager);
+            ArgumentNullException.ThrowIfNull(authenticationTokenManager);
 
             #endregion
 
             // Default
             _authenticationManager = authenticationManager;
-            _authenticateTokenManager = authenticateTokenManager;
+            _authenticationTokenManager = authenticationTokenManager;
         }
 
 
@@ -47,14 +47,14 @@ namespace MDP.BlazorCore.Maui
             // Send
             HttpResponseMessage response = null;
             {
-                // AuthenticateToken
-                var authenticateToken = await _authenticateTokenManager.GetAsync();
-                if (authenticateToken == null) return await base.SendAsync(request, cancellationToken);
+                // AuthenticationToken
+                var authenticationToken = await _authenticationTokenManager.GetAsync();
+                if (authenticationToken == null) return await base.SendAsync(request, cancellationToken);
 
                 // SendAsync
                 {
                     // Headers
-                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticationToken.AccessToken);
                 }
                 response = await base.SendAsync(request, cancellationToken);
                 if (response == null) throw new InvalidOperationException($"{nameof(response)}=null");
@@ -66,16 +66,16 @@ namespace MDP.BlazorCore.Maui
                 // Refresh
                 await _authenticationManager.RefreshAsync();
 
-                // AuthenticateToken
-                var authenticateToken = await _authenticateTokenManager.GetAsync();
-                if (authenticateToken == null) return response;
+                // AuthenticationToken
+                var authenticationToken = await _authenticationTokenManager.GetAsync();
+                if (authenticationToken == null) return response;
 
                 // SendAsync
                 var newRequest = await request.CloneAsync();
-                if (authenticateToken != null)
+                if (authenticationToken != null)
                 {
                     // Headers
-                    newRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticateToken.AccessToken);
+                    newRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authenticationToken.AccessToken);
                 }
                 return await base.SendAsync(newRequest, cancellationToken);
             }

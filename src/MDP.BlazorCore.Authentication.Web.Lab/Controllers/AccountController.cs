@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using MDP.AspNetCore.Authentication;
+using MDP.AspNetCore.Authentication.Line;
 
 namespace MDP.BlazorCore.Authentication.Web.Lab
 {
@@ -63,6 +64,17 @@ namespace MDP.BlazorCore.Authentication.Web.Lab
 
             // Return
             return await this.SignInAsync(claimsIdentity, returnUrl);
+        }
+
+        [AllowAnonymous]
+        public Task<ActionResult> LoginByLine(string returnUrl = null)
+        {
+            // Require
+            returnUrl = this.NormalizeReturnUrl(returnUrl);
+            if (this.User?.Identity?.IsAuthenticated == true) return Task.FromResult<ActionResult>(this.Redirect(returnUrl));
+
+            // Return
+            return this.LoginAsync(LineDefaults.AuthenticationScheme, returnUrl);
         }
     }
 }

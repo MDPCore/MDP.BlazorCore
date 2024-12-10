@@ -2,6 +2,7 @@
 @using MDP.BlazorCore.Maui
 @using Microsoft.AspNetCore.Authorization
 
+@implements IDisposable
 @attribute [AllowAnonymous]
 @layout EmptyLayout
 @page "/Account/Login"
@@ -54,12 +55,18 @@
             this.Initialized = true;
         }
     }
+
+    public void Dispose()
+    {
+        // CancelAsync
+        this.AuthenticationManager.CancelAsync().GetAwaiter().GetResult();
+    }
 }
 
 @if (this.Initialized == true && string.IsNullOrEmpty(this.ErrorMessage)== false)
 {
     <div class="mdp-processer">
-        <div class="error">系統發生錯誤，請稍後再試或聯絡系統管理員</div>
+        <div class="error">系統登入失敗，請稍後再試或聯絡系統管理員</div>
         <div class="action-group">
 
             <!-- home -->
@@ -81,6 +88,19 @@ else
 {
     <div class="mdp-processer">
         <div class="spinner-border"></div>
-        <div class="title">Loading</div>
+        <div class="title">Login...</div>
+        <div class="action-group show-delay">
+
+            <!-- home -->
+            <form action="/" method="get">
+                <input class="btn btn-secondary" type="submit" value="回到首頁" />
+            </form>
+
+            <!-- login -->
+            <form action="/Account/Login" method="get">
+                <input type="hidden" name="returnUrl" value="@(this.ReturnUrl)" />
+                <input class="btn btn-primary" type="submit" value="重新執行" />
+            </form>
+        </div>
     </div>
 }

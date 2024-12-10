@@ -40,7 +40,10 @@ Role=@String.Join(",", Principal.GetAllClaimValue(ClaimTypes.Role))<br />
 <br />
 
 <!-- logout -->
-<form action="/Account/Logout" method="get">
-    <input type="hidden" name="returnUrl" value="/" />
-    <input type="submit" value="Logout" />
-</form>
+@if ((this.Principal.Identity as ClaimsIdentity)?.IsAuthenticated == true)
+{
+    <form action="/Account/Logout" method="get">
+        <input type="hidden" name="returnUrl" value="/" />
+        <input type="submit" value="Logout" />
+    </form>
+}
