@@ -1,6 +1,7 @@
 using MDP.BlazorCore.Maui;
 using MDP.Threading.Tasks;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,6 @@ namespace MDP.BlazorCore.Authentication.Maui
 
         private ManualTask<string> _callbackTask = null;
 
-        private HttpClient _httpClient = null;
-
 
         // Constructors
         public OAuthSSOProvider(OAuthSSOOptions authOptions)
@@ -41,56 +40,9 @@ namespace MDP.BlazorCore.Authentication.Maui
             _authOptions = authOptions;
         }
 
-        public void Dispose()
-        {
-            // HttpClient
-            HttpClient httpClient = null;
-            lock (_syncRoot)
-            {
-                // Remove
-                httpClient = _httpClient;
-                _httpClient = null;
-            }
-            if (httpClient != null) httpClient.Dispose();
-        }
-
 
         // Properties
         public string AuthenticationScheme { get; private set; } = OAuthSSODefaults.AuthenticationScheme;
-
-        private HttpClient Backchannel
-        {
-            get
-            {
-                // Sync
-                lock (_syncRoot)
-                {
-                    // Create
-                    if (_httpClient == null)
-                    {
-                        // HttpClientHandler
-                        var httpClientHandler = new HttpClientHandler();
-                        {
-                            // UseCookies
-                            httpClientHandler.UseCookies = _authOptions.UseCookies;
-
-                            // IgnoreCertificates
-                            if (_authOptions.IgnoreServerCertificate == true)
-                            {
-                                httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                            }
-                        }
-
-                        // HttpClient
-                        _httpClient = new HttpClient(httpClientHandler);
-                        _httpClient.Timeout = TimeSpan.FromSeconds(10);
-                    }
-
-                    // Return
-                    return _httpClient;
-                }
-            }
-        }
 
 
         // Methods
@@ -115,6 +67,10 @@ namespace MDP.BlazorCore.Authentication.Maui
             // LoginUrl
             var loginUrl = $"{_authOptions.AuthorizationEndpoint}?client_id={_authOptions.ClientId}&response_type=code&scope=openid profile email&redirect_uri={WebUtility.UrlEncode(redirectUri)}&code_challenge={codeChallenge}&code_challenge_method=S256&state={state}";
             if (string.IsNullOrEmpty(loginUrl) == true) throw new InvalidOperationException($"{nameof(loginUrl)}=null");
+
+            // Confirm           
+            var isAllowed = await Application.Current.MainPage.DisplayAlert($"「{AppInfo.Name}」想要使用「{new Uri(loginUrl).Host}」登入", $"這會讓APP和網站分享關於你的資訊。", "繼續", "取消");
+            if (isAllowed == false) throw new TaskCanceledException();
 
             // LoginAsync
             var loginResult = string.Empty;
@@ -175,24 +131,29 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             #endregion
 
-            // Request
-            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                {"grant_type", "refresh_token"},
-                {"client_id", _authOptions.ClientId},
-                {"refresh_token", refreshToken}
-            });
+            // HttpClient
+            HttpResponseMessage response = null;
+            using (var httpClient = this.CreateHttpClient()) {
 
-            // Response
-            var response = await this.Backchannel.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.Unauthorized) return null;
-            if (response.IsSuccessStatusCode == false)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
-                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                // Request
+                var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+                {
+                    {"grant_type", "refresh_token"},
+                    {"client_id", _authOptions.ClientId},
+                    {"refresh_token", refreshToken}
+                });
+
+                // Response
+                response = await httpClient.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.Unauthorized) return null;
+                if (response.IsSuccessStatusCode == false)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
+                    if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                }
             }
 
             // Payload
@@ -234,18 +195,23 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             #endregion
 
-            // Request
-            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.UserInformationEndpoint);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            // Response
-            var response = await this.Backchannel.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            // HttpClient
+            HttpResponseMessage response = null;
+            using (var httpClient = this.CreateHttpClient())
             {
-                var content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
-                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                // Request
+                var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.UserInformationEndpoint);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Response
+                response = await httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode == false)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
+                    if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                }
             }
 
             // UserInfoData
@@ -356,6 +322,29 @@ namespace MDP.BlazorCore.Authentication.Maui
         }
 
 
+        private HttpClient CreateHttpClient()
+        {
+            // HttpClientHandler
+            var httpClientHandler = new HttpClientHandler();
+            {
+                // UseCookies
+                httpClientHandler.UseCookies = _authOptions.UseCookies;
+
+                // IgnoreCertificates
+                if (_authOptions.IgnoreServerCertificate == true)
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                }
+            }
+
+            // HttpClient
+            var httpClient = new HttpClient(httpClientHandler);
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+            // Return
+            return httpClient;
+        }
+
         private string CreateCodeVerifier()
         {
             // CodeVerifierBytes
@@ -412,25 +401,30 @@ namespace MDP.BlazorCore.Authentication.Maui
 
             #endregion
 
-            // Request
-            var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+            // HttpClient
+            HttpResponseMessage response = null;
+            using (var httpClient = this.CreateHttpClient())
             {
-                {"grant_type", "authorization_code"},
-                {"client_id", _authOptions.ClientId},
-                {"redirect_uri", _authOptions.LoginCallbackEndpoint},
-                {"code", authenticateCode},
-                {"code_verifier", codeVerifier}
-            });
+                // Request
+                var request = new HttpRequestMessage(HttpMethod.Post, _authOptions.TokenEndpoint);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+                {
+                    {"grant_type", "authorization_code"},
+                    {"client_id", _authOptions.ClientId},
+                    {"redirect_uri", _authOptions.LoginCallbackEndpoint},
+                    {"code", authenticateCode},
+                    {"code_verifier", codeVerifier}
+                });
 
-            // Response
-            var response = await this.Backchannel.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
-                if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                // Response
+                response = await httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode == false)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(content) == false) throw new HttpRequestException(content);
+                    if (string.IsNullOrEmpty(content) == true) throw new HttpRequestException($"An error occurred when retrieving user information ({response.StatusCode}). Please check if the authentication information is correct.");
+                }
             }
 
             // Payload
