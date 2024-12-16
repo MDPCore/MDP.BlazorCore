@@ -1,8 +1,5 @@
 ﻿using Foundation;
 using MDP.BlazorCore.Maui;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui;
-using UIKit;
 
 namespace MDP.BlazorCore.Authentication.Maui.Lab
 {

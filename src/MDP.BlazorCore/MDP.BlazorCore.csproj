@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.Reflection" Version="8.0.7.53" />
     <PackageReference Include="MDP.Registration" Version="8.0.7.53" />
     <PackageReference Include="MDP.Network.Http" Version="8.0.7.53" />
     <PackageReference Include="MDP.Security.Claims" Version="8.0.7.53" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.IO\MDP.IO.csproj" />
+    <ProjectReference Include="..\MDP.Reflection\MDP.Reflection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +39,6 @@
   <ItemGroup>
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
-    <None Include="wwwroot\lib\mdp-blazor-core\js\mdp-blazor-core.js" />
   </ItemGroup>
 
 </Project>

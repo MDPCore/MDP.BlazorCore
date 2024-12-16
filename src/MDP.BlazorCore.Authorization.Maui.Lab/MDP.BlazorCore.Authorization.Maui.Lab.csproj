@@ -12,7 +12,7 @@
 
     <!-- Application -->
     <ApplicationTitle>MDP.BlazorCore.Authorization.Maui.Lab</ApplicationTitle>
-    <ApplicationId>mdpcore.blazorcore.lab</ApplicationId>
+    <ApplicationId>mdpcore.blazorcore</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>16</ApplicationVersion>
 
@@ -24,7 +24,7 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
     <ProvisioningType>manual</ProvisioningType>
     <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>

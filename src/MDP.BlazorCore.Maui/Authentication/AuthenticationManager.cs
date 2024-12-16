@@ -37,6 +37,10 @@ namespace MDP.BlazorCore.Maui
         // Methods
         public async Task LoginAsync(string authenticationScheme = null)
         {
+            // Clear
+            await _authenticationTokenManager.RemoveAsync();
+            await _authenticationStateManager.RemoveAsync();
+
             // AuthenticationProvider
             IAuthenticationProvider authenticationProvider = null;
             if (string.IsNullOrEmpty(authenticationScheme) == true)
@@ -48,10 +52,6 @@ namespace MDP.BlazorCore.Maui
                 authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
             }
             if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
-
-            // Clear
-            await _authenticationTokenManager.RemoveAsync();
-            await _authenticationStateManager.RemoveAsync();
 
             // LoginAsync
             var authenticationToken = await authenticationProvider.LoginAsync();
@@ -68,6 +68,10 @@ namespace MDP.BlazorCore.Maui
 
         public async Task LogoutAsync(string authenticationScheme = null)
         {
+            // Clear
+            await _authenticationTokenManager.RemoveAsync();
+            await _authenticationStateManager.RemoveAsync();
+
             // AuthenticationProvider
             IAuthenticationProvider authenticationProvider = null;
             if (string.IsNullOrEmpty(authenticationScheme) == true)
@@ -79,10 +83,6 @@ namespace MDP.BlazorCore.Maui
                 authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
             }
             if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
-
-            // Clear
-            await _authenticationTokenManager.RemoveAsync();
-            await _authenticationStateManager.RemoveAsync();
 
             // LogoutAsync
             await authenticationProvider.LogoutAsync();
@@ -90,44 +90,28 @@ namespace MDP.BlazorCore.Maui
 
         public async Task RefreshAsync(string authenticationScheme = null)
         {
-            // AuthenticationProvider
-            IAuthenticationProvider authenticationProvider = null;
-            if (string.IsNullOrEmpty(authenticationScheme) == true)
-            {
-                authenticationProvider = _authenticationProviderList.FirstOrDefault();
-            }
-            else
-            {
-                authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
-            }
-            if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
-
             // Execute
             try
             {
                 // Require
                 var authenticationToken = await _authenticationTokenManager.GetAsync();
-                if (authenticationToken == null)
-                {
-                    // Clear
-                    await _authenticationTokenManager.RemoveAsync();
-                    await _authenticationStateManager.RemoveAsync();
+                if (authenticationToken == null) throw new InvalidOperationException($"{nameof(authenticationToken)}=null");
 
-                    // Return
-                    return;
+                // AuthenticationProvider
+                IAuthenticationProvider authenticationProvider = null;
+                if (string.IsNullOrEmpty(authenticationScheme) == true)
+                {
+                    authenticationProvider = _authenticationProviderList.FirstOrDefault();
                 }
+                else
+                {
+                    authenticationProvider = _authenticationProviderList.FirstOrDefault(e => e.AuthenticationScheme == authenticationScheme);
+                }
+                if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
 
                 // RefreshAsync
                 authenticationToken = await authenticationProvider.RefreshAsync(authenticationToken.RefreshToken);
-                if (authenticationToken == null)
-                {
-                    // Clear
-                    await _authenticationTokenManager.RemoveAsync();
-                    await _authenticationStateManager.RemoveAsync();
-
-                    // Return
-                    return;
-                }
+                if (authenticationToken == null) throw new InvalidOperationException($"{nameof(authenticationToken)}=null");
 
                 // GetUserInformationAsync
                 var claimsIdentity = await authenticationProvider.GetUserInformationAsync(authenticationToken.AccessToken);
@@ -159,7 +143,7 @@ namespace MDP.BlazorCore.Maui
             }
             if (authenticationProvider == null) throw new InvalidOperationException($"{nameof(authenticationProvider)}=null");
 
-            // Execute
+            // CancelAsync
             await authenticationProvider.CancelAsync();
         }
     }

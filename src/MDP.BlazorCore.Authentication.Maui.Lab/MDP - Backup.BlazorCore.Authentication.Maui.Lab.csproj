@@ -24,10 +24,9 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
     <ProvisioningType>manual</ProvisioningType>
-    <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>
+    <CodesignKey>Apple Distribution: JUNG CHING CHOU (95ZK2QXF2M)</CodesignKey>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
   </PropertyGroup>
 
