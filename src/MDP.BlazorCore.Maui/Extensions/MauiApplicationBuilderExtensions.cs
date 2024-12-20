@@ -1,19 +1,12 @@
 ﻿using MDP.Configuration;
 using MDP.Hosting;
 using MDP.NetCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
-using Microsoft.Maui;
 using System;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.WebView.Maui;
-using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MDP.BlazorCore.Maui
 {
@@ -28,8 +21,9 @@ namespace MDP.BlazorCore.Maui
 
             #endregion
 
-            // ExceptionHandler
+            // Initialize
             MauiExceptionHandler.Initialize();
+            MauiReferenceAssemblies.Initialize();
 
             // EntryAssembly
             var entryAssembly = typeof(TProgram).Assembly;

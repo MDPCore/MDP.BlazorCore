@@ -121,7 +121,7 @@ namespace MDP.BlazorCore.Maui
                 await _authenticationTokenManager.SetAsync(authenticationToken);
                 await _authenticationStateManager.SetAsync(new ClaimsPrincipal(claimsIdentity), authenticationToken.RefreshTokenExpireTime);
             }
-            catch (Exception)
+            catch
             {
                 // Clear
                 await _authenticationTokenManager.RemoveAsync();

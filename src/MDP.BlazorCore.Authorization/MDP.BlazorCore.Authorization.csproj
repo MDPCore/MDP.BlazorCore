@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDP.Registration" Version="8.0.7.53" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
   </ItemGroup>
 

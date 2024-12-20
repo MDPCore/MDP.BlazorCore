@@ -23,7 +23,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\MDP.Threading.Tasks\MDP.Threading.Tasks.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Maui\MDP.BlazorCore.Maui.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
   </ItemGroup>

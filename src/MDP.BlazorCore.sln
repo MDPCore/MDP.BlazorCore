@@ -45,16 +45,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorizatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.BlazorCore.Authorization.Maui.Lab", "MDP.BlazorCore.Authorization.Maui.Lab\MDP.BlazorCore.Authorization.Maui.Lab.csproj", "{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.Threading.Tasks", "MDP.Threading.Tasks\MDP.Threading.Tasks.csproj", "{16B5E6D0-34D7-4E74-9BA8-FE60B10C16F5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.Threading.Tasks.Lab", "MDP.Threading.Tasks.Lab\MDP.Threading.Tasks.Lab.csproj", "{9C12FA57-47CF-4808-8222-E3F772A1CF94}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.Reflection", "MDP.Reflection\MDP.Reflection.csproj", "{867DFBDA-6F37-44CF-8C23-0A72B103C5C4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.IO", "MDP.IO\MDP.IO.csproj", "{204CCD5C-AF70-4662-B3AB-FAA1AEA9B403}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDP.Network.Http", "MDP.Network.Http\MDP.Network.Http.csproj", "{D0EBD01C-CAF7-4896-9A50-E183C09FCC30}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,26 +129,6 @@ Global
 		{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECF72FD9-3AC3-410D-A8E4-C0CE64273A5C}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{16B5E6D0-34D7-4E74-9BA8-FE60B10C16F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16B5E6D0-34D7-4E74-9BA8-FE60B10C16F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16B5E6D0-34D7-4E74-9BA8-FE60B10C16F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16B5E6D0-34D7-4E74-9BA8-FE60B10C16F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C12FA57-47CF-4808-8222-E3F772A1CF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C12FA57-47CF-4808-8222-E3F772A1CF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C12FA57-47CF-4808-8222-E3F772A1CF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C12FA57-47CF-4808-8222-E3F772A1CF94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{867DFBDA-6F37-44CF-8C23-0A72B103C5C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{867DFBDA-6F37-44CF-8C23-0A72B103C5C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{867DFBDA-6F37-44CF-8C23-0A72B103C5C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{867DFBDA-6F37-44CF-8C23-0A72B103C5C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{204CCD5C-AF70-4662-B3AB-FAA1AEA9B403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{204CCD5C-AF70-4662-B3AB-FAA1AEA9B403}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{204CCD5C-AF70-4662-B3AB-FAA1AEA9B403}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{204CCD5C-AF70-4662-B3AB-FAA1AEA9B403}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0EBD01C-CAF7-4896-9A50-E183C09FCC30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0EBD01C-CAF7-4896-9A50-E183C09FCC30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0EBD01C-CAF7-4896-9A50-E183C09FCC30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0EBD01C-CAF7-4896-9A50-E183C09FCC30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

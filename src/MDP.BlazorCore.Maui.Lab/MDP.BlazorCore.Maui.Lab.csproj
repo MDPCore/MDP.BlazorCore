@@ -4,12 +4,12 @@
     <!-- Build -->
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
+    <Nullable>disable</Nullable>
     <SingleProject>true</SingleProject>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
     <RootNamespace>MDP.BlazorCore.Maui.Lab</RootNamespace>
-    
+
     <!-- Application -->
     <ApplicationTitle>MDP.BlazorCore.Maui.Lab</ApplicationTitle>
     <ApplicationId>mdpcore.blazorcore</ApplicationId>
@@ -29,6 +29,11 @@
     <ProvisioningType>manual</ProvisioningType>
     <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-android'">
+    <PublishTrimmed>false</PublishTrimmed>
+    <RunAOTCompilation>false</RunAOTCompilation>
   </PropertyGroup>
 
   <ItemGroup>
@@ -62,4 +67,15 @@
     <MauiAsset Include="appsettings*.json" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     <Content Remove="appsettings*.json" />
   </ItemGroup>
+  
+  <Target Name="GenerateReferences" AfterTargets="ResolveAssemblyReferences" Condition="'$(Configuration)'=='Release'">
+    <ItemGroup>
+      <ResolvedReferences Include="@(ReferencePath)" />
+    </ItemGroup>
+    <WriteLinesToFile 
+      File="$(ProjectDir)Resources\Raw\References.txt"
+      Lines="@(ResolvedReferences->'%(Filename)%(Extension)')"
+      Overwrite="true"
+    />
+  </Target>
 </Project>
