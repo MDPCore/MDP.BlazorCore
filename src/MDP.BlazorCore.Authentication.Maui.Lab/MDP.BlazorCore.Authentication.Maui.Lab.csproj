@@ -1,36 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-  <PropertyGroup>
 
-    <!-- Build -->
+  <!-- Build -->
+  <PropertyGroup>
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
+    <Nullable>disable</Nullable>
     <SingleProject>true</SingleProject>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
-    <RootNamespace>MDP.BlazorCore.Authentication.Maui.Lab</RootNamespace>
-
-    <!-- Application -->
-    <ApplicationTitle>MDP.BlazorCore.Authentication.Maui.Lab</ApplicationTitle>
-    <ApplicationId>mdpcore.blazorcore</ApplicationId>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>16</ApplicationVersion>
-
-    <!-- Platform -->
-    <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
-    <ProvisioningType>manual</ProvisioningType>
-    <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
   </PropertyGroup>
 
+  <!-- Reference -->
   <ItemGroup>
     <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.100" />
     <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
@@ -42,22 +22,52 @@
     <ProjectReference Include="..\MDP.BlazorCore.Authentication.Maui\MDP.BlazorCore.Authentication.Maui.csproj" />
   </ItemGroup>
 
+  <!-- Application -->
+  <PropertyGroup>
+    <RootNamespace>MDP.BlazorCore.Authentication.Maui.Lab</RootNamespace>
+    <ApplicationTitle>MDP.BlazorCore.Authentication.Maui.Lab</ApplicationTitle>
+    <ApplicationId>mdpcore.blazorcore</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>16</ApplicationVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
+    <ProvisioningType>manual</ProvisioningType>
+    <CodesignKey>Apple Development: Created via API (5BAM9C5ZL4)</CodesignKey>
+    <CodesignProvision>VS: WildCard Development</CodesignProvision>
+  </PropertyGroup>
+
   <ItemGroup>
-
-    <!-- Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
-    <!-- Splash -->
     <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
-
-    <!-- Images -->
-    <MauiImage Include="Resources\Images\*" />
     <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+  </ItemGroup>
 
-    <!-- Fonts -->
+  <!-- Platform -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-android'">
+    <PublishTrimmed>false</PublishTrimmed>
+    <RunAOTCompilation>false</RunAOTCompilation>
+  </PropertyGroup>
+
+  <Target Name="GenerateReferences" AfterTargets="ResolveAssemblyReferences" Condition="'$(Configuration)'=='Release'">
+    <ItemGroup>
+      <ResolvedReferences Include="@(ReferencePath)" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(ProjectDir)Resources\Raw\References.txt" Lines="@(ResolvedReferences->'%(Filename)%(Extension)')" Overwrite="true" />
+  </Target>
+
+  <ItemGroup>
     <MauiFont Include="Resources\Fonts\*" />
-
-    <!-- Assets -->
+    <MauiImage Include="Resources\Images\*" />
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     <MauiAsset Include="appsettings*.json" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     <Content Remove="appsettings*.json" />

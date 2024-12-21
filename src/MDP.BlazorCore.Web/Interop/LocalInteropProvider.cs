@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore
+namespace MDP.BlazorCore.Web
 {
     public class LocalInteropProvider : InteropProvider
     {
@@ -42,7 +42,7 @@ namespace MDP.BlazorCore
             try
             {
                 // InteropController
-                var interopController = _serviceProvider.GetService(interopResource.ServiceType) as InteropController;
+                var interopController = _serviceProvider.GetService(interopResource.ServiceType) as MDP.BlazorCore.InteropController;
                 if (interopController == null)
                 {
                     // NotFound

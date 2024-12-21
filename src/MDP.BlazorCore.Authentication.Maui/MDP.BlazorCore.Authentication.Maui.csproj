@@ -1,22 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  <!-- Build -->
   <PropertyGroup>
     <UseMaui>true</UseMaui>
+    <Nullable>disable</Nullable>
     <SingleProject>true</SingleProject>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
 
   <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <!-- Reference -->
+  <ItemGroup>
+    <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.62" />
     <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.100" />
     <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
     <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.100" />
@@ -27,6 +26,17 @@
     <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
   </ItemGroup>
 
+  <!-- Platform -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Package -->
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
@@ -40,5 +50,4 @@
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
-  
 </Project>

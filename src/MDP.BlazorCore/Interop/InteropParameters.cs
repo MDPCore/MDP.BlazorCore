@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace MDP.BlazorCore
 {
-    internal class InteropParameters : MDP.Reflection.ParameterProvider
+    public class InteropParameters : MDP.Reflection.ParameterProvider
     {
         // Fields
         private readonly Dictionary<string, string> _routeParameters = null;

@@ -62,7 +62,7 @@ namespace MDP.BlazorCore
 
 
         // Methods
-        internal bool MatchRoute(InteropRequest interopRequest)
+        public bool MatchRoute(InteropRequest interopRequest)
         {
             #region Contracts
 
@@ -99,7 +99,7 @@ namespace MDP.BlazorCore
             return true;
         }
 
-        internal InteropParameters CreateParameters(InteropRequest interopRequest)
+        public InteropParameters CreateParameters(InteropRequest interopRequest)
         {
             #region Contracts
 

@@ -1,29 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  <!-- Build -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
 
+  <!-- Reference -->
   <ItemGroup>
     <PackageReference Include="MDP.Reflection" Version="8.0.7.62" />
     <PackageReference Include="MDP.Registration" Version="8.0.7.62" />
-    <PackageReference Include="MDP.Network.Http" Version="8.0.7.62" />
     <PackageReference Include="MDP.Security.Claims" Version="8.0.7.62" />
     <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.62" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
   </ItemGroup>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
-  </PropertyGroup>
-
+  <!-- Package -->
   <PropertyGroup>
     <authors>CLK Software Studio</authors>
     <copyright>Copyright © 2014 CLK Software Studio</copyright>
@@ -37,8 +36,4 @@
     <None Include="..\..\Package.png" Pack="true" PackagePath="\Package.png" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interop\Providers\" />
-  </ItemGroup>
-
 </Project>

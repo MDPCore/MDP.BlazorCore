@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MDP.BlazorCore
+namespace MDP.BlazorCore.Maui
 {
     public class RemoteInteropProvider : InteropProvider
     {

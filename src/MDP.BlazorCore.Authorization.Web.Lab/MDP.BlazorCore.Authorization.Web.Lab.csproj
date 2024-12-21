@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <!-- Build -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Reference -->
   <ItemGroup>
-    <PackageReference Include="MDP.AspNetCore.Authentication.Tokens" Version="8.0.7.54" />
-    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.7.54" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.Tokens" Version="8.0.7.62" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.OAuthSSO.Server" Version="8.0.7.62" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,5 +18,4 @@
     <ProjectReference Include="..\MDP.BlazorCore.Authorization.Web\MDP.BlazorCore.Authorization.Web.csproj" />
     <ProjectReference Include="..\MDP.BlazorCore.Authentication.Web\MDP.BlazorCore.Authentication.Web.csproj" />
   </ItemGroup>
-
 </Project>

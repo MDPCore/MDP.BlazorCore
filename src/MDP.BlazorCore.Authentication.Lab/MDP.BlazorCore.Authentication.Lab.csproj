@@ -1,22 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  <!-- Build -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MDP.BlazorCore\MDP.BlazorCore.csproj" />
-    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
-  </PropertyGroup>
-
+  <!-- Reference -->
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.BlazorCore.Authentication\MDP.BlazorCore.Authentication.csproj" />
+  </ItemGroup>
 </Project>

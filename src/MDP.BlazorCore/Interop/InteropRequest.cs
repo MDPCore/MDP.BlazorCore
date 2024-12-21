@@ -52,8 +52,8 @@ namespace MDP.BlazorCore
         public JsonDocument ActionParameters { get; private set; }
 
 
-        internal string RoutePath { get; private set; }
+        public string RoutePath { get; private set; }
 
-        internal List<string> RoutePathSectionList { get; private set; }
+        public List<string> RoutePathSectionList { get; private set; }
     }
 }
