@@ -14,10 +14,10 @@
 
   <!-- Reference -->
   <ItemGroup>
-    <PackageReference Include="MDP.Reflection" Version="8.0.7.62" />
-    <PackageReference Include="MDP.Registration" Version="8.0.7.62" />
-    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.62" />
-    <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.62" />
+    <PackageReference Include="MDP.Reflection" Version="8.0.7.65" />
+    <PackageReference Include="MDP.Registration" Version="8.0.7.65" />
+    <PackageReference Include="MDP.Security.Claims" Version="8.0.7.65" />
+    <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.65" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
   </ItemGroup>

@@ -15,7 +15,7 @@
 
   <!-- Reference -->
   <ItemGroup>
-    <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.62" />
+    <PackageReference Include="MDP.Threading.Tasks" Version="8.0.7.65" />
     <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.100" />
     <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
     <PackageReference Update="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.100" />
