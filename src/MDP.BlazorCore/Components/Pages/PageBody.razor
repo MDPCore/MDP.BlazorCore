@@ -13,8 +13,8 @@
     [Parameter]
     public MarkupString PageDataString { get; set; }
 
-    [Parameter]
-    public MarkupString PageErrorString { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null;
 
 
     // Methods
@@ -28,13 +28,6 @@
         if (this.PageDataString.Value != pageDataString.Value)
         {
             this.PageDataString = pageDataString;
-        }
-
-        // PageError
-        var pageErrorString = this.CreatePageError();
-        if (this.PageErrorString.Value != pageErrorString.Value)
-        {
-            this.PageErrorString = pageErrorString;
         }
     }
 
@@ -56,26 +49,9 @@
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         }));
     }
-
-    private MarkupString CreatePageError()
-    {
-        // Require
-        if (this.Context?.PageError == null) return new MarkupString("{}");
-
-        // PageError
-        var pageError = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        pageError["source"] = this.Context?.PageError.Source;
-        pageError["message"] = this.Context?.PageError.Message;
-
-        // Return
-        return new MarkupString(JsonSerializer.Serialize(pageError, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        }));
-    }
 }
 
-<!-- require -->
+<!-- pageLoading -->
 @if (this.Context == null) {
 
     // processer
@@ -88,9 +64,32 @@
     return;
 }
 
-<!-- content -->
-@ChildContent
+<!-- pageError -->
+@if (this.Context.PageError != null)
+{
+    // processer
+    <div class="mdp-processer">
+        <div class="error">系統發生錯誤，請稍後再試或聯絡系統管理員</div>
+        <div class="action-group">
 
-<!-- context -->
+            <!-- home -->
+            <form action="/" method="get">
+                <input class="btn btn-secondary" type="submit" value="回到首頁" />
+            </form>
+
+            <!-- refresh -->
+            <form action="@(this.NavigationManager.Uri)" method="get">
+                <input class="btn btn-primary" type="submit" value="重新整理" />
+            </form>
+        </div>
+        <div class="detail">@($"錯誤頁面：{new Uri(this.NavigationManager?.Uri).PathAndQuery.TrimEnd('?')}")</div>
+        <div class="detail">@($"錯誤訊息：{this.Context?.PageError.Message}")</div>
+    </div>
+
+    // return
+    return;
+}
+
+<!-- pageContent -->
+@ChildContent
 <span id="mdp-blazor-core-pagedata" style="display:none;" data-value="@PageDataString"></span>
-<span id="mdp-blazor-core-pageerror" style="display:none;" data-value="@PageErrorString"></span>

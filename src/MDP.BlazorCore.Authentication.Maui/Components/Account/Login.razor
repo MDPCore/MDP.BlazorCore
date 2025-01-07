@@ -77,7 +77,7 @@
             <!-- login -->
             <form action="/Account/Login" method="get">
                 <input type="hidden" name="returnUrl" value="@(this.ReturnUrl)" />
-                <input class="btn btn-primary" type="submit" value="重新執行" />
+                <input class="btn btn-primary" type="submit" value="重新整理" />
             </form>
         </div>
         <div class="detail">@($"錯誤頁面：{new Uri(this.NavigationManager.Uri).PathAndQuery}")</div>
@@ -99,7 +99,7 @@ else
             <!-- login -->
             <form action="/Account/Login" method="get">
                 <input type="hidden" name="returnUrl" value="@(this.ReturnUrl)" />
-                <input class="btn btn-primary" type="submit" value="重新執行" />
+                <input class="btn btn-primary" type="submit" value="重新整理" />
             </form>
         </div>
     </div>

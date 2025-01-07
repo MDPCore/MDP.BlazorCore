@@ -81,26 +81,10 @@ mdp.blazorCore.pageManager = (function () {
             }
         }
 
-        // pageError
-        var pageError = {};
-        var pageErrorElement = document.getElementById("mdp-blazor-core-pageerror");
-        if (pageErrorElement) {
-            var pageErrorString = pageErrorElement.getAttribute("data-value");
-            if (pageErrorString) {
-                try {
-                    pageError = JSON.parse(pageErrorString);
-                } catch (error) {
-                    console.error("pageError=null, error=", error.message);
-                }
-            }
-        }
-        if (Object.keys(pageError).length === 0) pageError = null;
-
         // pageLoaded
         var pageLoadedEvent = new CustomEvent("MDPPageLoaded", {
             detail: {
-                pageData: pageData,
-                pageError: pageError
+                pageData: pageData
             }
         });
         document.dispatchEvent(pageLoadedEvent);
@@ -124,16 +108,11 @@ document.addEventListener("MDPPageLoading", function (event) {
 
 document.addEventListener("MDPPageLoaded", function (event) {
 
-    // scroll
-    window.scrollTo({ top: 0, behavior: 'auto' });
-    
     // style
     document.body.classList.remove("mdp-page-loading");
 
-    // error
-    if (event.detail.pageError) {
-        mdp.blazorCore.errorManager.dispatchError(new Error(event.detail.pageError.message));
-    }
+    // scroll
+    window.scrollTo({ top: 0, behavior: 'auto' });
 });
 
 // mdp.blazorCore.interopManager
@@ -172,6 +151,13 @@ mdp.blazorCore.interopManager = (function () {
                 } else {
                     throw new Error(response.errorMessage);
                 }
+            }).catch(function (error) {
+
+                // dispatch
+                mdp.blazorCore.errorManager.dispatchError(error);
+
+                // throw
+                throw error;
             }).finally(function () {
 
                 // invokedEvent
@@ -194,6 +180,13 @@ mdp.blazorCore.interopManager = (function () {
                 } else {
                     throw new Error(response.errorMessage);
                 }
+            }).catch(function (error) {
+
+                // dispatch
+                mdp.blazorCore.errorManager.dispatchError(error);
+
+                // throw
+                throw error;
             }).finally(function () {
 
                 // invokedEvent
@@ -403,9 +396,6 @@ mdp.blazorCore.errorManager = (function () {
             }
         });
         document.dispatchEvent(errorThrownEvent);
-
-        // console
-        console.error(error);
     }
 
 
@@ -416,6 +406,30 @@ mdp.blazorCore.errorManager = (function () {
         dispatchError: dispatchError
     };
 })();
+
+document.addEventListener("MDPErrorThrown", function (event) {
+
+    // require
+    document.querySelector(".mdp-processer")?.remove();
+
+    // processerElement
+    var processerElement = document.createElement("div");
+    processerElement.className = "mdp-processer";
+    processerElement.innerHTML = `
+        <div class="error">系統發生錯誤，請稍後再試或聯絡系統管理員</div>
+        <div class="action-group">
+            <form action="/" method="get">
+                <input class="btn btn-secondary" type="submit" value="回到首頁">
+            </form>
+            <form action="${window.location.href}" method="get">
+                <input class="btn btn-primary" type="submit" value="重新整理">
+            </form>
+        </div>
+        <div class="detail">錯誤頁面：${new URL(window.location.href).pathname}</div>
+        <div class="detail">錯誤訊息：${event.detail.error.message}</div>
+    `;
+    document.body.appendChild(processerElement);
+});
 
 // anchor.hotfix
 document.addEventListener('click', function (event) {

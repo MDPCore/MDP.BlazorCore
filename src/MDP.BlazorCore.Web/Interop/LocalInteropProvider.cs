@@ -50,7 +50,7 @@ namespace MDP.BlazorCore.Web
                     {
                         StatusCode = InteropStatusCode.NotFound,
                         Result = null,
-                        ErrorMessage = $"Not found for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                        ErrorMessage = $"InvokeAsync failed: path={interopRequest.RoutePath}/{interopRequest.ActionName}, error=Not Found"
                     };
                 }
                 if (interopController != null) interopController.User = principal;
@@ -64,7 +64,7 @@ namespace MDP.BlazorCore.Web
                     {
                         StatusCode = InteropStatusCode.BadRequest,
                         Result = null,
-                        ErrorMessage = $"Bad request for resource: {interopRequest.RoutePath}/{interopRequest.ActionName}"
+                        ErrorMessage = $"InvokeAsync failed: path={interopRequest.RoutePath}/{interopRequest.ActionName}, error=Bad request"
                     };
                 }
 
@@ -90,7 +90,7 @@ namespace MDP.BlazorCore.Web
                 {
                     StatusCode = InteropStatusCode.InternalServerError,
                     Result = null,
-                    ErrorMessage = exception.Message
+                    ErrorMessage = $"InvokeAsync failed: path={interopRequest.RoutePath}/{interopRequest.ActionName}, error={exception.Message}"
                 };
 
                 // Return

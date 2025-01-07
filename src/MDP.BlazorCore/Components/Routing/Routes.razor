@@ -41,20 +41,22 @@
     </Found>
     <NotFound>
         <LayoutView Layout="typeof(MDP.BlazorCore.EmptyLayout)">
+            <div class="mdp-processer">
+                <div class="error">此頁面不存在，請稍後再試或聯絡系統管理員</div>
+                <div class="action-group">
 
-            <p>找不到頁面，頁面路徑為：</p>
-            <ul><li>@_currentPath</li></ul>
+                    <!-- home -->
+                    <form action="/" method="get">
+                        <input class="btn btn-secondary" type="submit" value="回到首頁" />
+                    </form>
 
-            <p>應用組件：</p>
-            <ul><li>@RoutesOptions.CreateAppAssembly().GetName().Name</li></ul>
-
-            <p>附加組件：</p>
-            <ul>
-                @foreach (var assembly in RoutesOptions.CreateAdditionalAssemblies())
-                {
-                    <li>@assembly.GetName().Name</li>
-                }
-            </ul>
+                    <!-- refresh -->
+                    <form action="@(_currentPath)" method="get">
+                        <input class="btn btn-primary" type="submit" value="重新整理" />
+                    </form>
+                </div>
+                <div class="detail">@($"錯誤頁面：{_currentPath}")</div>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>

@@ -24,21 +24,9 @@
 
                     // alert
                     alert(message + " By PageController");
-                }).catch(mdp.blazorCore.errorManager.dispatchError);
+                });
             });
         }, { once: true });
-
-        // errorThrown
-        document.MDPErrorThrownListener = document.MDPErrorThrownListener || function (event) {
-
-            // error
-            var error = event.detail.error;
-
-            // alert
-            alert(error.message);
-        };
-        document.removeEventListener("MDPErrorThrown", document.MDPErrorThrownListener);
-        document.addEventListener("MDPErrorThrown", document.MDPErrorThrownListener);
     </script>
 </PageScript>
 
