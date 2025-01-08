@@ -153,7 +153,7 @@ mdp.blazorCore.interopManager = (function () {
                 }
             }).catch(function (error) {
 
-                // dispatch
+                // dispatchError
                 mdp.blazorCore.errorManager.dispatchError(error);
 
                 // throw
@@ -182,7 +182,7 @@ mdp.blazorCore.interopManager = (function () {
                 }
             }).catch(function (error) {
 
-                // dispatch
+                // dispatchError
                 mdp.blazorCore.errorManager.dispatchError(error);
 
                 // throw
@@ -1023,8 +1023,57 @@ mdp.blazorCore.fade = function (fadeElement) {
 };
 
 document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.fade:not([data-auto-start="false"]').forEach(function (fadeElement) {
+    document.querySelectorAll('.fade').forEach(function (fadeElement) {
         new mdp.blazorCore.fade(fadeElement);
+    });
+});
+
+// mdp.blazorCore.bubble
+mdp.blazorCore.bubble = function (bubbleElement) {
+
+    // require
+    if (!bubbleElement) return;
+    if (bubbleElement.bubble) return bubbleElement.bubble;
+    if (bubbleElement.classList.contains('fade') == false) {
+        bubbleElement.classList.add('fade');
+        new mdp.blazorCore.fade(bubbleElement);
+    }
+
+
+    // methods
+    function show(duration) {
+
+        // show
+        return bubbleElement.fade.show(duration);
+    };
+
+    function hide() {
+
+        // hide
+        return bubbleElement.fade.hide();
+    };
+
+    function toggle(duration) {
+
+        // toggle
+        return bubbleElement.fade.toggle(duration);
+    };
+
+
+    // return
+    bubbleElement.bubble = {
+
+        // methods
+        show: show,
+        hide: hide,
+        toggle: toggle
+    };
+    return bubbleElement.bubble;
+};
+
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.bubble').forEach(function (bubbleElement) {
+        new mdp.blazorCore.bubble(bubbleElement);
     });
 });
 
@@ -1121,24 +1170,8 @@ mdp.blazorCore.popper = function (popperElement) {
 };
 
 document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.popper:not([data-auto-start="false"]').forEach(function (popperElement) {
+    document.querySelectorAll('.popper').forEach(function (popperElement) {
         new mdp.blazorCore.popper(popperElement);
-    });
-});
-
-// mdp.blazorCore.offcanvas
-document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.offcanvas').forEach(function (offcanvasElement) {
-
-        // anchor.click
-        offcanvasElement.querySelectorAll('a').forEach(function (anchorElement) {
-            anchorElement.addEventListener('click', function (event) {
-                
-                // offcanvas.hide
-                var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-                if (offcanvas) offcanvas.hide();
-            });
-        });
     });
 });
 
@@ -1157,6 +1190,22 @@ document.addEventListener("MDPPageLoaded", function (event) {
             textareaElement.style.height = this.scrollHeight + 'px';
         });
         textareaElement.dispatchEvent(new Event('input'));
+    });
+});
+
+// mdp.blazorCore.offcanvas
+document.addEventListener("MDPPageLoaded", function (event) {
+    document.querySelectorAll('.offcanvas').forEach(function (offcanvasElement) {
+
+        // anchor.click
+        offcanvasElement.querySelectorAll('a').forEach(function (anchorElement) {
+            anchorElement.addEventListener('click', function (event) {
+
+                // offcanvas.hide
+                var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if (offcanvas) offcanvas.hide();
+            });
+        });
     });
 });
 
@@ -1237,7 +1286,7 @@ mdp.blazorCore.swiperSlider = function (swiperSliderElement) {
 };
 
 document.addEventListener('MDPPageLoaded', function () {
-    document.querySelectorAll('.swiper-slider:not([data-auto-start="false"]').forEach(swiperSliderElement => {
+    document.querySelectorAll('.swiper-slider').forEach(swiperSliderElement => {
         new mdp.blazorCore.swiperSlider(swiperSliderElement);
     });
 });
@@ -1373,7 +1422,7 @@ mdp.blazorCore.swiperWheel = function (swiperWheelElement) {
 };
 
 document.addEventListener('MDPPageLoaded', function () {
-    document.querySelectorAll('.swiper-wheel:not([data-auto-start="false"]').forEach(swiperWheelElement => {
+    document.querySelectorAll('.swiper-wheel').forEach(swiperWheelElement => {
         new mdp.blazorCore.swiperWheel(swiperWheelElement);
     });
 });
@@ -1575,7 +1624,7 @@ mdp.blazorCore.filePicker = function (filePickerElement) {
 };
 
 document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.mdp-wrapper .file-picker:not([data-auto-start="false"]').forEach(function (filePickerElement) {
+    document.querySelectorAll('.mdp-wrapper .file-picker').forEach(function (filePickerElement) {
         new mdp.blazorCore.filePicker(filePickerElement);
     });
 });
@@ -1784,7 +1833,7 @@ mdp.blazorCore.timePicker = function (timePickerElement) {
 };
 
 document.addEventListener("MDPPageLoaded", function (event) {
-    document.querySelectorAll('.mdp-wrapper .time-picker:not([data-auto-start="false"]').forEach(function (timePickerElement) {
+    document.querySelectorAll('.mdp-wrapper .time-picker').forEach(function (timePickerElement) {
         new mdp.blazorCore.timePicker(timePickerElement);
     });
 });

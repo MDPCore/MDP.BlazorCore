@@ -4,9 +4,9 @@
 :root {
 
     /* color */
-    --mdp-color: #000000;
-    --mdp-color-background: #FFFFFF;
-    --mdp-color-warning: #FF0000;
+    --mdp-body-color: #3E3A3A;
+    --mdp-body-bg: #FFFFFF;
+    --mdp-body-warning: #FF0000;
 }
 
 /* reset */
@@ -25,8 +25,8 @@ body {
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
-    color: var(--mdp-color);
-    background-color: var(--mdp-color-background);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 
@@ -42,8 +42,8 @@ body {
     height: 100%; 
     margin: 0;
     padding: 0;
-    color: var(--mdp-color);
-    background-color: var(--mdp-color-background);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
 }
 
 .mdp-wrapper a,
@@ -85,8 +85,8 @@ body {
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    color: var(--mdp-color);
-    background-color: var(--mdp-color-background);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
     overflow: auto;
     z-index: 9999;
 }
@@ -105,7 +105,7 @@ body {
 }
 
 .mdp-processer .title { 
-    color: var(--mdp-color);
+    color: var(--mdp-body-color);
     font-size: 1rem;
     font-weight: normal;
 }
@@ -117,7 +117,7 @@ body {
 }
 
 .mdp-processer .error {
-    color: var(--mdp-color-warning);
+    color: var(--mdp-body-warning);
     font-size: 1rem;
     font-weight: normal;
     word-wrap: break-word;
@@ -162,8 +162,8 @@ body {
     width: 0;
     height: 0;
     overflow: visible;
-    color: var(--mdp-color-background);
-    background-color: var(--mdp-color); 
+    color: var(--mdp-body-bg);
+    background-color: var(--mdp-body-color); 
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.01s linear;
@@ -184,7 +184,7 @@ body {
     gap: 1rem;
     color: inherit;
     background-color: inherit;
-    opacity: 0.8;
+    opacity: 0.75;
     z-index: 2000;
 }
 
@@ -334,26 +334,14 @@ body {
     pointer-events: none;
 }
 
-/* popper */
-.mdp-wrapper .popper {
-    width: fit-content;
-    height: fit-content;
-    display: none; 
-    z-index: 1039;
-}
-
-.mdp-wrapper .popper.popper-show {
-    display: inherit; 
-}
-
 /* bubble */
 .mdp-wrapper .bubble {
     display: block;
     width: 0;
     height: 0;
     overflow: visible;
-    color: var(--bs-body-bg);
-    background-color: var(--bs-body-color);
+    color: var(--mdp-body-bg);
+    background-color: var(--mdp-body-color);
 }
 
 .mdp-wrapper .bubble .bubble-body {
@@ -371,7 +359,7 @@ body {
     gap: 1rem;
     color: inherit;
     background-color: inherit;
-    opacity: 0.9;
+    opacity: 0.75;
     z-index: 2000;
 }
 
@@ -382,6 +370,18 @@ body {
     right: 0;
     bottom: 0;
     z-index: 1039;
+}
+
+/* popper */
+.mdp-wrapper .popper {
+    width: fit-content;
+    height: fit-content;
+    display: none; 
+    z-index: 1039;
+}
+
+.mdp-wrapper .popper.popper-show {
+    display: inherit; 
 }
 
 /* image */
@@ -491,9 +491,9 @@ body {
     align-items: center;
     justify-content: space-between;
     font-size: var(--mdp-input-font-size);
-    --mdp-input-color: var(--bs-body-color);
+    --mdp-input-color: var(--mdp-body-color);
     --mdp-input-border-color: var(--bs-border-color);
-    --mdp-input-background-color: var(--bs-body-bg);
+    --mdp-input-background-color: var(--mdp-body-bg);
     --mdp-input-invalid-color: var(--bs-form-invalid-color);
     --mdp-input-font-size: 1rem;
 }
@@ -581,10 +581,10 @@ body {
     align-items: center;
     justify-content: space-between;
     color: var(--mdp-display-color);
-    background-color: var(--mdp-display-background-color);
+    background-color: var(--mdp-display-bg);
     font-size: var(--mdp-display-font-size);
-    --mdp-display-color: var(--bs-body-color);
-    --mdp-display-background-color: var(--bs-body-bg);
+    --mdp-display-color: var(--mdp-body-color);
+    --mdp-display-bg: var(--mdp-body-bg);
     --mdp-display-font-size: 1rem;
 }
 
@@ -650,8 +650,8 @@ body {
     margin: 1.5rem;
     padding: 0;
     border-radius: 50%;
-    color: var(--bs-body-color);
-    background-color: var(--bs-body-bg);
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg);
     opacity: 0;
     pointer-events: none;
     z-index: 2;
@@ -684,8 +684,8 @@ body {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    color: var(--bs-body-bg) !important;
-    background-color: var(--bs-body-color) !important;
+    color: var(--mdp-body-bg) !important;
+    background-color: var(--mdp-body-color) !important;
     z-index: 2000 !important;
 }
 
