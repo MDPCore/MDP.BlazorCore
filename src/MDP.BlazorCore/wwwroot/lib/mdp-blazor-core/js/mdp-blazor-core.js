@@ -214,6 +214,20 @@ document.addEventListener("MDPActionInvoking", function (event) {
 
     // style
     document.body.classList.add("mdp-action-invoking");
+
+    // loaderElement
+    if (!document.querySelector(".mdp-loader")) {
+        var loaderElement = document.createElement("div");
+        loaderElement.className = "mdp-loader";
+        loaderElement.innerHTML = `
+            <div class="mdp-loader-body">
+                <div class="spinner-border"></div>
+                <div class="title">Loading</div>
+            </div>
+            <div class="mdp-loader-overlay" />
+        `;
+        document.body.appendChild(loaderElement);
+    }
 });
 
 document.addEventListener("MDPActionInvoked", function (event) {
@@ -371,6 +385,20 @@ document.addEventListener("MDPTaskInvoking", function (event) {
 
     // style
     document.body.classList.add("mdp-task-invoking");
+
+    // loaderElement
+    if (!document.querySelector(".mdp-loader")) {
+        var loaderElement = document.createElement("div");
+        loaderElement.className = "mdp-loader";
+        loaderElement.innerHTML = `
+            <div class="mdp-loader-body">
+                <div class="spinner-border"></div>
+                <div class="title">Loading</div>
+            </div>
+            <div class="mdp-loader-overlay" />
+        `;
+        document.body.appendChild(loaderElement);
+    }
 });
 
 document.addEventListener("MDPTaskInvoked", function (event) {

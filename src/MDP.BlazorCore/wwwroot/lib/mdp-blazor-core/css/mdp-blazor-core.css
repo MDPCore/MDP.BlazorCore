@@ -4,8 +4,8 @@
 :root {
 
     /* color */
-    --mdp-color-font: #000000;
-    --mdp-color-bg: #FFFFFF;
+    --mdp-color: #000000;
+    --mdp-color-background: #FFFFFF;
     --mdp-color-warning: #FF0000;
 }
 
@@ -25,8 +25,8 @@ body {
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
-    color: var(--mdp-color-font);
-    background-color: var(--mdp-color-bg);
+    color: var(--mdp-color);
+    background-color: var(--mdp-color-background);
 }
 
 
@@ -42,8 +42,8 @@ body {
     height: 100%; 
     margin: 0;
     padding: 0;
-    color: var(--mdp-color-font);
-    background-color: var(--mdp-color-bg);
+    color: var(--mdp-color);
+    background-color: var(--mdp-color-background);
 }
 
 .mdp-wrapper a,
@@ -85,8 +85,8 @@ body {
     align-items: center;
     justify-content: start;
     gap: 1rem;
-    color: var(--mdp-color-font);
-    background-color: var(--mdp-color-bg);
+    color: var(--mdp-color);
+    background-color: var(--mdp-color-background);
     overflow: auto;
     z-index: 9999;
 }
@@ -105,7 +105,7 @@ body {
 }
 
 .mdp-processer .title { 
-    color: var(--mdp-color-font);
+    color: var(--mdp-color);
     font-size: 1rem;
     font-weight: normal;
 }
@@ -154,6 +154,66 @@ body {
         opacity: 1;
         visibility: visible;
     }
+}
+
+/* mdp-loader */
+.mdp-loader {
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    color: var(--mdp-color-background);
+    background-color: var(--mdp-color); 
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.01s linear;
+}
+
+.mdp-loader .mdp-loader-body {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: 0.75rem;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  
+    gap: 1rem;
+    color: inherit;
+    background-color: inherit;
+    opacity: 0.8;
+    z-index: 2000;
+}
+
+.mdp-loader .mdp-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1039;
+}
+
+.mdp-loader .spinner-border {
+    --bs-spinner-width: 2.5rem;
+    --bs-spinner-height: 2.5rem;
+    --bs-spinner-border-width: 0.25rem;
+    --bs-spinner-animation-speed: 0.5s;
+}
+
+.mdp-loader .title {    
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.mdp-task-invoking .mdp-loader,
+.mdp-action-invoking .mdp-loader {    
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.1s linear 0.3s;
 }
 
 
