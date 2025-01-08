@@ -98,10 +98,22 @@ body {
     --bs-spinner-animation-speed: 0.5s;
 }
 
+.mdp-processer .spinner-border.show-delay {
+    opacity: 0;
+    visibility: hidden;
+    animation: mdp-processer-show-delay 0.1s ease-in-out 0.3s forwards, .75s linear infinite spinner-border;
+}
+
 .mdp-processer .title { 
     color: var(--mdp-color-font);
     font-size: 1rem;
     font-weight: normal;
+}
+
+.mdp-processer .title.show-delay {
+    opacity: 0;
+    visibility: hidden;
+    animation: mdp-processer-show-delay 0.1s ease-in-out 0.3s forwards;
 }
 
 .mdp-processer .error {
@@ -131,7 +143,7 @@ body {
     gap: 0.5rem;
 }
 
-.mdp-processer .show-delay {
+.mdp-processer .action-group.show-delay {
     opacity: 0;
     visibility: hidden;
     animation: mdp-processer-show-delay 1s ease-in-out 10s forwards;

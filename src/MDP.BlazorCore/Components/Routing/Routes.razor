@@ -21,7 +21,7 @@
     protected override void OnInitialized()
     {
         // Default
-        _currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        _currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).TrimEnd('?');
     }
 }
 
@@ -30,8 +30,8 @@
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@RoutesOptions.DefaultLayout" Resource="@NavigationManager">
             <Authorizing>
                 <div class="mdp-processer">
-                    <div class="spinner-border"></div>
-                    <div class="title">Loading</div>
+                    <div class="spinner-border show-delay"></div>
+                    <div class="title show-delay">Loading</div>
                 </div>
             </Authorizing>
             <NotAuthorized>
