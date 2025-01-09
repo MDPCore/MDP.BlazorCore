@@ -212,11 +212,10 @@ mdp.blazorCore.interopManager = (function () {
 
 document.addEventListener("MDPActionInvoking", function (event) {
 
-    // style
-    document.body.classList.add("mdp-action-invoking");
-
     // loaderElement
     if (!document.querySelector(".mdp-loader")) {
+
+        // create
         var loaderElement = document.createElement("div");
         loaderElement.className = "mdp-loader";
         loaderElement.innerHTML = `
@@ -227,7 +226,18 @@ document.addEventListener("MDPActionInvoking", function (event) {
             <div class="mdp-loader-overlay" />
         `;
         document.body.appendChild(loaderElement);
+
+        // style
+        setTimeout(() => {
+            document.body.classList.add("mdp-action-invoking");
+        }, 1);
+
+        // return
+        return;
     }
+
+    // style
+    document.body.classList.add("mdp-action-invoking");
 });
 
 document.addEventListener("MDPActionInvoked", function (event) {
@@ -383,11 +393,10 @@ mdp.blazorCore.taskManager = (function () {
 
 document.addEventListener("MDPTaskInvoking", function (event) {
 
-    // style
-    document.body.classList.add("mdp-task-invoking");
-
     // loaderElement
     if (!document.querySelector(".mdp-loader")) {
+
+        // create
         var loaderElement = document.createElement("div");
         loaderElement.className = "mdp-loader";
         loaderElement.innerHTML = `
@@ -398,7 +407,18 @@ document.addEventListener("MDPTaskInvoking", function (event) {
             <div class="mdp-loader-overlay" />
         `;
         document.body.appendChild(loaderElement);
+
+        // style
+        setTimeout(() => {
+            document.body.classList.add("mdp-task-invoking");
+        }, 1);
+
+        // return
+        return;
     }
+
+    // style
+    document.body.classList.add("mdp-task-invoking");
 });
 
 document.addEventListener("MDPTaskInvoked", function (event) {
@@ -458,6 +478,69 @@ document.addEventListener("MDPErrorThrown", function (event) {
     `;
     document.body.appendChild(processerElement);
 });
+
+// mdp.blazorCore.toastManager
+mdp.blazorCore.toastManager = (function () {
+
+    // methods
+    function show(message, duration, className) {
+
+        // require
+        if (!duration) duration = 1000;
+        if (!className) className = "show-success";
+
+        // toastElement
+        var toastElement = document.querySelector(".mdp-toast");
+        if (!toastElement) {
+            toastElement = document.createElement("div");
+            toastElement.className = "mdp-toast";
+            toastElement.innerHTML = `
+                <div class="mdp-toast-body">
+                    <div class="icon"></div>
+                    <div class="text">message</div>
+                </div>
+            `;
+            document.body.appendChild(toastElement);
+        }
+        toastElement.className = "mdp-toast show " + className;
+        toastElement.querySelector(".text").innerText = message;
+
+        // show
+        toastElement.classList.add('show');
+        return new Promise((resolve, reject) => {
+            setTimeout(function () {
+                try {
+                    toastElement.classList.remove('show');
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            }, duration);
+        });
+    }
+
+    function showSuccess(message, duration) {
+
+        // show
+        return show(message, duration, "show-success");
+    }
+
+    function showWarning(message, duration) {
+
+        // show
+        return show(message, duration, "show-warning");
+    }
+
+
+    // return
+    return {
+
+        // methods
+        show: show,
+        showSuccess: showSuccess,
+        showWarning: showWarning
+    };
+})();
 
 // anchor.hotfix
 document.addEventListener('click', function (event) {
@@ -988,27 +1071,13 @@ mdp.blazorCore.fade = function (fadeElement) {
     };
 
     function toggle(duration) {
-        if (fadeElement.classList.contains('fade-end') == true) {
+        if (fadeElement.classList.contains('show') == false) {
             fadeElement.fade.show(duration);
         }
         else {
             fadeElement.fade.hide();
         }
     };
-
-
-    // handlers
-    fadeElement.addEventListener('transitionend', function () {
-
-        // style
-        if (window.getComputedStyle(fadeElement).getPropertyValue('opacity') == 0) {
-            fadeElement.classList.add('fade-end');
-        }
-        else {
-            fadeElement.classList.remove('fade-end');
-        }
-    });
-    fadeElement.dispatchEvent(new Event('transitionend'));
 
 
     // return

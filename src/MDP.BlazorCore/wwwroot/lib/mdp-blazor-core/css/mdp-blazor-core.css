@@ -4,24 +4,25 @@
 :root {
 
     /* color */
-    --mdp-body-color: #3E3A3A;
+    --mdp-body-color: #000000;
     --mdp-body-bg: #FFFFFF;
-    --mdp-body-warning: #FF0000;
+    --mdp-color-warning: #FF0000;
 }
 
 /* reset */
 html {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
+    min-height: 100dvh;
     scroll-behavior: auto !important;
 }
 
 body {
     width: 100%;
     height: 100%;
+    min-height: 100dvh;
     margin: 0 !important;
     padding: 0 !important;
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     scroll-behavior: auto !important;
@@ -117,7 +118,7 @@ body {
 }
 
 .mdp-processer .error {
-    color: var(--mdp-body-warning);
+    color: var(--mdp-color-warning);
     font-size: 1rem;
     font-weight: normal;
     word-wrap: break-word;
@@ -162,11 +163,10 @@ body {
     width: 0;
     height: 0;
     overflow: visible;
-    color: var(--mdp-body-bg);
-    background-color: var(--mdp-body-color); 
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg); 
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.01s linear;
 }
 
 .mdp-loader .mdp-loader-body {
@@ -184,7 +184,7 @@ body {
     gap: 1rem;
     color: inherit;
     background-color: inherit;
-    opacity: 0.75;
+    opacity: 0.9;
     z-index: 2000;
 }
 
@@ -214,6 +214,75 @@ body {
     opacity: 1;
     pointer-events: auto;
     transition: opacity 0.1s linear 0.3s;
+}
+
+/* mdp-toast */
+.mdp-toast {
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    color: var(--mdp-body-color);
+    background-color: var(--mdp-body-bg); 
+    opacity: 0;
+    pointer-events: none;
+    --success-icon-url: url('/lib/mdp-blazor-core/img/success.svg');
+    --warning-icon-url: url('/lib/mdp-blazor-core/img/warning.svg');
+}
+
+.mdp-toast .mdp-toast-body {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: 0.75rem;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  
+    gap: 1rem;
+    color: inherit;
+    background-color: inherit;
+    opacity: 0.9;
+    z-index: 2000;
+}
+
+.mdp-toast .mdp-toast-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1039;
+}
+
+.mdp-toast .icon {
+    width: 3rem;
+    height: 3rem;
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    background-color: currentColor;
+}
+
+.mdp-toast .text {    
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.mdp-toast.show {    
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mdp-toast.show-success .icon {    
+    mask-image: var(--success-icon-url);
+}
+
+.mdp-toast.show-warning .icon {    
+    mask-image: var(--warning-icon-url);
 }
 
 
@@ -331,6 +400,7 @@ body {
 }
 
 .mdp-wrapper .fade:not(.show) {    
+    opacity: 0;
     pointer-events: none;
 }
 
@@ -359,7 +429,7 @@ body {
     gap: 1rem;
     color: inherit;
     background-color: inherit;
-    opacity: 0.75;
+    opacity: 0.9;
     z-index: 2000;
 }
 
@@ -370,6 +440,11 @@ body {
     right: 0;
     bottom: 0;
     z-index: 1039;
+}
+
+.mdp-wrapper .bubble:not(.show) {    
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* popper */
