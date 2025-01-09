@@ -41,5 +41,9 @@
         </array>
       </dict>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>需要使用相機拍攝照片，以便您進行編輯和分享，所有數據僅限於系統內使用。</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>需要訪問相簿選擇照片，以便您進行編輯和分享，所有數據僅限於系統內使用。</string>
   </dict>
 </plist>

@@ -11,6 +11,6 @@ namespace MDP.BlazorCore.Maui.Lab
             // Host    
             return MDP.BlazorCore.Maui.Host.CreateMauiApp<MauiProgram>(typeof(MainLayout));        
         }          
-    }    
+    }       
 }                                                                                 
-                                                                                             
+                                                                                                
