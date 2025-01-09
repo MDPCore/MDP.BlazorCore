@@ -163,8 +163,8 @@ body {
     width: 0;
     height: 0;
     overflow: visible;
-    color: var(--mdp-body-color);
-    background-color: var(--mdp-body-bg); 
+    color: var(--mdp-body-bg);
+    background-color: var(--mdp-body-color); 
     opacity: 0;
     pointer-events: none;
 }
@@ -222,8 +222,8 @@ body {
     width: 0;
     height: 0;
     overflow: visible;
-    color: var(--mdp-body-color);
-    background-color: var(--mdp-body-bg); 
+    color: var(--mdp-body-bg);
+    background-color: var(--mdp-body-color); 
     opacity: 0;
     pointer-events: none;
     --success-icon-url: url('/lib/mdp-blazor-core/img/success.svg');
